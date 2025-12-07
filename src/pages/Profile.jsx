@@ -55,6 +55,50 @@ export default function Profile() {
         totalSaves
       });
     } catch (error) {
+      console.error('Error loading data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Check file size (1MB = 1,000,000 bytes)
+      if (file.size > 1000000) {
+        alert('Avatar file size must be less than 1MB. Please choose a smaller image.');
+        e.target.value = ''; // Reset input
+        return;
+      }
+
+      setAvatarFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => setAvatarPreview(reader.result);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleBannerChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Check file size (5MB = 5,000,000 bytes)
+      if (file.size > 5000000) {
+        alert('Banner file size must be less than 5MB. Please choose a smaller image.');
+        e.target.value = ''; // Reset input
+        return;
+      }
+
+      setBannerFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => setBannerPreview(reader.result);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const formDataToSend = new FormData();
       formDataToSend.append('username', formData.username);
       formDataToSend.append('bio', formData.bio || '');
 
@@ -78,7 +122,13 @@ export default function Profile() {
     } catch (error) {
       console.error('Error updating profile:', error);
       console.error('Error response:', error.response?.data);
-      alert(`Failed to update profile: ${error.response?.data?.detail || error.message}`);
+
+      // Show specific error message
+      const errorMsg = error.response?.data?.avatar?.[0] ||
+        error.response?.data?.banner?.[0] ||
+        error.response?.data?.detail ||
+        error.message;
+      alert(`Failed to update profile: ${errorMsg}`);
     } finally {
       setSaving(false);
     }
@@ -281,7 +331,7 @@ export default function Profile() {
                         <label htmlFor="modal-avatar-upload" className="btn-upload">
                           Change
                         </label>
-                        <p className="upload-hint">It's recommended to use a picture that's at least 98 x 98 pixels</p>
+                        <p className="upload-hint">It's recommended to use a picture that's at least 98 x 98 pixels and less than 1MB</p>
                       </div>
                     </div>
                   </div>
@@ -312,7 +362,7 @@ export default function Profile() {
                         <label htmlFor="modal-banner-upload" className="btn-upload">
                           Change
                         </label>
-                        <p className="upload-hint">For best results, use an image that's at least 2048 x 1152 pixels</p>
+                        <p className="upload-hint">For best results, use an image that's at least 2048 x 1152 pixels and less than 5MB</p>
                       </div>
                     </div>
                   </div>
