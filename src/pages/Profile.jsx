@@ -3,50 +3,59 @@ import { AuthContext } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
 import useNotifications from '../hooks/useNotifications';
 import api from '../api';
+import { HeartIcon, BookmarkIcon, EyeIcon } from '../components/AnimatedIcons';
+import PromptDetailModal from '../components/PromptDetailModal';
 import './Profile.css';
 
 export default function Profile() {
   const { user } = useContext(AuthContext);
   const { unreadCount } = useNotifications();
+  const [activeTab, setActiveTab] = useState('prompts');
+  const [prompts, setPrompts] = useState([]);
   const [stats, setStats] = useState({
     totalPrompts: 0,
     totalLikes: 0,
-    totalSaves: 0,
-    followers: 0,
-    following: 0
+    totalSaves: 0
   });
   const [loading, setLoading] = useState(true);
-  const [editMode, setEditMode] = useState(false);
+  const [showCustomizeModal, setShowCustomizeModal] = useState(false);
+  const [customizeTab, setCustomizeTab] = useState('branding');
   const [avatarFile, setAvatarFile] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState(null);
+  const [bannerFile, setBannerFile] = useState(null);
+  const [bannerPreview, setBannerPreview] = useState(null);
+  const [selectedPrompt, setSelectedPrompt] = useState(null);
+  const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
     username: user?.username || '',
-    email: user?.email || '',
     bio: user?.bio || ''
   });
 
   useEffect(() => {
-    loadUserStats();
-  }, []);
+    loadUserData();
+    setFormData({
+      username: user?.username || '',
+      bio: user?.bio || ''
+    });
+  }, [user]);
 
-  const loadUserStats = async () => {
+  const loadUserData = async () => {
     setLoading(true);
     try {
       const promptsRes = await api.get('prompts/mine/');
-      const prompts = promptsRes.data.results || promptsRes.data;
+      const userPrompts = promptsRes.data.results || promptsRes.data;
+      setPrompts(userPrompts);
 
-      const totalLikes = prompts.reduce((sum, p) => sum + (p.likes_count || 0), 0);
-      const totalSaves = prompts.reduce((sum, p) => sum + (p.saves_count || 0), 0);
+      const totalLikes = userPrompts.reduce((sum, p) => sum + (p.likes_count || 0), 0);
+      const totalSaves = userPrompts.reduce((sum, p) => sum + (p.saves_count || 0), 0);
 
       setStats({
-        totalPrompts: prompts.length,
+        totalPrompts: userPrompts.length,
         totalLikes,
-        totalSaves,
-        followers: 0,
-        following: 0
+        totalSaves
       });
     } catch (error) {
-      console.error('Error loading stats:', error);
+      console.error('Error loading data:', error);
     } finally {
       setLoading(false);
     }
@@ -57,37 +66,51 @@ export default function Profile() {
     if (file) {
       setAvatarFile(file);
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setAvatarPreview(reader.result);
-      };
+      reader.onloadend = () => setAvatarPreview(reader.result);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleBannerChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setBannerFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => setBannerPreview(reader.result);
       reader.readAsDataURL(file);
     }
   };
 
   const handleSave = async () => {
+    setSaving(true);
     try {
       const formDataToSend = new FormData();
       formDataToSend.append('username', formData.username);
-      formDataToSend.append('bio', formData.bio);
+      formDataToSend.append('bio', formData.bio || '');
 
-      if (avatarFile) {
-        formDataToSend.append('avatar', avatarFile);
-      }
+      if (avatarFile) formDataToSend.append('avatar', avatarFile);
+      if (bannerFile) formDataToSend.append('banner', bannerFile);
 
-      await api.patch('auth/user/', formDataToSend, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+      const response = await api.patch('auth/user/', formDataToSend, {
+        headers: { 'Content-Type': 'multipart/form-data' }
       });
 
-      setEditMode(false);
+      console.log('Update successful:', response.data);
+
+      setShowCustomizeModal(false);
       setAvatarFile(null);
       setAvatarPreview(null);
-      alert('Profile updated successfully!');
+      setBannerFile(null);
+      setBannerPreview(null);
+
+      // Reload the page to show updated data
       window.location.reload();
     } catch (error) {
       console.error('Error updating profile:', error);
-      alert('Failed to update profile');
+      console.error('Error response:', error.response?.data);
+      alert(`Failed to update profile: ${error.response?.data?.detail || error.message}`);
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -103,122 +126,283 @@ export default function Profile() {
   return (
     <>
       <Navbar unreadCount={unreadCount} />
-      <div className="profile-container">
-        <div className="profile-header">
-          <div className="profile-avatar-large">
-            {editMode ? (
-              <div className="avatar-upload-wrapper">
-                <input
-                  type="file"
-                  id="avatar-upload"
-                  accept="image/*"
-                  onChange={handleAvatarChange}
-                  style={{ display: 'none' }}
-                />
-                <label htmlFor="avatar-upload" className="avatar-upload-label">
-                  {avatarPreview || user?.avatar ? (
-                    <img src={avatarPreview || user.avatar} alt={user.username} />
-                  ) : (
-                    <div className="avatar-placeholder-large">
-                      {getAvatarLetters()}
-                    </div>
-                  )}
-                  <div className="avatar-upload-overlay">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-                      <circle cx="12" cy="13" r="4" />
-                    </svg>
-                    <span>Change Photo</span>
-                  </div>
-                </label>
+      <div className="profile-page">
+        {/* Banner Section */}
+        <div className="profile-banner">
+          {user?.banner ? (
+            <img src={user.banner} alt="Banner" />
+          ) : (
+            <div className="banner-placeholder">
+              <span>No banner yet</span>
+            </div>
+          )}
+        </div>
+
+        {/* Profile Info Section */}
+        <div className="profile-info-section">
+          <div className="profile-info-container">
+            <div className="profile-avatar-circle">
+              {user?.avatar ? (
+                <img src={user.avatar} alt={user.username} />
+              ) : (
+                <div className="avatar-placeholder-circle">
+                  {getAvatarLetters()}
+                </div>
+              )}
+            </div>
+
+            <div className="profile-details">
+              <h1 className="profile-username">{user?.username}</h1>
+              <div className="profile-stats-inline">
+                <span>{stats.totalPrompts} prompts</span>
+                <span>•</span>
+                <span>{stats.totalLikes} likes</span>
+                <span>•</span>
+                <span>{stats.totalSaves} saves</span>
               </div>
-            ) : (
-              <>
-                {user?.avatar ? (
-                  <img src={user.avatar} alt={user.username} />
-                ) : (
-                  <div className="avatar-placeholder-large">
-                    {getAvatarLetters()}
-                  </div>
-                )}
-              </>
-            )}
+              {user?.bio && (
+                <p className="profile-bio-text">{user.bio}</p>
+              )}
+            </div>
+
+            <button
+              className="btn-customize-channel"
+              onClick={() => setShowCustomizeModal(true)}
+            >
+              Customize Profile
+            </button>
           </div>
-          <div className="profile-info">
-            <h1>{user?.username}</h1>
-            <p className="profile-email">{user?.email}</p>
-            <p className="profile-joined">
-              Joined {new Date(user?.date_joined).toLocaleDateString('en-US', {
-                month: 'long',
-                year: 'numeric'
-              })}
-            </p>
-          </div>
+        </div>
+
+        {/* Tabs */}
+        <div className="profile-tabs">
           <button
-            className="btn-edit-profile"
-            onClick={() => setEditMode(!editMode)}
+            className={`tab ${activeTab === 'prompts' ? 'active' : ''}`}
+            onClick={() => setActiveTab('prompts')}
           >
-            {editMode ? 'Cancel' : 'Edit Profile'}
+            Prompts
+          </button>
+          <button
+            className={`tab ${activeTab === 'about' ? 'active' : ''}`}
+            onClick={() => setActiveTab('about')}
+          >
+            About
           </button>
         </div>
 
-        {editMode && (
-          <div className="edit-profile-section">
-            <h2>Edit Profile</h2>
-            <div className="form-group">
-              <label>Username</label>
-              <input
-                type="text"
-                value={formData.username}
-                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                placeholder="Username"
-              />
+        {/* Tab Content */}
+        <div className="tab-content">
+          {activeTab === 'prompts' && (
+            <div className="prompts-grid">
+              {prompts.length === 0 ? (
+                <div className="empty-state">
+                  <p>No prompts yet. Create your first prompt!</p>
+                </div>
+              ) : (
+                prompts.map((prompt) => (
+                  <div
+                    key={prompt.id}
+                    className="prompt-card"
+                    onClick={() => setSelectedPrompt(prompt)}
+                  >
+                    <h3>{prompt.title}</h3>
+                    <p className="prompt-preview">{prompt.content}</p>
+                    <div className="prompt-meta">
+                      <span className="prompt-model">{prompt.ai_model}</span>
+                      <div className="prompt-stats">
+                        <span><HeartIcon size={16} /> {prompt.likes_count || 0}</span>
+                        <span><BookmarkIcon size={16} /> {prompt.saves_count || 0}</span>
+                        <span><EyeIcon size={16} /> {prompt.views_count || 0}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
-            <div className="form-group">
-              <label>Bio</label>
-              <textarea
-                value={formData.bio}
-                onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                placeholder="Tell us about yourself..."
-                rows="4"
-              />
-            </div>
-            <button className="btn-save" onClick={handleSave}>
-              Save Changes
-            </button>
-          </div>
-        )}
+          )}
 
-        <div className="profile-stats">
-          <div className="stat-card">
-            <div className="stat-value">{stats.totalPrompts}</div>
-            <div className="stat-label">Prompts</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-value">{stats.totalLikes}</div>
-            <div className="stat-label">Total Likes</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-value">{stats.totalSaves}</div>
-            <div className="stat-label">Total Saves</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-value">{stats.followers}</div>
-            <div className="stat-label">Followers</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-value">{stats.following}</div>
-            <div className="stat-label">Following</div>
+          {activeTab === 'about' && (
+            <div className="about-section">
+              <h2>About</h2>
+              <div className="about-content">
+                <div className="about-item">
+                  <strong>Email:</strong>
+                  <span>{user?.email}</span>
+                </div>
+                <div className="about-item">
+                  <strong>Joined:</strong>
+                  <span>{new Date(user?.date_joined).toLocaleDateString('en-US', {
+                    month: 'long',
+                    day: 'numeric',
+                    year: 'numeric'
+                  })}</span>
+                </div>
+                <div className="about-item">
+                  <strong>Total Prompts:</strong>
+                  <span>{stats.totalPrompts}</span>
+                </div>
+                {user?.bio && (
+                  <div className="about-item">
+                    <strong>Bio:</strong>
+                    <p>{user.bio}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Customize Profile Modal */}
+      {showCustomizeModal && (
+        <div className="customize-modal-overlay" onClick={() => setShowCustomizeModal(false)}>
+          <div className="customize-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Customize profile</h2>
+              <button className="modal-close" onClick={() => setShowCustomizeModal(false)}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+
+            <div className="modal-tabs">
+              <button
+                className={`modal-tab ${customizeTab === 'branding' ? 'active' : ''}`}
+                onClick={() => setCustomizeTab('branding')}
+              >
+                Branding
+              </button>
+              <button
+                className={`modal-tab ${customizeTab === 'basic' ? 'active' : ''}`}
+                onClick={() => setCustomizeTab('basic')}
+              >
+                Basic info
+              </button>
+            </div>
+
+            <div className="modal-content">
+              {customizeTab === 'branding' && (
+                <div className="branding-section">
+                  <div className="upload-section">
+                    <h3>Picture</h3>
+                    <p className="upload-description">
+                      Your profile picture will appear where your profile is presented on CommandVault
+                    </p>
+                    <div className="upload-preview">
+                      <div className="preview-avatar">
+                        {avatarPreview || user?.avatar ? (
+                          <img src={avatarPreview || user.avatar} alt="Avatar" />
+                        ) : (
+                          <div className="avatar-placeholder-circle">
+                            {getAvatarLetters()}
+                          </div>
+                        )}
+                      </div>
+                      <div className="upload-actions">
+                        <input
+                          type="file"
+                          id="modal-avatar-upload"
+                          accept="image/*"
+                          onChange={handleAvatarChange}
+                          style={{ display: 'none' }}
+                        />
+                        <label htmlFor="modal-avatar-upload" className="btn-upload">
+                          Change
+                        </label>
+                        <p className="upload-hint">It's recommended to use a picture that's at least 98 x 98 pixels</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="upload-section">
+                    <h3>Banner image</h3>
+                    <p className="upload-description">
+                      This image will appear across the top of your profile
+                    </p>
+                    <div className="upload-preview banner-preview">
+                      <div className="preview-banner">
+                        {bannerPreview || user?.banner ? (
+                          <img src={bannerPreview || user.banner} alt="Banner" />
+                        ) : (
+                          <div className="banner-placeholder-small">
+                            <span>No banner</span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="upload-actions">
+                        <input
+                          type="file"
+                          id="modal-banner-upload"
+                          accept="image/*"
+                          onChange={handleBannerChange}
+                          style={{ display: 'none' }}
+                        />
+                        <label htmlFor="modal-banner-upload" className="btn-upload">
+                          Change
+                        </label>
+                        <p className="upload-hint">For best results, use an image that's at least 2048 x 1152 pixels</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {customizeTab === 'basic' && (
+                <div className="basic-info-section">
+                  <div className="form-field">
+                    <label>Profile name</label>
+                    <input
+                      type="text"
+                      value={formData.username}
+                      onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                      placeholder="Enter profile name"
+                    />
+                    <p className="field-hint">Choose a name that represents you and your content</p>
+                  </div>
+
+                  <div className="form-field">
+                    <label>Description</label>
+                    <textarea
+                      value={formData.bio}
+                      onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                      placeholder="Tell others about yourself. Your description will appear in the About section of your profile"
+                      rows="5"
+                      maxLength="1000"
+                    />
+                    <p className="field-hint">{(formData.bio || '').length} / 1000</p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="modal-footer">
+              <button
+                className="btn-cancel"
+                onClick={() => setShowCustomizeModal(false)}
+                disabled={saving}
+              >
+                Cancel
+              </button>
+              <button
+                className="btn-publish"
+                onClick={handleSave}
+                disabled={saving}
+              >
+                {saving ? 'Publishing...' : 'Publish'}
+              </button>
+            </div>
           </div>
         </div>
+      )}
 
-        {user?.bio && !editMode && (
-          <div className="profile-bio">
-            <h2>Bio</h2>
-            <p>{user.bio}</p>
-          </div>
-        )}
-      </div>
+      {selectedPrompt && (
+        <PromptDetailModal
+          prompt={selectedPrompt}
+          onClose={() => setSelectedPrompt(null)}
+        />
+      )}
     </>
   );
 }
