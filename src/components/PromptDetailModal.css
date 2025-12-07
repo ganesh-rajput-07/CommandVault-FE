@@ -1,0 +1,271 @@
+.prompt-detail-modal {
+  max-width: 850px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 16px;
+  animation: scaleIn 0.4s ease-out;
+  position: relative;
+  background: #1f1f1f;
+  border: 1px solid #333333;
+  padding: 32px;
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  background: #2a2a2a;
+  border: 1px solid #333333;
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  font-size: 24px;
+  color: #a0a0a0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close-btn:hover {
+  background: #333333;
+  border-color: #444444;
+  color: #ffffff;
+}
+
+.modal-header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #333333;
+}
+
+.prompt-owner-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.owner-avatar-large {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #333333;
+}
+
+.owner-avatar-large.placeholder {
+  background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.prompt-owner-info h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.upload-date {
+  color: #666666;
+  font-size: 0.9rem;
+  margin: 4px 0 0 0;
+  font-weight: 500;
+}
+
+.modal-content-section {
+  padding: 0 4px;
+}
+
+.prompt-title-large {
+  font-size: 2rem;
+  margin-bottom: 24px;
+  line-height: 1.3;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.model-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 28px;
+  padding: 14px 18px;
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 8px;
+}
+
+.model-info .label {
+  font-weight: 600;
+  color: #a0a0a0;
+  font-size: 14px;
+}
+
+.prompt-text-section,
+.example-output-section,
+.tags-section {
+  margin-bottom: 28px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.section-header h4,
+.example-output-section h4,
+.tags-section h4 {
+  font-size: 1.125rem;
+  margin: 0 0 14px 0;
+  color: #a0a0a0;
+  font-weight: 700;
+}
+
+.copy-btn {
+  background: #2a2a2a;
+  border: 1px solid #333333;
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #a0a0a0;
+}
+
+.copy-btn:hover {
+  background: #333333;
+  border-color: #8b5cf6;
+  color: #8b5cf6;
+}
+
+.prompt-text-box,
+.output-box {
+  background: #2a2a2a;
+  border: 1px solid #333333;
+  border-radius: 12px;
+  padding: 24px;
+  overflow-x: auto;
+}
+
+.prompt-text-box pre,
+.output-box pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: 'Fira Code', 'Consolas', monospace;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #ffffff;
+}
+
+.output-box {
+  background: rgba(139, 92, 246, 0.05);
+  border-color: rgba(139, 92, 246, 0.2);
+}
+
+.tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding-top: 28px;
+  border-top: 1px solid #333333;
+  align-items: center;
+}
+
+.action-btn-large {
+  background: #2a2a2a;
+  border: 1px solid #333333;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #ffffff;
+}
+
+.action-btn-large:hover {
+  background: #333333;
+  border-color: #8b5cf6;
+  color: #8b5cf6;
+}
+
+.usage-stat {
+  margin-left: auto;
+  color: #666666;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.prompt-detail-modal::-webkit-scrollbar {
+  width: 8px;
+}
+
+.prompt-detail-modal::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.prompt-detail-modal::-webkit-scrollbar-thumb {
+  background: #333333;
+  border-radius: 4px;
+}
+
+.prompt-detail-modal::-webkit-scrollbar-thumb:hover {
+  background: #8b5cf6;
+}
+
+@media (max-width: 640px) {
+  .prompt-detail-modal {
+    width: 95%;
+    padding: 24px;
+  }
+
+  .prompt-title-large {
+    font-size: 1.5rem;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .action-btn-large {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .usage-stat {
+    margin-left: 0;
+    text-align: center;
+  }
+
+  .modal-close-btn {
+    top: 16px;
+    right: 16px;
+    width: 40px;
+    height: 40px;
+  }
+}

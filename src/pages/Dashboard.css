@@ -1,0 +1,340 @@
+.dashboard-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.dashboard-header h1 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 2rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.btn-create {
+  background: #8b5cf6;
+  color: #ffffff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  font-family: 'Inter', sans-serif;
+}
+
+.btn-create:hover {
+  background: #7c3aed;
+  transform: scale(1.02);
+}
+
+/* ===== CREATE MODAL ===== */
+.create-modal-content {
+  width: 90%;
+  max-width: 600px;
+  background: #1f1f1f;
+  border: none;
+  border-radius: 16px;
+  padding: 32px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: scaleIn 0.4s ease-out;
+}
+
+.create-modal-content .modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.create-modal-content h2 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.5rem;
+  margin: 0;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.create-modal-content .modal-close {
+  background: #2a2a2a;
+  border: none;
+  font-size: 24px;
+  color: #a0a0a0;
+  cursor: pointer;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.create-modal-content .modal-close:hover {
+  background: #333333;
+  color: #ffffff;
+}
+
+.create-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.create-form input,
+.create-form textarea {
+  font-family: 'Inter', sans-serif;
+  background: #2a2a2a;
+  border: none;
+  color: #ffffff;
+  padding: 14px 16px;
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+.create-form input:focus,
+.create-form textarea:focus {
+  background: #333333;
+  outline: 2px solid #8b5cf6;
+  outline-offset: 0;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+  padding: 8px 0;
+  font-family: 'Inter', sans-serif;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: auto;
+  cursor: pointer;
+}
+
+.checkbox-label span {
+  color: #a0a0a0;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.create-form button[type="submit"] {
+  font-family: 'Inter', sans-serif;
+  background: #8b5cf6;
+  color: #ffffff;
+  border: none;
+  padding: 14px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 8px;
+}
+
+.create-form button[type="submit"]:hover {
+  background: #7c3aed;
+  transform: scale(1.02);
+}
+
+/* ===== PROMPTS GRID ===== */
+.prompts-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.prompt-grid-card {
+  background: #1f1f1f;
+  border: none;
+  border-radius: 12px;
+  padding: 24px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.prompt-grid-card:hover {
+  background: #2a2a2a;
+  transform: translateY(-2px);
+}
+
+/* ===== CARD HEADER ===== */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.owner-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar-sm {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #333333;
+}
+
+.avatar-sm.placeholder {
+  background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.owner-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #a0a0a0;
+  font-family: 'Inter', sans-serif;
+}
+
+.private-icon {
+  font-size: 16px;
+  color: #666666;
+}
+
+/* ===== CARD CONTENT ===== */
+.card-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.25rem;
+  margin: 0 0 12px 0;
+  font-weight: 700;
+  line-height: 1.4;
+  color: #ffffff;
+}
+
+.card-text {
+  font-family: 'Inter', sans-serif;
+  color: #a0a0a0;
+  font-size: 14px;
+  line-height: 1.7;
+  margin: 0 0 16px 0;
+}
+
+.model-badge {
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #8b5cf6;
+  font-weight: 600;
+  width: fit-content;
+  margin-bottom: 14px;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ===== TAGS ===== */
+.card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.tag-sm {
+  background: #2a2a2a;
+  border: none;
+  color: #a0a0a0;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  font-family: 'Inter', sans-serif;
+}
+
+.tag-sm:hover {
+  background: rgba(139, 92, 246, 0.1);
+  color: #8b5cf6;
+}
+
+/* ===== CARD STATS ===== */
+.card-stats {
+  display: flex;
+  gap: 24px;
+  font-size: 13px;
+  color: #666666;
+  padding-top: 16px;
+  border-top: 1px solid #333333;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+  text-align: center;
+  padding: 80px 20px;
+  color: #666666;
+}
+
+.empty-state p {
+  font-size: 16px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 24px 16px;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .dashboard-header h1 {
+    font-size: 1.75rem;
+  }
+
+  .prompt-grid-card {
+    padding: 20px;
+  }
+
+  .btn-create {
+    width: 100%;
+  }
+
+  .create-modal-content {
+    padding: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .card-title {
+    font-size: 1.125rem;
+  }
+
+  .card-stats {
+    gap: 16px;
+    font-size: 12px;
+  }
+}
