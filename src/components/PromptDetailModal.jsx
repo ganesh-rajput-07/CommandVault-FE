@@ -1,10 +1,13 @@
 import { useState } from 'react';
+import { HeartIcon, BookmarkIcon, EyeIcon } from './AnimatedIcons';
 import './PromptDetailModal.css';
 
-export default function PromptDetailModal({ prompt, isOpen, onClose, onLike, onSave }) {
+export default function PromptDetailModal({ prompt, onClose, onLike, onSave }) {
     const [copied, setCopied] = useState(false);
+    const [isLiked, setIsLiked] = useState(false);
+    const [isSaved, setIsSaved] = useState(false);
 
-    if (!isOpen || !prompt) return null;
+    if (!prompt) return null;
 
     const handleCopy = () => {
         navigator.clipboard.writeText(prompt.text);
@@ -12,22 +15,32 @@ export default function PromptDetailModal({ prompt, isOpen, onClose, onLike, onS
         setTimeout(() => setCopied(false), 2000);
     };
 
+    const handleLike = () => {
+        setIsLiked(!isLiked);
+        onLike(prompt.id);
+    };
+
+    const handleSave = () => {
+        setIsSaved(!isSaved);
+        onSave(prompt.id);
+    };
+
     return (
         <div className="modal-backdrop" onClick={onClose}>
-            <div className="prompt-detail-modal glass" onClick={(e) => e.stopPropagation()}>
-                <button className="modal-close-btn" onClick={onClose}>×</button>
+            <div className="prompt-detail-modal" onClick={(e) => e.stopPropagation()}>
+                <button className="modal-close-btn" onClick={onClose}>✕</button>
 
                 <div className="modal-header-section">
                     <div className="prompt-owner-info">
-                        {prompt.owner.avatar_url ? (
+                        {prompt.owner?.avatar_url ? (
                             <img src={prompt.owner.avatar_url} alt={prompt.owner.username} className="owner-avatar-large" />
                         ) : (
                             <div className="owner-avatar-large placeholder">
-                                {prompt.owner.username.charAt(0).toUpperCase()}
+                                {prompt.owner?.username?.charAt(0).toUpperCase()}
                             </div>
                         )}
                         <div>
-                            <h3>{prompt.owner.username}</h3>
+                            <h3>{prompt.owner?.username}</h3>
                             <p className="upload-date">{new Date(prompt.created_at).toLocaleDateString()}</p>
                         </div>
                     </div>
@@ -40,7 +53,7 @@ export default function PromptDetailModal({ prompt, isOpen, onClose, onLike, onS
                     {prompt.ai_model && (
                         <div className="model-info">
                             <span className="label">🤖 AI Model:</span>
-                            <span className="tag">{prompt.ai_model}</span>
+                            <span>{prompt.ai_model}</span>
                         </div>
                     )}
 
@@ -70,24 +83,24 @@ export default function PromptDetailModal({ prompt, isOpen, onClose, onLike, onS
                             <h4>Tags</h4>
                             <div className="tags-list">
                                 {prompt.tags.map((tag, idx) => (
-                                    <span key={idx} className="tag">{tag}</span>
+                                    <span key={idx} className="tag-sm">{tag}</span>
                                 ))}
                             </div>
                         </div>
                     )}
 
                     <div className="modal-actions">
-                        <button className="action-btn-large" onClick={() => onLike(prompt.id)}>
-                            ❤️ {prompt.like_count} Likes
+                        <button className="action-btn-large" onClick={handleLike}>
+                            <HeartIcon isLiked={isLiked} size={20} />
+                            <span>{prompt.likes_count || 0} Likes</span>
                         </button>
-                        <button className="action-btn-large" onClick={() => onSave(prompt.id)}>
-                            🔖 Save
-                        </button>
-                        <button className="action-btn-large">
-                            💬 {prompt.comment_count} Comments
+                        <button className="action-btn-large" onClick={handleSave}>
+                            <BookmarkIcon isSaved={isSaved} size={20} />
+                            <span>Save</span>
                         </button>
                         <div className="usage-stat">
-                            👁️ {prompt.times_used} uses
+                            <EyeIcon isViewing={true} size={18} />
+                            <span>{prompt.usage_count || 0} uses</span>
                         </div>
                     </div>
                 </div>

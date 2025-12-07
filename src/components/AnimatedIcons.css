@@ -1,0 +1,196 @@
+/* ===== ICON WRAPPER ===== */
+.icon-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.icon-wrapper:hover {
+  transform: scale(1.1);
+}
+
+/* ===== HEART ICON ===== */
+.heart-icon {
+  color: #666666;
+  transition: all 0.3s ease;
+}
+
+.heart-icon.liked {
+  color: #ef4444;
+}
+
+.heart-outline {
+  transition: all 0.3s ease;
+}
+
+.heart-fill {
+  animation: fillHeart 0.6s ease-out;
+  transform-origin: center;
+}
+
+@keyframes fillHeart {
+  0% {
+    clip-path: inset(100% 0 0 0);
+    transform: scale(0.8);
+  }
+  50% {
+    clip-path: inset(50% 0 0 0);
+    transform: scale(1.1);
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+    transform: scale(1);
+  }
+}
+
+.heart-icon.breaking .heart-fill {
+  animation: breakHeart 0.6s ease-out;
+}
+
+.heart-icon.breaking .heart-outline {
+  animation: shakeHeart 0.6s ease-out;
+}
+
+@keyframes breakHeart {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.8) translateY(-10px);
+  }
+}
+
+@keyframes shakeHeart {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-2px);
+  }
+  75% {
+    transform: translateX(2px);
+  }
+}
+
+/* ===== BOOKMARK ICON ===== */
+.bookmark-icon {
+  color: #666666;
+  transition: all 0.3s ease;
+}
+
+.bookmark-icon.saved {
+  color: #8b5cf6;
+}
+
+.bookmark-outline {
+  transition: all 0.3s ease;
+}
+
+.bookmark-icon.animating .bookmark-outline {
+  animation: bookmarkSave 0.8s ease-out;
+}
+
+@keyframes bookmarkSave {
+  0% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.1) rotate(-5deg);
+  }
+  50% {
+    transform: scale(0.95) rotate(5deg);
+  }
+  75% {
+    transform: scale(1.05) rotate(-2deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.pencil-line {
+  stroke-dasharray: 20;
+  stroke-dashoffset: 20;
+  animation: drawLine 0.6s ease-out forwards;
+}
+
+@keyframes drawLine {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* ===== EYE ICON ===== */
+.eye-icon {
+  color: #666666;
+  transition: all 0.3s ease;
+}
+
+.eye-outline {
+  transition: all 0.2s ease;
+}
+
+.eye-pupil {
+  transition: all 0.2s ease;
+}
+
+.eye-icon.blinking .eye-outline {
+  animation: blink 0.4s ease-in-out;
+}
+
+.eye-icon.blinking .eye-pupil {
+  animation: blinkPupil 0.4s ease-in-out;
+}
+
+@keyframes blink {
+  0%, 100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(0.1);
+  }
+}
+
+@keyframes blinkPupil {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.eyelid {
+  animation: closeEyelid 0.4s ease-in-out;
+  transform-origin: center top;
+}
+
+@keyframes closeEyelid {
+  0%, 100% {
+    transform: scaleY(0);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+/* ===== HOVER EFFECTS ===== */
+.icon-wrapper:hover .heart-icon:not(.liked) {
+  color: #fca5a5;
+}
+
+.icon-wrapper:hover .bookmark-icon:not(.saved) {
+  color: #a78bfa;
+}
+
+.icon-wrapper:hover .eye-icon {
+  color: #a0a0a0;
+}

@@ -3,6 +3,7 @@ import api from "../api";
 import Navbar from "../components/Navbar";
 import LoadingSpinner from "../components/LoadingSpinner";
 import PromptDetailModal from "../components/PromptDetailModal";
+import { HeartIcon, BookmarkIcon, EyeIcon } from "../components/AnimatedIcons";
 import SEO from "../components/SEO";
 import { AuthContext } from "../context/AuthContext";
 import useNotifications from "../hooks/useNotifications";
@@ -16,6 +17,8 @@ export default function MyPrompts() {
     const [selectedPrompt, setSelectedPrompt] = useState(null);
     const [showDetailModal, setShowDetailModal] = useState(false);
     const [showCreateModal, setShowCreateModal] = useState(false);
+    const [likedPrompts, setLikedPrompts] = useState(new Set());
+    const [savedPrompts, setSavedPrompts] = useState(new Set());
     const [form, setForm] = useState({
         title: "",
         text: "",
@@ -29,7 +32,24 @@ export default function MyPrompts() {
         setLoading(true);
         try {
             const res = await api.get('prompts/mine/');
-            setPrompts(res.data.results || res.data);
+            const promptsData = res.data.results || res.data;
+            setPrompts(promptsData);
+
+            // Extract liked and saved prompts from the data
+            const liked = new Set();
+            const saved = new Set();
+
+            promptsData.forEach(prompt => {
+                if (prompt.is_liked_by_user) {
+                    liked.add(prompt.id);
+                }
+                if (prompt.is_saved_by_user) {
+                    saved.add(prompt.id);
+                }
+            });
+
+            setLikedPrompts(liked);
+            setSavedPrompts(saved);
         } catch (error) {
             console.error('Error loading my prompts:', error);
         } finally {
@@ -58,19 +78,65 @@ export default function MyPrompts() {
         setShowDetailModal(true);
     };
 
-    const handleLike = async (promptId) => {
+    const handleLike = async (e, promptId) => {
+        e.stopPropagation();
         try {
             await api.post('likes/toggle/', { prompt_id: promptId });
-            loadMyPrompts();
+
+            // Update local state instantly
+            setPrompts(prevPrompts =>
+                prevPrompts.map(p => {
+                    if (p.id === promptId) {
+                        const isLiked = likedPrompts.has(promptId);
+                        const newLikesCount = isLiked ? (p.likes_count || 1) - 1 : (p.likes_count || 0) + 1;
+                        return { ...p, likes_count: newLikesCount, is_liked_by_user: !isLiked };
+                    }
+                    return p;
+                })
+            );
+
+            // Toggle liked state
+            setLikedPrompts(prev => {
+                const newSet = new Set(prev);
+                if (newSet.has(promptId)) {
+                    newSet.delete(promptId);
+                } else {
+                    newSet.add(promptId);
+                }
+                return newSet;
+            });
         } catch (error) {
             console.error('Error toggling like:', error);
         }
     };
 
-    const handleSave = async (promptId) => {
+    const handleSave = async (e, promptId) => {
+        e.stopPropagation();
         try {
             await api.post('saved/toggle/', { prompt_id: promptId });
-            alert('Prompt saved!');
+
+            // Update local state instantly
+            setPrompts(prevPrompts =>
+                prevPrompts.map(p => {
+                    if (p.id === promptId) {
+                        const isSaved = savedPrompts.has(promptId);
+                        const newSavesCount = isSaved ? (p.saves_count || 1) - 1 : (p.saves_count || 0) + 1;
+                        return { ...p, saves_count: newSavesCount, is_saved_by_user: !isSaved };
+                    }
+                    return p;
+                })
+            );
+
+            // Toggle saved state
+            setSavedPrompts(prev => {
+                const newSet = new Set(prev);
+                if (newSet.has(promptId)) {
+                    newSet.delete(promptId);
+                } else {
+                    newSet.add(promptId);
+                }
+                return newSet;
+            });
         } catch (error) {
             console.error('Error toggling save:', error);
         }
@@ -125,7 +191,7 @@ export default function MyPrompts() {
                                     </div>
 
                                     <h3 className="card-title">{prompt.title}</h3>
-                                    <p className="card-text">{prompt.text.substring(0, 150)}...</p>
+                                    <p className="card-text">{prompt.text}</p>
 
                                     {prompt.ai_model && (
                                         <div className="model-badge">{prompt.ai_model}</div>
@@ -140,9 +206,18 @@ export default function MyPrompts() {
                                     )}
 
                                     <div className="card-stats">
-                                        <span>❤️ {prompt.likes_count || 0}</span>
-                                        <span>💾 {prompt.saves_count || 0}</span>
-                                        <span>👁️ {prompt.usage_count || 0}</span>
+                                        <span className="stat-item" onClick={(e) => handleLike(e, prompt.id)}>
+                                            <HeartIcon isLiked={likedPrompts.has(prompt.id)} size={20} />
+                                            <span className="stat-count">{prompt.likes_count || 0}</span>
+                                        </span>
+                                        <span className="stat-item" onClick={(e) => handleSave(e, prompt.id)}>
+                                            <BookmarkIcon isSaved={savedPrompts.has(prompt.id)} size={20} />
+                                            <span className="stat-count">{prompt.saves_count || 0}</span>
+                                        </span>
+                                        <span className="stat-item">
+                                            <EyeIcon isViewing={false} size={20} />
+                                            <span className="stat-count">{prompt.usage_count || 0}</span>
+                                        </span>
                                     </div>
                                 </div>
                             ))
@@ -217,8 +292,8 @@ export default function MyPrompts() {
                 <PromptDetailModal
                     prompt={selectedPrompt}
                     onClose={() => setShowDetailModal(false)}
-                    onLike={handleLike}
-                    onSave={handleSave}
+                    onLike={(id) => handleLike({ stopPropagation: () => { } }, id)}
+                    onSave={(id) => handleSave({ stopPropagation: () => { } }, id)}
                 />
             )}
         </>
