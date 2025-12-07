@@ -17,8 +17,6 @@ export default function MyPrompts() {
     const [selectedPrompt, setSelectedPrompt] = useState(null);
     const [showDetailModal, setShowDetailModal] = useState(false);
     const [showCreateModal, setShowCreateModal] = useState(false);
-    const [likedPrompts, setLikedPrompts] = useState(new Set());
-    const [savedPrompts, setSavedPrompts] = useState(new Set());
     const [form, setForm] = useState({
         title: "",
         text: "",
@@ -32,24 +30,7 @@ export default function MyPrompts() {
         setLoading(true);
         try {
             const res = await api.get('prompts/mine/');
-            const promptsData = res.data.results || res.data;
-            setPrompts(promptsData);
-
-            // Extract liked and saved prompts from the data
-            const liked = new Set();
-            const saved = new Set();
-
-            promptsData.forEach(prompt => {
-                if (prompt.is_liked_by_user) {
-                    liked.add(prompt.id);
-                }
-                if (prompt.is_saved_by_user) {
-                    saved.add(prompt.id);
-                }
-            });
-
-            setLikedPrompts(liked);
-            setSavedPrompts(saved);
+            setPrompts(res.data.results || res.data);
         } catch (error) {
             console.error('Error loading my prompts:', error);
         } finally {
@@ -79,64 +60,46 @@ export default function MyPrompts() {
     };
 
     const handleLike = async (e, promptId) => {
-        e.stopPropagation();
+        if (e && e.stopPropagation) e.stopPropagation();
+
         try {
             await api.post('likes/toggle/', { prompt_id: promptId });
 
-            // Update local state instantly
+            // Fetch fresh data for the specific prompt
+            const res = await api.get(`prompts/${promptId}/`);
+
+            // Update prompts list
             setPrompts(prevPrompts =>
-                prevPrompts.map(p => {
-                    if (p.id === promptId) {
-                        const isLiked = likedPrompts.has(promptId);
-                        const newLikesCount = isLiked ? (p.likes_count || 1) - 1 : (p.likes_count || 0) + 1;
-                        return { ...p, likes_count: newLikesCount, is_liked_by_user: !isLiked };
-                    }
-                    return p;
-                })
+                prevPrompts.map(p => p.id === promptId ? res.data : p)
             );
 
-            // Toggle liked state
-            setLikedPrompts(prev => {
-                const newSet = new Set(prev);
-                if (newSet.has(promptId)) {
-                    newSet.delete(promptId);
-                } else {
-                    newSet.add(promptId);
-                }
-                return newSet;
-            });
+            // Update selected prompt if modal is open
+            if (selectedPrompt && selectedPrompt.id === promptId) {
+                setSelectedPrompt(res.data);
+            }
         } catch (error) {
             console.error('Error toggling like:', error);
         }
     };
 
     const handleSave = async (e, promptId) => {
-        e.stopPropagation();
+        if (e && e.stopPropagation) e.stopPropagation();
+
         try {
             await api.post('saved/toggle/', { prompt_id: promptId });
 
-            // Update local state instantly
+            // Fetch fresh data for the specific prompt
+            const res = await api.get(`prompts/${promptId}/`);
+
+            // Update prompts list
             setPrompts(prevPrompts =>
-                prevPrompts.map(p => {
-                    if (p.id === promptId) {
-                        const isSaved = savedPrompts.has(promptId);
-                        const newSavesCount = isSaved ? (p.saves_count || 1) - 1 : (p.saves_count || 0) + 1;
-                        return { ...p, saves_count: newSavesCount, is_saved_by_user: !isSaved };
-                    }
-                    return p;
-                })
+                prevPrompts.map(p => p.id === promptId ? res.data : p)
             );
 
-            // Toggle saved state
-            setSavedPrompts(prev => {
-                const newSet = new Set(prev);
-                if (newSet.has(promptId)) {
-                    newSet.delete(promptId);
-                } else {
-                    newSet.add(promptId);
-                }
-                return newSet;
-            });
+            // Update selected prompt if modal is open
+            if (selectedPrompt && selectedPrompt.id === promptId) {
+                setSelectedPrompt(res.data);
+            }
         } catch (error) {
             console.error('Error toggling save:', error);
         }
@@ -207,11 +170,11 @@ export default function MyPrompts() {
 
                                     <div className="card-stats">
                                         <span className="stat-item" onClick={(e) => handleLike(e, prompt.id)}>
-                                            <HeartIcon isLiked={likedPrompts.has(prompt.id)} size={20} />
+                                            <HeartIcon isLiked={prompt.is_liked_by_user || false} size={20} />
                                             <span className="stat-count">{prompt.likes_count || 0}</span>
                                         </span>
                                         <span className="stat-item" onClick={(e) => handleSave(e, prompt.id)}>
-                                            <BookmarkIcon isSaved={savedPrompts.has(prompt.id)} size={20} />
+                                            <BookmarkIcon isSaved={prompt.is_saved_by_user || false} size={20} />
                                             <span className="stat-count">{prompt.saves_count || 0}</span>
                                         </span>
                                         <span className="stat-item">
@@ -292,8 +255,8 @@ export default function MyPrompts() {
                 <PromptDetailModal
                     prompt={selectedPrompt}
                     onClose={() => setShowDetailModal(false)}
-                    onLike={(id) => handleLike({ stopPropagation: () => { } }, id)}
-                    onSave={(id) => handleSave({ stopPropagation: () => { } }, id)}
+                    onLike={(id) => handleLike(null, id)}
+                    onSave={(id) => handleSave(null, id)}
                 />
             )}
         </>
