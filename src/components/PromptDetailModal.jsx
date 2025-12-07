@@ -126,7 +126,7 @@ export default function PromptDetailModal({ prompt, onClose, onLike, onSave }) {
                             <p className="upload-date">{new Date(currentPrompt.created_at).toLocaleDateString()}</p>
                         </div>
                     </div>
-                    {!currentPrompt.is_public && <span className="private-badge">🔒 Private</span>}
+                    {!currentPrompt.is_public && <span className="private-badge">Private</span>}
                 </div>
 
                 <div className="modal-content-section">
@@ -134,7 +134,7 @@ export default function PromptDetailModal({ prompt, onClose, onLike, onSave }) {
 
                     {currentPrompt.ai_model && (
                         <div className="model-info">
-                            <span className="label">🤖 AI Model:</span>
+                            <span className="label">AI Model:</span>
                             <span>{currentPrompt.ai_model}</span>
                         </div>
                     )}
@@ -142,8 +142,12 @@ export default function PromptDetailModal({ prompt, onClose, onLike, onSave }) {
                     <div className="prompt-text-section">
                         <div className="section-header">
                             <h4>Prompt</h4>
-                            <button className="copy-btn" onClick={handleCopy}>
-                                {copied ? '✅ Copied!' : '📋 Copy'}
+                            <button className={`copy-btn ${copied ? 'copied' : ''}`} onClick={handleCopy}>
+                                {copied ? (
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                        <polyline points="20 6 9 17 4 12" className="checkmark" />
+                                    </svg>
+                                ) : 'Copy'}
                             </button>
                         </div>
                         <div className="prompt-text-box">

@@ -165,25 +165,45 @@
 }
 
 .copy-btn {
-  background: #2a2a2a;
-  border: none;
-  padding: 10px 20px;
+  background: rgba(139, 92, 246, 0.1);
+  color: #8b5cf6;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  padding: 8px 16px;
   border-radius: 8px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  color: #a0a0a0;
   font-family: 'Inter', sans-serif;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  min-width: 80px;
+  justify-content: center;
 }
 
 .copy-btn:hover {
-  background: #8b5cf6;
-  color: #ffffff;
-  transform: scale(1.02);
+  background: rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.5);
+  transform: translateY(-1px);
+}
+
+.copy-btn.copied {
+  background: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+.copy-btn .checkmark {
+  animation: checkmarkDraw 0.3s ease-in-out forwards;
+  stroke-dasharray: 30;
+  stroke-dashoffset: 30;
+}
+
+@keyframes checkmarkDraw {
+  to {
+    stroke-dashoffset: 0;
+  }
 }
 
 .prompt-text-box,
