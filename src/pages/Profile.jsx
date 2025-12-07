@@ -68,7 +68,6 @@ export default function Profile() {
     try {
       const formDataToSend = new FormData();
       formDataToSend.append('username', formData.username);
-      formDataToSend.append('email', formData.email);
       formDataToSend.append('bio', formData.bio);
 
       if (avatarFile) {
@@ -117,8 +116,8 @@ export default function Profile() {
                   style={{ display: 'none' }}
                 />
                 <label htmlFor="avatar-upload" className="avatar-upload-label">
-                  {avatarPreview || user?.avatar_url ? (
-                    <img src={avatarPreview || user.avatar_url} alt={user.username} />
+                  {avatarPreview || user?.avatar ? (
+                    <img src={avatarPreview || user.avatar} alt={user.username} />
                   ) : (
                     <div className="avatar-placeholder-large">
                       {getAvatarLetters()}
@@ -135,8 +134,8 @@ export default function Profile() {
               </div>
             ) : (
               <>
-                {user?.avatar_url ? (
-                  <img src={user.avatar_url} alt={user.username} />
+                {user?.avatar ? (
+                  <img src={user.avatar} alt={user.username} />
                 ) : (
                   <div className="avatar-placeholder-large">
                     {getAvatarLetters()}
@@ -173,15 +172,6 @@ export default function Profile() {
                 value={formData.username}
                 onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                 placeholder="Username"
-              />
-            </div>
-            <div className="form-group">
-              <label>Email</label>
-              <input
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                placeholder="Email"
               />
             </div>
             <div className="form-group">
