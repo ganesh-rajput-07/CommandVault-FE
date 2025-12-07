@@ -16,10 +16,20 @@ export default function Navbar({ unreadCount = 0 }) {
 
     if (!user) return null;
 
+    // Generate two-letter avatar: first letter + second letter (or random if username is 1 char)
+    const getAvatarLetters = () => {
+        if (!user.username) return 'U?';
+        const username = user.username;
+        if (username.length === 1) {
+            return username.charAt(0).toUpperCase() + String.fromCharCode(65 + Math.floor(Math.random() * 26));
+        }
+        return (username.charAt(0) + username.charAt(1)).toUpperCase();
+    };
+
     return (
         <nav className="navbar">
             <div className="navbar-container">
-                <Link to="/" className="navbar-brand">
+                <Link to="/explore" className="navbar-brand">
                     CommandVault
                 </Link>
 
@@ -30,60 +40,63 @@ export default function Navbar({ unreadCount = 0 }) {
                     ☰
                 </button>
 
-                <div className={`navbar-menu ${showMobileMenu ? 'active' : ''}`}>
-                    <Link to="/" className="nav-link">Explore</Link>
-                    <Link to="/trending" className="nav-link">Trending</Link>
-                </div>
+                <div className="navbar-right">
+                    <div className={`navbar-menu ${showMobileMenu ? 'active' : ''}`}>
+                        <Link to="/explore" className="nav-link">Explore</Link>
+                        <Link to="/trending" className="nav-link">Trending</Link>
+                    </div>
 
-                <div className="navbar-actions">
-                    <div className="user-menu">
-                        <button
-                            className="user-avatar-btn"
-                            onClick={() => setShowUserMenu(!showUserMenu)}
-                        >
-                            <div className={`user-avatar ${unreadCount > 0 ? 'has-notification' : ''}`}>
-                                {user.avatar_url ? (
-                                    <img src={user.avatar_url} alt={user.username} />
-                                ) : (
-                                    <div className="avatar-placeholder">
-                                        {user.username?.charAt(0).toUpperCase()}
-                                    </div>
-                                )}
-                                {unreadCount > 0 && <span className="notification-dot"></span>}
-                            </div>
-                            <span className="username-display">{user.username}</span>
-                        </button>
-
-                        {showUserMenu && (
-                            <div className="user-dropdown">
-                                <div className="dropdown-section">
-                                    <Link to="/profile" onClick={() => setShowUserMenu(false)}>
-                                        Profile
-                                    </Link>
-                                    <Link to="/my-prompts" onClick={() => setShowUserMenu(false)}>
-                                        My Prompts
-                                    </Link>
-                                    <Link to="/profile/saved" onClick={() => setShowUserMenu(false)}>
-                                        Saved Prompts
-                                    </Link>
-                                </div>
-
-                                {unreadCount > 0 && (
-                                    <div className="dropdown-section notifications-section">
-                                        <div className="section-title">
-                                            Notifications ({unreadCount})
+                    <div className="navbar-actions">
+                        <div className="user-menu">
+                            <button
+                                className="user-avatar-btn"
+                                onClick={() => setShowUserMenu(!showUserMenu)}
+                            >
+                                <div className={`user-avatar ${unreadCount > 0 ? 'has-notification' : ''}`}>
+                                    {user.avatar_url ? (
+                                        <img src={user.avatar_url} alt={user.username} />
+                                    ) : (
+                                        <div className="avatar-placeholder">
+                                            {getAvatarLetters()}
                                         </div>
-                                        <Link to="/notifications" onClick={() => setShowUserMenu(false)}>
-                                            View all notifications
+                                    )}
+                                    {unreadCount > 0 && <span className="notification-dot"></span>}
+                                </div>
+                                <span className="username-display">{user.username}</span>
+                            </button>
+
+                            {showUserMenu && (
+                                <div className="user-dropdown">
+                                    <div className="dropdown-section">
+                                        <Link to="/profile" onClick={() => setShowUserMenu(false)}>
+                                            Profile
+                                        </Link>
+                                        <Link to="/my-prompts" onClick={() => setShowUserMenu(false)}>
+                                            My Prompts
+                                        </Link>
+                                        <Link to="/profile/saved" onClick={() => setShowUserMenu(false)}>
+                                            Saved Prompts
                                         </Link>
                                     </div>
-                                )}
 
-                                <div className="dropdown-section">
-                                    <button onClick={handleLogout}>Logout</button>
+                                    {unreadCount > 0 && (
+                                        <div className="dropdown-section notifications-section">
+                                            <div className="section-title">
+                                                Notifications ({unreadCount})
+                                            </div>
+                                            <Link to="/notifications" onClick={() => setShowUserMenu(false)}>
+                                                View all notifications
+                                            </Link>
+                                        </div>
+                                    )}
+
+
+                                    <div className="dropdown-section">
+                                        <button onClick={handleLogout}>Logout</button>
+                                    </div>
                                 </div>
-                            </div>
-                        )}
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>

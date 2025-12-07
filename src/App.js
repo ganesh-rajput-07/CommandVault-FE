@@ -8,6 +8,7 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import MyPrompts from "./pages/MyPrompts";
 import Profile from "./pages/Profile";
+import Notifications from "./pages/Notifications";
 
 function ProtectedRoute({ children }) {
   const { user } = useContext(AuthContext);
@@ -70,6 +71,11 @@ export default function App() {
           <Route path="/profile" element={
             <ProtectedRoute>
               <Profile />
+            </ProtectedRoute>
+          } />
+          <Route path="/notifications" element={
+            <ProtectedRoute>
+              <Notifications />
             </ProtectedRoute>
           } />
         </Routes>
