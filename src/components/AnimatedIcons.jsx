@@ -119,13 +119,19 @@ export function EyeIcon({ isViewing, size = 20 }) {
                 width={size}
                 height={size}
                 viewBox="0 0 24 24"
-                className={`eye-icon ${blinking ? 'blinking' : ''}`}
+                className={`eye-icon ${isViewing ? 'viewed' : ''} ${blinking ? 'blinking' : ''}`}
             >
+                <defs>
+                    <linearGradient id="eyeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stopColor="#8b5cf6" />
+                        <stop offset="100%" stopColor="#7c3aed" />
+                    </linearGradient>
+                </defs>
                 {/* Eye outline */}
                 <path
                     className="eye-outline"
                     d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
-                    fill="none"
+                    fill={isViewing ? 'url(#eyeGradient)' : 'none'}
                     stroke="currentColor"
                     strokeWidth="2"
                 />
@@ -136,7 +142,7 @@ export function EyeIcon({ isViewing, size = 20 }) {
                     cx="12"
                     cy="12"
                     r="3"
-                    fill="currentColor"
+                    fill={isViewing ? '#ffffff' : 'currentColor'}
                 />
 
                 {/* Eyelid for blink */}

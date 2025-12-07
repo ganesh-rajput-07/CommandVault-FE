@@ -155,7 +155,7 @@ export default function Dashboard({ type = "explore" }) {
                       <span className="stat-count">{prompt.saves_count || 0}</span>
                     </span>
                     <span className="stat-item">
-                      <EyeIcon isViewing={false} size={20} />
+                      <EyeIcon isViewing={prompt.is_viewed_by_user || false} size={20} />
                       <span className="stat-count">{prompt.usage_count || 0}</span>
                     </span>
                   </div>
@@ -173,6 +173,8 @@ export default function Dashboard({ type = "explore" }) {
           onClose={() => {
             setShowDetailModal(false);
             setSelectedPrompt(null);
+            // Reload feed to get updated view counts
+            loadFeed();
           }}
           onLike={(id) => handleLike(null, id)}
           onSave={(id) => handleSave(null, id)}

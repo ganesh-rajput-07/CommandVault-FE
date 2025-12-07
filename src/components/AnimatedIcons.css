@@ -134,6 +134,10 @@
   transition: all 0.3s ease;
 }
 
+.eye-icon.viewed {
+  color: #8b5cf6;
+}
+
 .eye-outline {
   transition: all 0.2s ease;
 }

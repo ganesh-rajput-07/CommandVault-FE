@@ -8,12 +8,37 @@ export default function PromptDetailModal({ prompt, onClose, onLike, onSave }) {
     const [currentPrompt, setCurrentPrompt] = useState(prompt);
     const [isLiked, setIsLiked] = useState(prompt.is_liked_by_user || false);
     const [isSaved, setIsSaved] = useState(prompt.is_saved_by_user || false);
+    const [isViewed, setIsViewed] = useState(prompt.is_viewed_by_user || false);
+
+    // Record view when modal opens
+    useEffect(() => {
+        const recordView = async () => {
+            try {
+                const res = await api.post(`prompts/${prompt.id}/record_view/`);
+                if (res.data.viewed) {
+                    setIsViewed(true);
+                    // Update usage count if it was incremented
+                    if (res.data.usage_count) {
+                        setCurrentPrompt(prev => ({
+                            ...prev,
+                            usage_count: res.data.usage_count
+                        }));
+                    }
+                }
+            } catch (error) {
+                console.error('Error recording view:', error);
+            }
+        };
+
+        recordView();
+    }, [prompt.id]);
 
     // Update state when prompt prop changes
     useEffect(() => {
         setCurrentPrompt(prompt);
         setIsLiked(prompt.is_liked_by_user || false);
         setIsSaved(prompt.is_saved_by_user || false);
+        setIsViewed(prompt.is_viewed_by_user || false);
     }, [prompt]);
 
     if (!currentPrompt) return null;
@@ -27,12 +52,13 @@ export default function PromptDetailModal({ prompt, onClose, onLike, onSave }) {
     const handleLike = async () => {
         try {
             // Toggle local state immediately
-            setIsLiked(!isLiked);
+            const newIsLiked = !isLiked;
+            setIsLiked(newIsLiked);
 
             // Update count immediately
             setCurrentPrompt(prev => ({
                 ...prev,
-                likes_count: isLiked ? (prev.likes_count || 1) - 1 : (prev.likes_count || 0) + 1
+                likes_count: newIsLiked ? (prev.likes_count || 0) + 1 : (prev.likes_count || 1) - 1
             }));
 
             // Call API
@@ -55,12 +81,13 @@ export default function PromptDetailModal({ prompt, onClose, onLike, onSave }) {
     const handleSave = async () => {
         try {
             // Toggle local state immediately
-            setIsSaved(!isSaved);
+            const newIsSaved = !isSaved;
+            setIsSaved(newIsSaved);
 
             // Update count immediately
             setCurrentPrompt(prev => ({
                 ...prev,
-                saves_count: isSaved ? (prev.saves_count || 1) - 1 : (prev.saves_count || 0) + 1
+                saves_count: newIsSaved ? (prev.saves_count || 0) + 1 : (prev.saves_count || 1) - 1
             }));
 
             // Call API
@@ -151,11 +178,11 @@ export default function PromptDetailModal({ prompt, onClose, onLike, onSave }) {
                         </button>
                         <button className="action-btn-large" onClick={handleSave}>
                             <BookmarkIcon isSaved={isSaved} size={20} />
-                            <span>Save</span>
+                            <span>{isSaved ? 'Saved' : 'Save'}</span>
                         </button>
                         <div className="usage-stat">
-                            <EyeIcon isViewing={true} size={18} />
-                            <span>{currentPrompt.usage_count || 0} uses</span>
+                            <EyeIcon isViewing={isViewed} size={18} />
+                            <span>{currentPrompt.usage_count || 0} views</span>
                         </div>
                     </div>
                 </div>
