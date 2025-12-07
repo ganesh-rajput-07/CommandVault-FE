@@ -55,36 +55,6 @@ export default function Profile() {
         totalSaves
       });
     } catch (error) {
-      console.error('Error loading data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleAvatarChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setAvatarFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => setAvatarPreview(reader.result);
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleBannerChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setBannerFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => setBannerPreview(reader.result);
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleSave = async () => {
-    setSaving(true);
-    try {
-      const formDataToSend = new FormData();
       formDataToSend.append('username', formData.username);
       formDataToSend.append('bio', formData.bio || '');
 
