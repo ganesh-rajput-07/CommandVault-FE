@@ -1,20 +1,42 @@
 import { useState } from 'react';
 import api from '../api';
 
-export default function useFollow(userId) {
-    const [isFollowing, setIsFollowing] = useState(false);
+export default function useFollow() {
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
-    const toggleFollow = async () => {
+    const followUser = async (userId) => {
+        setLoading(true);
+        setError(null);
         try {
-            const newFollowState = !isFollowing;
-            setIsFollowing(newFollowState);
-
-            await api.post('follows/toggle/', { user_id: userId });
-        } catch (error) {
-            setIsFollowing(!isFollowing);
-            console.error('Error toggling follow:', error);
+            await api.post(`auth/users/${userId}/follow/`);
+            setLoading(false);
+            return true;
+        } catch (err) {
+            setError(err.response?.data?.error || 'Failed to follow user');
+            setLoading(false);
+            return false;
         }
     };
 
-    return { isFollowing, toggleFollow };
+    const unfollowUser = async (userId) => {
+        setLoading(true);
+        setError(null);
+        try {
+            await api.post(`auth/users/${userId}/unfollow/`);
+            setLoading(false);
+            return true;
+        } catch (err) {
+            setError(err.response?.data?.error || 'Failed to unfollow user');
+            setLoading(false);
+            return false;
+        }
+    };
+
+    return {
+        followUser,
+        unfollowUser,
+        loading,
+        error
+    };
 }

@@ -6,11 +6,21 @@ export const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
 
+  const fetchUser = async () => {
+    try {
+      const res = await api.get("auth/profile/");
+      setUser(res.data);
+    } catch (error) {
+      console.error("Failed to fetch user profile", error);
+      // If token is invalid, maybe clear it? For now just log.
+    }
+  };
+
   const login = async (email, password) => {
     const res = await api.post("auth/login/", { email, password });
     localStorage.setItem("access", res.data.access);
     localStorage.setItem("refresh", res.data.refresh);
-    setUser({ email });
+    await fetchUser();
   };
 
   const register = async (email, username, password) => {
@@ -25,7 +35,9 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const token = localStorage.getItem("access");
-    if (token) setUser({}); 
+    if (token) {
+      fetchUser();
+    }
   }, []);
 
   return (

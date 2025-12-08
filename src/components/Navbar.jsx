@@ -14,13 +14,13 @@ export default function Navbar({ unreadCount = 0 }) {
         navigate('/login');
     };
 
-    if (!user) return null;
-
     const getAvatarLetters = () => {
-        if (!user.username) return 'U?';
+        if (!user?.username) return 'U';
         const username = user.username;
+
+        // Get first two letters of username
         if (username.length === 1) {
-            return username.charAt(0).toUpperCase() + String.fromCharCode(65 + Math.floor(Math.random() * 26));
+            return username.charAt(0).toUpperCase() + username.charAt(0).toUpperCase();
         }
         return (username.charAt(0) + username.charAt(1)).toUpperCase();
     };
@@ -46,19 +46,27 @@ export default function Navbar({ unreadCount = 0 }) {
                     </div>
 
                     <div className="navbar-actions">
-                        <div className="user-profile" onClick={() => setShowUserMenu(!showUserMenu)}>
-                            <div className="avatar">
-                                {user.avatar ? (
-                                    <img src={user.avatar} alt={user.username} />
-                                ) : (
-                                    <div className="avatar-placeholder">
-                                        {getAvatarLetters()}
-                                    </div>
-                                )}
-                                {unreadCount > 0 && <div className="notification-dot"></div>}
+                        {user ? (
+                            <div className="user-profile" onClick={() => setShowUserMenu(!showUserMenu)}>
+                                <div className="avatar">
+                                    {user.avatar ? (
+                                        <img src={user.avatar} alt={user.username} />
+                                    ) : (
+                                        <div className="avatar-placeholder">
+                                            {getAvatarLetters()}
+                                        </div>
+                                    )}
+                                    {unreadCount > 0 && <div className="notification-dot"></div>}
+                                </div>
+                                <span className="username">{user.username || 'User'}</span>
                             </div>
-                            <span className="username">{user.username}</span>
-                        </div>
+                        ) : (
+                            <div className="user-profile-loading">
+                                <div className="avatar">
+                                    <div className="avatar-placeholder">...</div>
+                                </div>
+                            </div>
+                        )}
 
                         {showUserMenu && (
                             <div className="user-dropdown">

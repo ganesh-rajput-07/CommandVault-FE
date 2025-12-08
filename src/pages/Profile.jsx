@@ -24,6 +24,9 @@ export default function Profile() {
   const [avatarPreview, setAvatarPreview] = useState(null);
   const [bannerFile, setBannerFile] = useState(null);
   const [bannerPreview, setBannerPreview] = useState(null);
+  // New state for avatar URL
+  const [useAvatarUrl, setUseAvatarUrl] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState('');
   const [selectedPrompt, setSelectedPrompt] = useState(null);
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
@@ -33,10 +36,13 @@ export default function Profile() {
 
   useEffect(() => {
     loadUserData();
-    setFormData({
-      username: user?.username || '',
-      bio: user?.bio || ''
-    });
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        username: user.username || '',
+        bio: user.bio || ''
+      }));
+    }
   }, [user]);
 
   const loadUserData = async () => {
@@ -96,13 +102,25 @@ export default function Profile() {
   };
 
   const handleSave = async () => {
+    // Validate username is not empty
+    if (!formData.username || formData.username.trim() === '') {
+      alert('Profile name cannot be empty');
+      return;
+    }
+
     setSaving(true);
     try {
       const formDataToSend = new FormData();
-      formDataToSend.append('username', formData.username);
+      formDataToSend.append('username', formData.username.trim());
       formDataToSend.append('bio', formData.bio || '');
 
-      if (avatarFile) formDataToSend.append('avatar', avatarFile);
+      // Handle avatar: either URL or file
+      if (useAvatarUrl && avatarUrl) {
+        formDataToSend.append('avatar_url', avatarUrl);
+      } else if (avatarFile) {
+        formDataToSend.append('avatar', avatarFile);
+      }
+
       if (bannerFile) formDataToSend.append('banner', bannerFile);
 
       const response = await api.patch('auth/user/', formDataToSend, {
@@ -124,7 +142,8 @@ export default function Profile() {
       console.error('Error response:', error.response?.data);
 
       // Show specific error message
-      const errorMsg = error.response?.data?.avatar?.[0] ||
+      const errorMsg = error.response?.data?.username?.[0] ||
+        error.response?.data?.avatar?.[0] ||
         error.response?.data?.banner?.[0] ||
         error.response?.data?.detail ||
         error.message;
@@ -138,10 +157,15 @@ export default function Profile() {
     if (!user?.username) return 'U?';
     const username = user.username;
     if (username.length === 1) {
-      return username.charAt(0).toUpperCase() + String.fromCharCode(65 + Math.floor(Math.random() * 26));
+      // Double the letter for single character usernames
+      return username.charAt(0).toUpperCase() + username.charAt(0).toUpperCase();
     }
     return (username.charAt(0) + username.charAt(1)).toUpperCase();
   };
+
+  if (!user) {
+    return <div className="profile-page-loading" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#0f0f0f', color: 'white' }}>Loading...</div>;
+  }
 
   return (
     <>
@@ -321,17 +345,75 @@ export default function Profile() {
                         )}
                       </div>
                       <div className="upload-actions">
-                        <input
-                          type="file"
-                          id="modal-avatar-upload"
-                          accept="image/*"
-                          onChange={handleAvatarChange}
-                          style={{ display: 'none' }}
-                        />
-                        <label htmlFor="modal-avatar-upload" className="btn-upload">
-                          Change
-                        </label>
-                        <p className="upload-hint">It's recommended to use a picture that's at least 98 x 98 pixels and less than 1MB</p>
+                        <div className="avatar-input-toggle" style={{ marginBottom: '10px', display: 'flex', gap: '10px' }}>
+                          <button
+                            className={`btn-toggle ${!useAvatarUrl ? 'active' : ''}`}
+                            onClick={() => setUseAvatarUrl(false)}
+                            style={{
+                              padding: '5px 10px',
+                              borderRadius: '4px',
+                              border: '1px solid #333',
+                              background: !useAvatarUrl ? '#3ea6ff' : 'transparent',
+                              color: !useAvatarUrl ? 'black' : '#aaa',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            Upload File
+                          </button>
+                          <button
+                            className={`btn-toggle ${useAvatarUrl ? 'active' : ''}`}
+                            onClick={() => setUseAvatarUrl(true)}
+                            style={{
+                              padding: '5px 10px',
+                              borderRadius: '4px',
+                              border: '1px solid #333',
+                              background: useAvatarUrl ? '#3ea6ff' : 'transparent',
+                              color: useAvatarUrl ? 'black' : '#aaa',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            Use URL
+                          </button>
+                        </div>
+
+                        {useAvatarUrl ? (
+                          <div className="url-input-container">
+                            <input
+                              type="text"
+                              placeholder="https://example.com/avatar.png"
+                              value={avatarUrl}
+                              onChange={(e) => {
+                                setAvatarUrl(e.target.value);
+                                setAvatarPreview(e.target.value);
+                              }}
+                              className="url-input"
+                              style={{
+                                width: '100%',
+                                padding: '8px',
+                                background: '#121212',
+                                border: '1px solid #333',
+                                borderRadius: '4px',
+                                color: 'white',
+                                marginBottom: '4px'
+                              }}
+                            />
+                            <p className="upload-hint">Enter a direct link to an image (JPG, PNG)</p>
+                          </div>
+                        ) : (
+                          <>
+                            <input
+                              type="file"
+                              id="modal-avatar-upload"
+                              accept="image/*"
+                              onChange={handleAvatarChange}
+                              style={{ display: 'none' }}
+                            />
+                            <label htmlFor="modal-avatar-upload" className="btn-upload">
+                              Upload
+                            </label>
+                            <p className="upload-hint">It's recommended to use a picture that's at least 98 x 98 pixels and less than 1MB</p>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>

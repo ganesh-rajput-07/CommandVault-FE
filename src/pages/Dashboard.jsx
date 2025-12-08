@@ -3,6 +3,7 @@ import api from "../api";
 import Navbar from "../components/Navbar";
 import LoadingSpinner from "../components/LoadingSpinner";
 import PromptDetailModal from "../components/PromptDetailModal";
+import UserCard from "../components/UserCard";
 import { HeartIcon, BookmarkIcon, EyeIcon } from "../components/AnimatedIcons";
 import SEO from "../components/SEO";
 import { AuthContext } from "../context/AuthContext";
@@ -117,16 +118,13 @@ export default function Dashboard({ type = "explore" }) {
                   onClick={() => handlePromptClick(prompt)}
                 >
                   <div className="card-header">
-                    <div className="owner-info">
-                      {prompt.owner?.avatar_url ? (
-                        <img src={prompt.owner.avatar_url} alt={prompt.owner.username} className="avatar-sm" />
-                      ) : (
-                        <div className="avatar-sm placeholder">
-                          {prompt.owner?.username?.charAt(0).toUpperCase()}
-                        </div>
-                      )}
-                      <span className="owner-name">{prompt.owner?.username}</span>
-                    </div>
+                    {prompt.owner && (
+                      <UserCard
+                        user={prompt.owner}
+                        showFollowButton={true}
+                        size="small"
+                      />
+                    )}
                     {!prompt.is_public && <span className="private-icon">🔒</span>}
                   </div>
 
