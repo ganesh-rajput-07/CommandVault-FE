@@ -61,7 +61,7 @@ export default function App() {
               <Dashboard type="trending" />
             </ProtectedRoute>
           } />
-          <Route path="/prompt/:id" element={
+          <Route path="/prompt/:slug" element={
             <ProtectedRoute>
               <PromptDetail />
             </ProtectedRoute>
