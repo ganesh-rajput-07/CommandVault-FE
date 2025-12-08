@@ -66,7 +66,7 @@ export default function App() {
               <PromptDetail />
             </ProtectedRoute>
           } />
-          <Route path="/user/:userId" element={
+          <Route path="/user/:username" element={
             <ProtectedRoute>
               <UserProfile />
             </ProtectedRoute>

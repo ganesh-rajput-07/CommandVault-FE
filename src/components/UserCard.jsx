@@ -41,7 +41,7 @@ export default function UserCard({ user, showFollowButton = true, size = 'small'
 
     const handleUserClick = (e) => {
         e.stopPropagation();
-        navigate(`/user/${user.id}`);
+        navigate(`/user/${user.username}`);
     };
 
     const isOwnProfile = currentUser?.id === user?.id;

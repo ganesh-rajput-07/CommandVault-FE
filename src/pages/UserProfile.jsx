@@ -9,7 +9,7 @@ import useFollow from "../hooks/useFollow";
 import "./UserProfile.css";
 
 export default function UserProfile() {
-    const { userId } = useParams();
+    const { username } = useParams();
     const navigate = useNavigate();
     const { unreadCount } = useNotifications();
     const { followUser, unfollowUser, loading: followLoading } = useFollow();
@@ -21,14 +21,15 @@ export default function UserProfile() {
 
     useEffect(() => {
         loadUserProfile();
-        loadUserPrompts();
-    }, [userId]);
+    }, [username]);
 
     const loadUserProfile = async () => {
         try {
-            const res = await api.get(`auth/users/${userId}/profile/`);
+            const res = await api.get(`auth/users/${username}/profile/`);
             setUser(res.data);
             setIsFollowing(res.data.is_following || false);
+            // Load prompts after getting user data
+            loadUserPrompts(res.data.id);
         } catch (error) {
             console.error('Error loading user profile:', error);
         } finally {
@@ -36,7 +37,7 @@ export default function UserProfile() {
         }
     };
 
-    const loadUserPrompts = async () => {
+    const loadUserPrompts = async (userId) => {
         try {
             const res = await api.get(`prompts/?owner_id=${userId}`);
             setPrompts(res.data.results || res.data);
@@ -46,13 +47,14 @@ export default function UserProfile() {
     };
 
     const handleFollow = async () => {
+        if (!user) return;
         try {
             if (isFollowing) {
-                await unfollowUser(userId);
+                await unfollowUser(user.id);
                 setIsFollowing(false);
                 setUser(prev => ({ ...prev, follower_count: (prev.follower_count || 1) - 1 }));
             } else {
-                await followUser(userId);
+                await followUser(user.id);
                 setIsFollowing(true);
                 setUser(prev => ({ ...prev, follower_count: (prev.follower_count || 0) + 1 }));
             }
