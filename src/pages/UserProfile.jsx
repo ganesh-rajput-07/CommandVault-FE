@@ -38,7 +38,7 @@ export default function UserProfile() {
 
     const loadUserPrompts = async () => {
         try {
-            const res = await api.get(`prompts/?owner=${userId}`);
+            const res = await api.get(`prompts/?owner_id=${userId}`);
             setPrompts(res.data.results || res.data);
         } catch (error) {
             console.error('Error loading user prompts:', error);
