@@ -11,7 +11,7 @@ import useNotifications from "../hooks/useNotifications";
 import "./PromptDetail.css";
 
 export default function PromptDetail() {
-    const { id } = useParams();
+    const { slug } = useParams();
     const navigate = useNavigate();
     const { user } = useContext(AuthContext);
     const { unreadCount } = useNotifications();
@@ -23,16 +23,16 @@ export default function PromptDetail() {
     useEffect(() => {
         loadPrompt();
         loadSimilarPrompts();
-    }, [id]);
+    }, [slug]);
 
     const loadPrompt = async () => {
         try {
-            const res = await api.get(`prompts/${id}/`);
+            const res = await api.get(`prompts/${slug}/`);
             setPrompt(res.data);
 
             // Record view
             try {
-                await api.post(`prompts/${id}/record_view/`);
+                await api.post(`prompts/${slug}/record_view/`);
             } catch (err) {
                 console.error('Error recording view:', err);
             }
@@ -45,7 +45,7 @@ export default function PromptDetail() {
 
     const loadSimilarPrompts = async () => {
         try {
-            const res = await api.get(`prompts/${id}/similar/`);
+            const res = await api.get(`prompts/${slug}/similar/`);
             setSimilarPrompts(res.data.slice(0, 6)); // Show max 6 similar prompts
         } catch (error) {
             console.error('Error loading similar prompts:', error);
@@ -62,8 +62,8 @@ export default function PromptDetail() {
 
     const handleLike = async () => {
         try {
-            await api.post('likes/toggle/', { prompt_id: id });
-            const res = await api.get(`prompts/${id}/`);
+            await api.post('likes/toggle/', { prompt_id: prompt.id });
+            const res = await api.get(`prompts/${slug}/`);
             setPrompt(res.data);
         } catch (error) {
             console.error('Error toggling like:', error);
@@ -72,8 +72,8 @@ export default function PromptDetail() {
 
     const handleSave = async () => {
         try {
-            await api.post('saved/toggle/', { prompt_id: id });
-            const res = await api.get(`prompts/${id}/`);
+            await api.post('saved/toggle/', { prompt_id: prompt.id });
+            const res = await api.get(`prompts/${slug}/`);
             setPrompt(res.data);
         } catch (error) {
             console.error('Error toggling save:', error);
@@ -229,7 +229,7 @@ export default function PromptDetail() {
                                 <div
                                     key={similarPrompt.id}
                                     className="similar-prompt-card"
-                                    onClick={() => navigate(`/prompt/${similarPrompt.id}`)}
+                                    onClick={() => navigate(`/prompt/${similarPrompt.slug}`)}
                                 >
                                     <div className="similar-card-header">
                                         {similarPrompt.owner && (
