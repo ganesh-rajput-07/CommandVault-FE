@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { HeartIcon, BookmarkIcon, EyeIcon } from './AnimatedIcons';
+import UserCard from './UserCard';
 import api from '../api';
 import './PromptDetailModal.css';
 
@@ -113,19 +114,13 @@ export default function PromptDetailModal({ prompt, onClose, onLike, onSave }) {
                 <button className="modal-close-btn" onClick={onClose}>✕</button>
 
                 <div className="modal-header-section">
-                    <div className="prompt-owner-info">
-                        {currentPrompt.owner?.avatar_url ? (
-                            <img src={currentPrompt.owner.avatar_url} alt={currentPrompt.owner.username} className="owner-avatar-large" />
-                        ) : (
-                            <div className="owner-avatar-large placeholder">
-                                {currentPrompt.owner?.username?.charAt(0).toUpperCase()}
-                            </div>
-                        )}
-                        <div>
-                            <h3>{currentPrompt.owner?.username}</h3>
-                            <p className="upload-date">{new Date(currentPrompt.created_at).toLocaleDateString()}</p>
-                        </div>
-                    </div>
+                    {currentPrompt.owner && (
+                        <UserCard
+                            user={currentPrompt.owner}
+                            showFollowButton={true}
+                            size="medium"
+                        />
+                    )}
                     {!currentPrompt.is_public && <span className="private-badge">Private</span>}
                 </div>
 
