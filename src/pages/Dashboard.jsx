@@ -87,8 +87,8 @@ export default function Dashboard({ type = "explore" }) {
     return () => clearTimeout(timer);
   }, [searchQuery, selectedModel, sortBy, type]);
 
-  const handlePromptClick = (promptId) => {
-    navigate(`/prompt/${promptId}`);
+  const handlePromptClick = (promptSlug) => {
+    navigate(`/prompt/${promptSlug}`);
   };
 
   const handleLike = async (e, promptId) => {
@@ -258,7 +258,7 @@ export default function Dashboard({ type = "explore" }) {
                 <div
                   key={prompt.id}
                   className="prompt-card"
-                  onClick={() => handlePromptClick(prompt.id)}
+                  onClick={() => handlePromptClick(prompt.slug)}
                 >
                   <div className="card-header">
                     {prompt.owner && (

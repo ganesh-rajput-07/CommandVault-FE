@@ -173,7 +173,7 @@ export default function UserProfile() {
                                 <div
                                     key={prompt.id}
                                     className="prompt-card"
-                                    onClick={() => navigate(`/prompt/${prompt.id}`)}
+                                    onClick={() => navigate(`/prompt/${prompt.slug}`)}
                                 >
                                     <h3 className="card-title">{prompt.title}</h3>
                                     <p className="card-text">{prompt.text}</p>
