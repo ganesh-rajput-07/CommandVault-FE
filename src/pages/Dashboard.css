@@ -302,6 +302,7 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 16px;
+  flex-shrink: 0; /* Prevent shrinking */
 }
 
 .private-badge {
@@ -317,10 +318,13 @@
   color: #ffffff;
   margin: 0 0 12px 0;
   line-height: 1.4;
+  height: 70px; /* Fixed height for 2 lines */
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .card-text {
@@ -328,11 +332,13 @@
   font-size: 0.9375rem;
   line-height: 1.6;
   margin: 0 0 16px 0;
+  height: 72px; /* Fixed height for 3 lines */
   display: -webkit-box;
   -webkit-line-clamp: 3;
   line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .model-badge {
@@ -347,6 +353,7 @@
   margin-bottom: 12px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  flex-shrink: 0;
 }
 
 .card-tags {
@@ -354,6 +361,8 @@
   flex-wrap: wrap;
   gap: 8px;
   margin-bottom: 16px;
+  min-height: 32px; /* Minimum height for consistency */
+  flex-shrink: 0;
 }
 
 .card-tags .tag {
