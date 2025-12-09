@@ -819,3 +819,92 @@
   align-items: center;
   min-height: 400px;
 }
+
+/* Output Type Select */
+.output-type-select {
+  width: 100%;
+  background: rgba(31, 31, 31, 0.8);
+  border: 2px solid rgba(139, 92, 246, 0.2);
+  border-radius: 12px;
+  padding: 14px 16px;
+  color: #ffffff;
+  font-size: 1rem;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.output-type-select:focus {
+  outline: none;
+  border-color: rgba(139, 92, 246, 0.6);
+  background: rgba(31, 31, 31, 1);
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+}
+
+.output-type-select option {
+  background: #1a1a1a;
+  color: #ffffff;
+}
+
+/* File Upload */
+.file-upload-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.file-input {
+  display: none;
+}
+
+.file-upload-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 24px;
+  background: rgba(139, 92, 246, 0.1);
+  border: 2px dashed rgba(139, 92, 246, 0.4);
+  border-radius: 12px;
+  color: #8b5cf6;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  justify-content: center;
+}
+
+.file-upload-label:hover {
+  background: rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.6);
+  transform: translateY(-2px);
+}
+
+.file-upload-label svg {
+  flex-shrink: 0;
+}
+
+.file-preview {
+  padding: 16px;
+  background: rgba(31, 31, 31, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+}
+
+.preview-image {
+  width: 100%;
+  max-height: 300px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.file-name {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #a0a0a0;
+  font-size: 0.9375rem;
+}
+
+.file-name svg {
+  color: #8b5cf6;
+  flex-shrink: 0;
+}

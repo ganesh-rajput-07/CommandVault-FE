@@ -23,7 +23,10 @@ export default function MyPrompts() {
         example_output: "",
         tags: "",
         is_public: true,
+        output_type: "text",
     });
+    const [outputFile, setOutputFile] = useState(null);
+    const [filePreview, setFilePreview] = useState(null);
 
     const loadMyPrompts = async () => {
         setLoading(true);
@@ -42,14 +45,60 @@ export default function MyPrompts() {
         if (!form.title || !form.text) return;
 
         try {
+            const formData = new FormData();
             const tagsArray = form.tags.split(',').map(t => t.trim()).filter(Boolean);
-            await api.post("prompts/", { ...form, tags: tagsArray });
-            setForm({ title: "", text: "", ai_model: "", example_output: "", tags: "", is_public: true });
+
+            // Add text fields
+            formData.append('title', form.title);
+            formData.append('text', form.text);
+            formData.append('ai_model', form.ai_model);
+            formData.append('example_output', form.example_output);
+            formData.append('tags', JSON.stringify(tagsArray));
+            formData.append('is_public', form.is_public);
+            formData.append('output_type', form.output_type);
+
+            // Add file if present
+            if (outputFile) {
+                const fieldName = form.output_type === 'image' ? 'output_image' :
+                    form.output_type === 'video' ? 'output_video' :
+                        form.output_type === 'audio' ? 'output_audio' : null;
+                if (fieldName) {
+                    formData.append(fieldName, outputFile);
+                }
+            }
+
+            await api.post("prompts/", formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
+            setForm({ title: "", text: "", ai_model: "", example_output: "", tags: "", is_public: true, output_type: "text" });
+            setOutputFile(null);
+            setFilePreview(null);
             setShowCreateModal(false);
             loadMyPrompts();
         } catch (error) {
             console.error('Error creating prompt:', error);
             alert('Failed to create prompt');
+        }
+    };
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setOutputFile(file);
+
+            // Create preview for images
+            if (form.output_type === 'image') {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    setFilePreview(reader.result);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                setFilePreview(file.name);
+            }
         }
     };
 
@@ -230,6 +279,67 @@ export default function MyPrompts() {
                                     rows="4"
                                 />
                             </div>
+
+                            <div className="form-group">
+                                <label>Output Type</label>
+                                <select
+                                    value={form.output_type}
+                                    onChange={(e) => {
+                                        setForm({ ...form, output_type: e.target.value });
+                                        setOutputFile(null);
+                                        setFilePreview(null);
+                                    }}
+                                    className="output-type-select"
+                                >
+                                    <option value="text">Text Output</option>
+                                    <option value="image">Image Output</option>
+                                    <option value="video">Video Output</option>
+                                    <option value="audio">Audio/Music Output</option>
+                                    <option value="code">Code Output</option>
+                                </select>
+                            </div>
+
+                            {form.output_type !== 'text' && form.output_type !== 'code' && (
+                                <div className="form-group">
+                                    <label>Upload Example Output</label>
+                                    <div className="file-upload-container">
+                                        <input
+                                            type="file"
+                                            id="output-file"
+                                            accept={
+                                                form.output_type === 'image' ? 'image/*' :
+                                                    form.output_type === 'video' ? 'video/*' :
+                                                        form.output_type === 'audio' ? 'audio/*' : '*'
+                                            }
+                                            onChange={handleFileChange}
+                                            className="file-input"
+                                        />
+                                        <label htmlFor="output-file" className="file-upload-label">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                                <polyline points="17 8 12 3 7 8"></polyline>
+                                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                                            </svg>
+                                            {outputFile ? 'Change File' : `Upload ${form.output_type}`}
+                                        </label>
+                                        {filePreview && (
+                                            <div className="file-preview">
+                                                {form.output_type === 'image' ? (
+                                                    <img src={filePreview} alt="Preview" className="preview-image" />
+                                                ) : (
+                                                    <div className="file-name">
+                                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                            <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                                                            <polyline points="13 2 13 9 20 9"></polyline>
+                                                        </svg>
+                                                        {filePreview}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
 
                             <div className="form-group">
                                 <label>Tags</label>
