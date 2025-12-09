@@ -190,6 +190,107 @@
               0 0 0 1px rgba(139, 92, 246, 0.1);
 }
 
+/* Media Output Section */
+.media-output-section {
+  margin-bottom: 32px;
+  position: relative;
+  z-index: 1;
+}
+
+.media-output-section h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 20px 0;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.output-image-container,
+.output-video-container,
+.output-audio-container {
+  background: rgba(15, 15, 15, 0.9);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  border-radius: 16px;
+  padding: 24px;
+  overflow: hidden;
+}
+
+.output-image {
+  width: 100%;
+  height: auto;
+  max-height: 600px;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.output-video {
+  width: 100%;
+  height: auto;
+  max-height: 600px;
+  border-radius: 12px;
+  background: #000;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.output-video::-webkit-media-controls-panel {
+  background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.8) 100%);
+}
+
+.output-video::-webkit-media-controls-play-button,
+.output-video::-webkit-media-controls-volume-slider {
+  filter: brightness(0) saturate(100%) invert(60%) sepia(77%) saturate(4489%) hue-rotate(235deg) brightness(96%) contrast(91%);
+}
+
+.audio-player {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.audio-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #8b5cf6;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.audio-info svg {
+  flex-shrink: 0;
+}
+
+.output-audio {
+  width: 100%;
+  height: 54px;
+  border-radius: 12px;
+  background: rgba(31, 31, 31, 0.8);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  padding: 8px;
+}
+
+.output-audio::-webkit-media-controls-panel {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(236, 72, 153, 0.15) 100%);
+  border-radius: 8px;
+}
+
+.output-audio::-webkit-media-controls-play-button,
+.output-audio::-webkit-media-controls-current-time-display,
+.output-audio::-webkit-media-controls-time-remaining-display {
+  color: #8b5cf6;
+  filter: brightness(0) saturate(100%) invert(60%) sepia(77%) saturate(4489%) hue-rotate(235deg) brightness(96%) contrast(91%);
+}
+
+.output-audio::-webkit-media-controls-timeline {
+  background: rgba(139, 92, 246, 0.2);
+  border-radius: 4px;
+}
+
+.output-audio::-webkit-media-controls-volume-slider {
+  filter: brightness(0) saturate(100%) invert(60%) sepia(77%) saturate(4489%) hue-rotate(235deg) brightness(96%) contrast(91%);
+}
+
 /* Example Output Section */
 .example-output-section {
   margin-bottom: 32px;

@@ -175,10 +175,48 @@ export default function PromptDetail() {
                         </div>
                     </div>
 
+                    {/* Media Output */}
+                    {(prompt.output_image || prompt.output_video || prompt.output_audio) && (
+                        <div className="media-output-section">
+                            <h3>Example Output</h3>
+                            {prompt.output_image && (
+                                <div className="output-image-container">
+                                    <img src={prompt.output_image} alt="Example output" className="output-image" />
+                                </div>
+                            )}
+                            {prompt.output_video && (
+                                <div className="output-video-container">
+                                    <video controls className="output-video">
+                                        <source src={prompt.output_video} type="video/mp4" />
+                                        Your browser does not support the video tag.
+                                    </video>
+                                </div>
+                            )}
+                            {prompt.output_audio && (
+                                <div className="output-audio-container">
+                                    <div className="audio-player">
+                                        <div className="audio-info">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                <path d="M9 18V5l12-2v13"></path>
+                                                <circle cx="6" cy="18" r="3"></circle>
+                                                <circle cx="18" cy="16" r="3"></circle>
+                                            </svg>
+                                            <span>Audio Output</span>
+                                        </div>
+                                        <audio controls className="output-audio">
+                                            <source src={prompt.output_audio} type="audio/mpeg" />
+                                            Your browser does not support the audio element.
+                                        </audio>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
                     {/* Example Output */}
                     {prompt.example_output && (
                         <div className="example-output-section">
-                            <h3>Example Output</h3>
+                            <h3>Text Output</h3>
                             <div className="example-output-box">
                                 {prompt.example_output}
                             </div>
