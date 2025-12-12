@@ -26,10 +26,19 @@ export default function UserProfile() {
     const loadUserProfile = async () => {
         try {
             const res = await api.get(`auth/users/${username}/profile/`);
-            setUser(res.data);
-            setIsFollowing(res.data.is_following || false);
+            const profileUser = res.data;
+
+            // Check if viewing own profile - redirect to /profile
+            const currentUserRes = await api.get('auth/profile/');
+            if (currentUserRes.data.username === profileUser.username) {
+                navigate('/profile');
+                return;
+            }
+
+            setUser(profileUser);
+            setIsFollowing(profileUser.is_following || false);
             // Load prompts after getting user data
-            loadUserPrompts(res.data.id);
+            loadUserPrompts(profileUser.id);
         } catch (error) {
             console.error('Error loading user profile:', error);
         } finally {

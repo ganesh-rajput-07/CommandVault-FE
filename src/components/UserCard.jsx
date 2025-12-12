@@ -59,7 +59,9 @@ export default function UserCard({ user, showFollowButton = true, size = 'small'
             </div>
             <div className="user-card-info">
                 <span className="user-card-username" onClick={handleUserClick}>
-                    {user?.username}
+                    {user?.first_name && user?.last_name
+                        ? `${user.first_name} ${user.last_name}`
+                        : user?.username}
                 </span>
                 {size !== 'tiny' && (
                     <span className="user-card-followers">
