@@ -1,7 +1,6 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
-import { AuthContext } from "../context/AuthContext";
 import SEO from "../components/SEO";
 import api from "../api";
 import "./Auth.css";
