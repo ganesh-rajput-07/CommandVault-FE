@@ -8,6 +8,7 @@ import SEO from "../components/SEO";
 import { AuthContext } from "../context/AuthContext";
 import useNotifications from "../hooks/useNotifications";
 import "./Dashboard.css";
+import "./MyPrompts.css";
 
 export default function MyPrompts() {
     const { user } = useContext(AuthContext);
@@ -27,6 +28,10 @@ export default function MyPrompts() {
     });
     const [outputFile, setOutputFile] = useState(null);
     const [filePreview, setFilePreview] = useState(null);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [editingPrompt, setEditingPrompt] = useState(null);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [promptToDelete, setPromptToDelete] = useState(null);
 
     const loadMyPrompts = async () => {
         setLoading(true);
@@ -104,6 +109,84 @@ export default function MyPrompts() {
 
     const handlePromptClick = (promptSlug) => {
         navigate(`/prompt/${promptSlug}`);
+    };
+
+    const handleEdit = (e, prompt) => {
+        e.stopPropagation();
+        setEditingPrompt(prompt);
+        setForm({
+            title: prompt.title,
+            text: prompt.text,
+            ai_model: prompt.ai_model || '',
+            example_output: prompt.example_output || '',
+            tags: Array.isArray(prompt.tags) ? prompt.tags.join(', ') : '',
+            is_public: prompt.is_public,
+            output_type: prompt.output_type || 'text',
+        });
+        setShowEditModal(true);
+    };
+
+    const handleDelete = (e, prompt) => {
+        e.stopPropagation();
+        setPromptToDelete(prompt);
+        setShowDeleteModal(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!promptToDelete) return;
+
+        try {
+            await api.delete(`prompts/${promptToDelete.slug}/`);
+            setPrompts(prev => prev.filter(p => p.id !== promptToDelete.id));
+            setShowDeleteModal(false);
+            setPromptToDelete(null);
+        } catch (error) {
+            console.error('Error deleting prompt:', error);
+            alert('Failed to delete prompt');
+        }
+    };
+
+    const updatePrompt = async (e) => {
+        e.preventDefault();
+        if (!form.title || !form.text || !editingPrompt) return;
+
+        try {
+            const formData = new FormData();
+            const tagsArray = form.tags.split(',').map(t => t.trim()).filter(Boolean);
+
+            formData.append('title', form.title);
+            formData.append('text', form.text);
+            formData.append('ai_model', form.ai_model);
+            formData.append('example_output', form.example_output);
+            formData.append('tags', JSON.stringify(tagsArray));
+            formData.append('is_public', form.is_public);
+            formData.append('output_type', form.output_type);
+
+            if (outputFile) {
+                const fieldName = form.output_type === 'image' ? 'output_image' :
+                    form.output_type === 'video' ? 'output_video' :
+                        form.output_type === 'audio' ? 'output_audio' : null;
+                if (fieldName) {
+                    formData.append(fieldName, outputFile);
+                }
+            }
+
+            const res = await api.patch(`prompts/${editingPrompt.slug}/`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
+            setPrompts(prev => prev.map(p => p.id === editingPrompt.id ? res.data : p));
+            setForm({ title: "", text: "", ai_model: "", example_output: "", tags: "", is_public: true, output_type: "text" });
+            setOutputFile(null);
+            setFilePreview(null);
+            setShowEditModal(false);
+            setEditingPrompt(null);
+        } catch (error) {
+            console.error('Error updating prompt:', error);
+            alert('Failed to update prompt');
+        }
     };
 
     useEffect(() => {
@@ -214,6 +297,31 @@ export default function MyPrompts() {
                                                 <EyeIcon isViewing={false} size={20} />
                                                 <span className="stat-count">{prompt.usage_count || 0}</span>
                                             </span>
+                                        </div>
+
+                                        <div className="card-actions">
+                                            <button
+                                                className="action-btn edit-btn"
+                                                onClick={(e) => handleEdit(e, prompt)}
+                                                title="Edit prompt"
+                                            >
+                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                                </svg>
+                                                Edit
+                                            </button>
+                                            <button
+                                                className="action-btn delete-btn"
+                                                onClick={(e) => handleDelete(e, prompt)}
+                                                title="Delete prompt"
+                                            >
+                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                                </svg>
+                                                Delete
+                                            </button>
                                         </div>
                                     </div>
                                 ))}
@@ -374,6 +482,139 @@ export default function MyPrompts() {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Edit Prompt Modal */}
+            {showEditModal && (
+                <div className="modal-backdrop" onClick={() => setShowEditModal(false)}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h2>Edit Prompt</h2>
+                            <button className="modal-close" onClick={() => setShowEditModal(false)}>
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <form onSubmit={updatePrompt} className="modal-form">
+                            <div className="form-group">
+                                <label>Title *</label>
+                                <input
+                                    type="text"
+                                    placeholder="Enter a descriptive title..."
+                                    value={form.title}
+                                    onChange={(e) => setForm({ ...form, title: e.target.value })}
+                                    required
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label>Prompt Content *</label>
+                                <textarea
+                                    placeholder="Write your prompt here..."
+                                    value={form.text}
+                                    onChange={(e) => setForm({ ...form, text: e.target.value })}
+                                    required
+                                    rows="6"
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label>AI Model/Tool</label>
+                                <input
+                                    type="text"
+                                    placeholder="e.g., ChatGPT-4, Claude, Gemini"
+                                    value={form.ai_model}
+                                    onChange={(e) => setForm({ ...form, ai_model: e.target.value })}
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label>Example Output (Optional)</label>
+                                <textarea
+                                    placeholder="Paste an example of what this prompt generates..."
+                                    value={form.example_output}
+                                    onChange={(e) => setForm({ ...form, example_output: e.target.value })}
+                                    rows="4"
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label>Tags</label>
+                                <input
+                                    type="text"
+                                    placeholder="coding, creative, business (comma separated)"
+                                    value={form.tags}
+                                    onChange={(e) => setForm({ ...form, tags: e.target.value })}
+                                />
+                            </div>
+
+                            <div className="form-group-checkbox">
+                                <label className="checkbox-label">
+                                    <input
+                                        type="checkbox"
+                                        checked={form.is_public}
+                                        onChange={(e) => setForm({ ...form, is_public: e.target.checked })}
+                                    />
+                                    <span className="checkbox-text">
+                                        <strong>Make this prompt public</strong>
+                                        <small>Allow others to discover and use your prompt</small>
+                                    </span>
+                                </label>
+                            </div>
+
+                            <div className="modal-actions">
+                                <button type="button" className="btn-secondary" onClick={() => setShowEditModal(false)}>
+                                    Cancel
+                                </button>
+                                <button type="submit" className="btn-primary">
+                                    Update Prompt
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Delete Confirmation Modal */}
+            {showDeleteModal && (
+                <div className="modal-backdrop" onClick={() => setShowDeleteModal(false)}>
+                    <div className="modal-content delete-modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h2>Delete Prompt</h2>
+                            <button className="modal-close" onClick={() => setShowDeleteModal(false)}>
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div className="modal-body delete-confirmation">
+                            <svg className="warning-icon" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                            <h3>Are you sure?</h3>
+                            <p>
+                                This will permanently delete "<strong>{promptToDelete?.title}</strong>".
+                                This action cannot be undone.
+                            </p>
+                        </div>
+
+                        <div className="modal-actions">
+                            <button type="button" className="btn-secondary" onClick={() => setShowDeleteModal(false)}>
+                                Cancel
+                            </button>
+                            <button type="button" className="btn-danger" onClick={confirmDelete}>
+                                Delete Prompt
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

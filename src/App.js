@@ -11,6 +11,7 @@ import Profile from "./pages/Profile";
 import Notifications from "./pages/Notifications";
 import PromptDetail from "./pages/PromptDetail";
 import UserProfile from "./pages/UserProfile";
+import Trending from "./pages/Trending";
 
 function ProtectedRoute({ children }) {
   const { user } = useContext(AuthContext);
@@ -58,7 +59,7 @@ export default function App() {
           } />
           <Route path="/trending" element={
             <ProtectedRoute>
-              <Dashboard type="trending" />
+              <Trending />
             </ProtectedRoute>
           } />
           <Route path="/prompt/:slug" element={

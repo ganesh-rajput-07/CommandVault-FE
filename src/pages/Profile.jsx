@@ -40,7 +40,10 @@ export default function Profile() {
       setFormData(prev => ({
         ...prev,
         username: user.username || '',
-        bio: user.bio || ''
+        bio: user.bio || '',
+        first_name: user.first_name || '',
+        last_name: user.last_name || '',
+        is_email_public: user.is_email_public || false
       }));
     }
   }, [user]);
@@ -113,6 +116,9 @@ export default function Profile() {
       const formDataToSend = new FormData();
       formDataToSend.append('username', formData.username.trim());
       formDataToSend.append('bio', formData.bio || '');
+      formDataToSend.append('first_name', formData.first_name || '');
+      formDataToSend.append('last_name', formData.last_name || '');
+      formDataToSend.append('is_email_public', formData.is_email_public);
 
       // Handle avatar: either URL or file
       if (useAvatarUrl && avatarUrl) {
@@ -155,9 +161,13 @@ export default function Profile() {
 
   const getAvatarLetters = () => {
     if (!user?.username) return 'U?';
+    // Use first name if available, otherwise username
+    if (user.first_name) {
+      return user.first_name.charAt(0).toUpperCase();
+    }
+
     const username = user.username;
     if (username.length === 1) {
-      // Double the letter for single character usernames
       return username.charAt(0).toUpperCase() + username.charAt(0).toUpperCase();
     }
     return (username.charAt(0) + username.charAt(1)).toUpperCase();
@@ -196,7 +206,13 @@ export default function Profile() {
             </div>
 
             <div className="profile-details">
-              <h1 className="profile-username">{user?.username}</h1>
+              <h1 className="profile-username">
+                {user?.first_name && user?.last_name ? `${user.first_name} ${user.last_name}` : user?.username}
+              </h1>
+              {user?.first_name && user?.last_name && (
+                <p className="profile-handle">@{user?.username}</p>
+              )}
+
               <div className="profile-stats-inline">
                 <span>{stats.totalPrompts} prompts</span>
                 <span>•</span>
@@ -270,9 +286,18 @@ export default function Profile() {
               <h2>About</h2>
               <div className="about-content">
                 <div className="about-item">
-                  <strong>Email:</strong>
-                  <span>{user?.email}</span>
+                  <strong>Full Name:</strong>
+                  <span>{user?.first_name} {user?.last_name}</span>
                 </div>
+
+                {(user?.is_email_public || true) && (
+                  /* Always show email to the owner, but indicate status */
+                  <div className="about-item">
+                    <strong>Email:</strong>
+                    <span>{user?.email} {user?.is_email_public ? '(Public)' : '(Private)'}</span>
+                  </div>
+                )}
+
                 <div className="about-item">
                   <strong>Joined:</strong>
                   <span>{new Date(user?.date_joined).toLocaleDateString('en-US', {
@@ -454,14 +479,35 @@ export default function Profile() {
               {customizeTab === 'basic' && (
                 <div className="basic-info-section">
                   <div className="form-field">
-                    <label>Profile name</label>
+                    <label>Profile name (Username)</label>
                     <input
                       type="text"
                       value={formData.username}
                       onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                       placeholder="Enter profile name"
                     />
-                    <p className="field-hint">Choose a name that represents you and your content</p>
+                    <p className="field-hint">Your unique username on CommandVault.</p>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '16px' }}>
+                    <div className="form-field" style={{ flex: 1 }}>
+                      <label>First Name</label>
+                      <input
+                        type="text"
+                        value={formData.first_name}
+                        onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
+                        placeholder="First Name"
+                      />
+                    </div>
+                    <div className="form-field" style={{ flex: 1 }}>
+                      <label>Last Name</label>
+                      <input
+                        type="text"
+                        value={formData.last_name}
+                        onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
+                        placeholder="Last Name"
+                      />
+                    </div>
                   </div>
 
                   <div className="form-field">
@@ -474,6 +520,17 @@ export default function Profile() {
                       maxLength="1000"
                     />
                     <p className="field-hint">{(formData.bio || '').length} / 1000</p>
+                  </div>
+
+                  <div className="form-field" style={{ flexDirection: 'row', alignItems: 'center', gap: '10px' }}>
+                    <input
+                      type="checkbox"
+                      id="emailPublic"
+                      checked={formData.is_email_public}
+                      onChange={(e) => setFormData({ ...formData, is_email_public: e.target.checked })}
+                      style={{ width: 'auto' }}
+                    />
+                    <label htmlFor="emailPublic" style={{ marginBottom: 0, cursor: 'pointer' }}>Show email on public profile</label>
                   </div>
                 </div>
               )}

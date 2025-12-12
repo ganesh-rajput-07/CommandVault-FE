@@ -65,6 +65,12 @@ export default function UserProfile() {
 
     const getAvatarLetters = () => {
         if (!user?.username) return 'U';
+
+        // Use first name if available
+        if (user.first_name) {
+            return user.first_name.charAt(0).toUpperCase();
+        }
+
         const words = user.username.trim().split(/\s+/);
         if (words.length >= 2) {
             return (words[0][0] + words[1][0]).toUpperCase();
@@ -126,8 +132,15 @@ export default function UserProfile() {
                     <div className="profile-details">
                         <div className="profile-header">
                             <div>
-                                <h1 className="profile-username">{user.username}</h1>
-                                <p className="profile-email">{user.email}</p>
+                                <h1 className="profile-username">
+                                    {user.first_name && user.last_name ? `${user.first_name} ${user.last_name}` : user.username}
+                                </h1>
+                                {user.first_name && user.last_name && (
+                                    <p className="profile-handle">@{user.username}</p>
+                                )}
+                                {user.email && (
+                                    <p className="profile-email">{user.email}</p>
+                                )}
                             </div>
                             <button
                                 className={`follow-btn ${isFollowing ? 'following' : ''}`}
