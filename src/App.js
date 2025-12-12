@@ -12,6 +12,7 @@ import Notifications from "./pages/Notifications";
 import PromptDetail from "./pages/PromptDetail";
 import UserProfile from "./pages/UserProfile";
 import Trending from "./pages/Trending";
+import SavedPrompts from "./pages/SavedPrompts";
 
 function ProtectedRoute({ children }) {
   const { user } = useContext(AuthContext);
@@ -75,6 +76,11 @@ export default function App() {
           <Route path="/my-prompts" element={
             <ProtectedRoute>
               <MyPrompts />
+            </ProtectedRoute>
+          } />
+          <Route path="/saved" element={
+            <ProtectedRoute>
+              <SavedPrompts />
             </ProtectedRoute>
           } />
 

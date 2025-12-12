@@ -77,7 +77,7 @@ export default function Navbar({ unreadCount = 0 }) {
                                     <Link to="/my-prompts" onClick={() => setShowUserMenu(false)}>
                                         My Prompts
                                     </Link>
-                                    <Link to="/profile/saved" onClick={() => setShowUserMenu(false)}>
+                                    <Link to="/saved" onClick={() => setShowUserMenu(false)}>
                                         Saved Prompts
                                     </Link>
                                 </div>
