@@ -13,6 +13,7 @@ export default function CreatePrompt() {
         text: '',
         ai_model: '',
         output_type: '',
+        example_output: '',
         output_image: null,
         output_video: null,
         output_audio: null,
@@ -117,6 +118,10 @@ export default function CreatePrompt() {
 
             if (formData.output_type) {
                 submitData.append('output_type', formData.output_type);
+            }
+
+            if (formData.example_output) {
+                submitData.append('example_output', formData.example_output);
             }
 
             if (formData.output_image) {
@@ -357,8 +362,33 @@ export default function CreatePrompt() {
                                 </div>
 
                                 {/* File Uploads - Show based on output type */}
-                                {formData.output_type && formData.output_type !== 'text' && formData.output_type !== 'code' && (
+                                {formData.output_type && (
                                     <div className="file-uploads">
+                                        {formData.output_type === 'text' && (
+                                            <div className="form-group">
+                                                <label>Example Text Output</label>
+                                                <textarea
+                                                    placeholder="Paste an example text output here..."
+                                                    rows={6}
+                                                    value={formData.example_output || ''}
+                                                    onChange={(e) => setFormData({ ...formData, example_output: e.target.value })}
+                                                />
+                                            </div>
+                                        )}
+
+                                        {formData.output_type === 'code' && (
+                                            <div className="form-group">
+                                                <label>Example Code Output</label>
+                                                <textarea
+                                                    placeholder="Paste an example code output here..."
+                                                    rows={8}
+                                                    value={formData.example_output || ''}
+                                                    onChange={(e) => setFormData({ ...formData, example_output: e.target.value })}
+                                                    style={{ fontFamily: 'monospace' }}
+                                                />
+                                            </div>
+                                        )}
+
                                         {formData.output_type === 'image' && (
                                             <div className="form-group">
                                                 <label>Example Image Output</label>
