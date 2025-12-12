@@ -211,10 +211,13 @@
 }
 
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }
+
   50% {
     opacity: 0.7;
     transform: scale(1.1);
@@ -246,6 +249,7 @@
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -299,8 +303,14 @@
 }
 
 @media (max-width: 768px) {
+  .navbar-container {
+    padding: 0 16px;
+  }
+
   .mobile-menu-btn {
     display: block;
+    font-size: 1.5rem;
+    padding: 8px;
   }
 
   .navbar-menu {
@@ -312,15 +322,58 @@
     border-top: 1px solid rgba(139, 92, 246, 0.3);
     flex-direction: column;
     padding: 16px;
-    gap: 8px;
+    gap: 12px;
     display: none;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
   }
 
   .navbar-menu.active {
     display: flex;
   }
 
-  .username-display {
+  .nav-link {
+    padding: 12px 16px;
+    font-size: 1rem;
+    border-radius: 8px;
+    transition: background 0.2s ease;
+  }
+
+  .nav-link:hover {
+    background: rgba(139, 92, 246, 0.1);
+  }
+
+  .username {
     display: none;
+  }
+
+  .user-dropdown {
+    position: fixed;
+    top: auto;
+    right: 10px;
+    left: 10px;
+    max-width: none;
+    margin-top: 8px;
+  }
+
+  .avatar {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar-brand {
+    font-size: 1.25rem;
+  }
+
+  .user-dropdown {
+    right: 8px;
+    left: 8px;
+  }
+
+  .dropdown-section a,
+  .dropdown-section button {
+    padding: 14px 16px;
+    font-size: 0.9375rem;
   }
 }
