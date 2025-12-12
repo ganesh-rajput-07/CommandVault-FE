@@ -209,7 +209,7 @@ export default function MyPrompts() {
                         <p className="hero-subtitle">
                             Create, manage, and share your AI prompts
                         </p>
-                        <button className="btn-create" onClick={() => setShowCreateModal(true)}>
+                        <button className="btn-create" onClick={() => navigate('/create-prompt')}>
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <line x1="12" y1="5" x2="12" y2="19"></line>
                                 <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -233,7 +233,7 @@ export default function MyPrompts() {
                                 </svg>
                                 <h3>No prompts yet</h3>
                                 <p>Start creating your first AI prompt to build your collection</p>
-                                <button className="btn-clear-filters" onClick={() => setShowCreateModal(true)}>
+                                <button className="btn-clear-filters" onClick={() => navigate('/create-prompt')}>
                                     Create Your First Prompt
                                 </button>
                             </div>
