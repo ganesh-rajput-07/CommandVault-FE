@@ -356,44 +356,52 @@ export default function CreatePrompt() {
                                     </select>
                                 </div>
 
-                                {/* File Uploads */}
-                                <div className="file-uploads">
-                                    <div className="form-group">
-                                        <label>Example Image Output</label>
-                                        <input
-                                            type="file"
-                                            accept="image/*"
-                                            onChange={(e) => handleFileChange(e, 'image')}
-                                        />
-                                        {formData.output_image && (
-                                            <p className="file-name">📎 {formData.output_image.name}</p>
+                                {/* File Uploads - Show based on output type */}
+                                {formData.output_type && formData.output_type !== 'text' && formData.output_type !== 'code' && (
+                                    <div className="file-uploads">
+                                        {formData.output_type === 'image' && (
+                                            <div className="form-group">
+                                                <label>Example Image Output</label>
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={(e) => handleFileChange(e, 'image')}
+                                                />
+                                                {formData.output_image && (
+                                                    <p className="file-name">📎 {formData.output_image.name}</p>
+                                                )}
+                                            </div>
                                         )}
-                                    </div>
 
-                                    <div className="form-group">
-                                        <label>Example Video Output</label>
-                                        <input
-                                            type="file"
-                                            accept="video/*"
-                                            onChange={(e) => handleFileChange(e, 'video')}
-                                        />
-                                        {formData.output_video && (
-                                            <p className="file-name">📎 {formData.output_video.name}</p>
+                                        {formData.output_type === 'video' && (
+                                            <div className="form-group">
+                                                <label>Example Video Output</label>
+                                                <input
+                                                    type="file"
+                                                    accept="video/*"
+                                                    onChange={(e) => handleFileChange(e, 'video')}
+                                                />
+                                                {formData.output_video && (
+                                                    <p className="file-name">📎 {formData.output_video.name}</p>
+                                                )}
+                                            </div>
                                         )}
-                                    </div>
 
-                                    <div className="form-group">
-                                        <label>Example Audio Output</label>
-                                        <input
-                                            type="file"
-                                            accept="audio/*"
-                                            onChange={(e) => handleFileChange(e, 'audio')}
-                                        />
-                                        {formData.output_audio && (
-                                            <p className="file-name">📎 {formData.output_audio.name}</p>
+                                        {formData.output_type === 'audio' && (
+                                            <div className="form-group">
+                                                <label>Example Audio Output</label>
+                                                <input
+                                                    type="file"
+                                                    accept="audio/*"
+                                                    onChange={(e) => handleFileChange(e, 'audio')}
+                                                />
+                                                {formData.output_audio && (
+                                                    <p className="file-name">📎 {formData.output_audio.name}</p>
+                                                )}
+                                            </div>
                                         )}
                                     </div>
-                                </div>
+                                )}
 
                                 {/* Tags */}
                                 <div className="form-group">
