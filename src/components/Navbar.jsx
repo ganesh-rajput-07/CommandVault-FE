@@ -28,16 +28,16 @@ export default function Navbar({ unreadCount = 0 }) {
     return (
         <nav className="navbar">
             <div className="navbar-container">
+                <Link to="/explore" className="navbar-brand">
+                    CommandVault
+                </Link>
+
                 <button
                     className="mobile-menu-btn"
                     onClick={() => setShowMobileMenu(!showMobileMenu)}
                 >
                     ☰
                 </button>
-
-                <Link to="/explore" className="navbar-brand">
-                    CommandVault
-                </Link>
 
                 <div className="navbar-right">
                     <div className={`navbar-menu ${showMobileMenu ? 'active' : ''}`}>
