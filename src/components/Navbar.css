@@ -342,7 +342,46 @@
     background: rgba(139, 92, 246, 0.1);
   }
 
+  /* Show Profile link only on mobile */
+  .mobile-only {
+    display: flex;
+  }
+
+  /* Mobile notification badge */
+  .mobile-notification-badge {
+    margin-left: auto;
+    background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 12px;
+    min-width: 20px;
+    text-align: center;
+  }
+
+  /* Logout button in mobile menu */
+  .logout-btn {
+    background: none;
+    border: none;
+    color: #ec4899;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    font-family: 'Inter', sans-serif !important;
+  }
+
+  .logout-btn:hover {
+    background: rgba(236, 72, 153, 0.1);
+  }
+
   .username {
+    display: none;
+  }
+
+  /* Hide user profile avatar on mobile */
+  .user-profile {
     display: none;
   }
 
@@ -354,10 +393,12 @@
     max-width: none;
     margin-top: 8px;
   }
+}
 
-  .avatar {
-    width: 36px;
-    height: 36px;
+/* Hide mobile-only links on desktop */
+@media (min-width: 769px) {
+  .mobile-only {
+    display: none;
   }
 }
 

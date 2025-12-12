@@ -119,3 +119,58 @@
 .btn-danger:active {
     transform: translateY(0);
 }
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .card-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .action-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .delete-modal {
+        max-width: 90%;
+    }
+
+    .delete-confirmation {
+        padding: 24px 16px;
+    }
+
+    .warning-icon {
+        width: 48px;
+        height: 48px;
+    }
+}
+
+@media (max-width: 480px) {
+    .card-actions {
+        gap: 8px;
+    }
+
+    .action-btn {
+        padding: 10px 14px;
+        font-size: 0.875rem;
+    }
+
+    .action-btn svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .delete-confirmation h3 {
+        font-size: 1.25rem;
+    }
+
+    .delete-confirmation p {
+        font-size: 0.9375rem;
+    }
+
+    .btn-danger {
+        padding: 12px 20px;
+        font-size: 0.9375rem;
+    }
+}

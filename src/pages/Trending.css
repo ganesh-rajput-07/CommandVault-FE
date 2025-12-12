@@ -88,3 +88,78 @@
 .trending-prompts-grid {
     padding-top: 20px;
 }
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .rank-badge {
+        width: 44px;
+        height: 44px;
+        font-size: 1.125rem;
+        top: -12px;
+        left: 16px;
+    }
+
+    .rank-1 .rank-badge {
+        width: 52px;
+        height: 52px;
+        font-size: 1.375rem;
+    }
+
+    .rank-2 .rank-badge {
+        width: 48px;
+        height: 48px;
+    }
+
+    .rank-stats-inline {
+        flex-direction: column;
+        gap: 8px;
+        padding: 10px;
+    }
+
+    .rank-stats-inline .stat {
+        font-size: 0.8125rem;
+    }
+
+    .trending-card {
+        padding-top: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .rank-badge {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+        top: -10px;
+        left: 12px;
+    }
+
+    .rank-1 .rank-badge {
+        width: 48px;
+        height: 48px;
+        font-size: 1.25rem;
+    }
+
+    .rank-2 .rank-badge {
+        width: 44px;
+        height: 44px;
+    }
+
+    .rank-3 .rank-badge {
+        width: 40px;
+        height: 40px;
+    }
+
+    .rank-stats-inline {
+        padding: 8px;
+        gap: 6px;
+    }
+
+    .rank-stats-inline .stat {
+        font-size: 0.75rem;
+    }
+
+    .rank-stats-inline .stat .icon {
+        font-size: 0.875rem;
+    }
+}

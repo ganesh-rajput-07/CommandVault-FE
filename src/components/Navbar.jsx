@@ -28,10 +28,6 @@ export default function Navbar({ unreadCount = 0 }) {
     return (
         <nav className="navbar">
             <div className="navbar-container">
-                <Link to="/explore" className="navbar-brand">
-                    CommandVault
-                </Link>
-
                 <button
                     className="mobile-menu-btn"
                     onClick={() => setShowMobileMenu(!showMobileMenu)}
@@ -39,10 +35,24 @@ export default function Navbar({ unreadCount = 0 }) {
                     ☰
                 </button>
 
+                <Link to="/explore" className="navbar-brand">
+                    CommandVault
+                </Link>
+
                 <div className="navbar-right">
                     <div className={`navbar-menu ${showMobileMenu ? 'active' : ''}`}>
-                        <Link to="/explore" className="nav-link">Explore</Link>
-                        <Link to="/trending" className="nav-link">Trending</Link>
+                        <Link to="/explore" className="nav-link" onClick={() => setShowMobileMenu(false)}>Explore</Link>
+                        <Link to="/trending" className="nav-link" onClick={() => setShowMobileMenu(false)}>Trending</Link>
+                        <Link to="/profile" className="nav-link mobile-only" onClick={() => setShowMobileMenu(false)}>Profile</Link>
+                        <Link to="/my-prompts" className="nav-link mobile-only" onClick={() => setShowMobileMenu(false)}>My Prompts</Link>
+                        <Link to="/saved" className="nav-link mobile-only" onClick={() => setShowMobileMenu(false)}>Saved Prompts</Link>
+                        <Link to="/notifications" className="nav-link mobile-only" onClick={() => setShowMobileMenu(false)}>
+                            Notifications
+                            {unreadCount > 0 && <span className="mobile-notification-badge">{unreadCount}</span>}
+                        </Link>
+                        <button className="nav-link mobile-only logout-btn" onClick={() => { handleLogout(); setShowMobileMenu(false); }}>
+                            Logout
+                        </button>
                     </div>
 
                     <div className="navbar-actions">
