@@ -1,17 +1,15 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import api from '../api';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { HeartIcon, BookmarkIcon, EyeIcon } from '../components/AnimatedIcons';
 import SEO from '../components/SEO';
-import { AuthContext } from '../context/AuthContext';
 import useNotifications from '../hooks/useNotifications';
 import './Dashboard.css';
 import './Trending.css';
 
 const Trending = () => {
-    const { user } = useContext(AuthContext);
     const { unreadCount } = useNotifications();
     const navigate = useNavigate();
     const [prompts, setPrompts] = useState([]);

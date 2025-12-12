@@ -1,16 +1,14 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
 import Navbar from "../components/Navbar";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { HeartIcon, BookmarkIcon, EyeIcon } from "../components/AnimatedIcons";
 import SEO from "../components/SEO";
-import { AuthContext } from "../context/AuthContext";
 import useNotifications from "../hooks/useNotifications";
 import "./Dashboard.css";
 
 export default function SavedPrompts() {
-    const { user } = useContext(AuthContext);
     const { unreadCount } = useNotifications();
     const navigate = useNavigate();
     const [prompts, setPrompts] = useState([]);
@@ -47,6 +45,7 @@ export default function SavedPrompts() {
 
     useEffect(() => {
         loadSavedPrompts();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (
