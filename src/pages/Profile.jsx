@@ -226,6 +226,53 @@ export default function Profile() {
               {user?.bio && (
                 <p className="profile-bio-text">{user.bio}</p>
               )}
+
+              {/* Email Verification Notice */}
+              {!user?.is_email_verified && !user?.is_google_account && (
+                <div className="verification-notice" style={{
+                  background: 'rgba(245, 158, 11, 0.1)',
+                  border: '1px solid rgba(245, 158, 11, 0.3)',
+                  borderRadius: '12px',
+                  padding: '12px 16px',
+                  marginTop: '16px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: '12px'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '18px' }}>⚠️</span>
+                    <span style={{ color: '#f59e0b', fontSize: '14px', fontWeight: '500' }}>
+                      Email not verified
+                    </span>
+                  </div>
+                  <button
+                    onClick={async () => {
+                      try {
+                        const res = await api.post('/auth/resend-verification/');
+                        alert(res.data.message);
+                      } catch (error) {
+                        alert(error.response?.data?.error || 'Failed to send email');
+                      }
+                    }}
+                    style={{
+                      padding: '6px 12px',
+                      background: 'rgba(245, 158, 11, 0.2)',
+                      border: '1px solid rgba(245, 158, 11, 0.4)',
+                      borderRadius: '8px',
+                      color: '#f59e0b',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s'
+                    }}
+                    onMouseOver={(e) => e.target.style.background = 'rgba(245, 158, 11, 0.3)'}
+                    onMouseOut={(e) => e.target.style.background = 'rgba(245, 158, 11, 0.2)'}
+                  >
+                    Resend Email
+                  </button>
+                </div>
+              )}
             </div>
 
             <button

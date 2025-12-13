@@ -15,6 +15,7 @@ import UserProfile from "./pages/UserProfile";
 import Trending from "./pages/Trending";
 import SavedPrompts from "./pages/SavedPrompts";
 import CreatePrompt from "./pages/CreatePrompt";
+import VerifyEmail from "./pages/VerifyEmail";
 
 function ProtectedRoute({ children }) {
   const { user } = useContext(AuthContext);
@@ -54,6 +55,7 @@ export default function App() {
                 <Register />
               </PublicRoute>
             } />
+            <Route path="/verify-email/:token" element={<VerifyEmail />} />
 
             {/* Main Dashboard Routes */}
             <Route path="/explore" element={

@@ -76,7 +76,14 @@ export default function Register() {
 
           <form onSubmit={handleSubmit} className="auth-form">
             {error && <div className="error-message">{error}</div>}
-            {success && <div className="success-message">Account created! Redirecting to login...</div>}
+            {success && (
+              <div className="success-message">
+                <strong>Account created successfully!</strong>
+                <p style={{ margin: '8px 0 0 0', fontSize: '14px' }}>
+                  Please check your email to verify your account before logging in.
+                </p>
+              </div>
+            )}
 
             <input
               type="email"
