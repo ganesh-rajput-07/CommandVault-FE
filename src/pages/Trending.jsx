@@ -91,27 +91,29 @@ const Trending = () => {
                 {/* Filters Section */}
                 <div className="filters-section">
                     <div className="filters-container">
-                        {/* AI Model Filters */}
-                        <div className="filter-group">
-                            <span className="filter-label">AI Model:</span>
-                            <div className="filter-chips">
-                                {AI_MODELS.map(model => (
-                                    <button
-                                        key={model}
-                                        className={`filter-chip ${selectedModel === model ? 'active' : ''}`}
-                                        onClick={() => setSelectedModel(model)}
-                                    >
-                                        {model === 'all' ? 'All Models' : model}
-                                    </button>
-                                ))}
+                        <div className="filters-left">
+                            {/* AI Model Filters */}
+                            <div className="filter-group">
+                                <span className="filter-label">AI Model:</span>
+                                <div className="filter-chips">
+                                    {AI_MODELS.map(model => (
+                                        <button
+                                            key={model}
+                                            className={`filter-chip ${selectedModel === model ? 'active' : ''}`}
+                                            onClick={() => setSelectedModel(model)}
+                                        >
+                                            {model === 'all' ? 'All Models' : model}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
 
-                        {/* Output Type Filter */}
-                        <OutputTypeFilter
-                            selectedTypes={selectedOutputTypes}
-                            onChange={setSelectedOutputTypes}
-                        />
+                            {/* Output Type Filter */}
+                            <OutputTypeFilter
+                                selectedTypes={selectedOutputTypes}
+                                onChange={setSelectedOutputTypes}
+                            />
+                        </div>
                     </div>
                 </div>
 

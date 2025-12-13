@@ -2,14 +2,16 @@ import { useContext, useState, useEffect } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
 import useNotifications from '../hooks/useNotifications';
+import usePrompts from '../hooks/usePrompts';
 import api from '../api';
-import { HeartIcon, BookmarkIcon, EyeIcon } from '../components/AnimatedIcons';
+import PromptCardEnhanced from '../components/PromptCardEnhanced';
 import PromptDetailModal from '../components/PromptDetailModal';
 import './Profile.css';
 
 export default function Profile() {
   const { user } = useContext(AuthContext);
   const { unreadCount } = useNotifications();
+  const { setPrompts: setGlobalPrompts } = usePrompts();
   const [activeTab, setActiveTab] = useState('prompts');
   const [prompts, setPrompts] = useState([]);
   const [stats, setStats] = useState({
@@ -52,14 +54,15 @@ export default function Profile() {
     setLoading(true);
     try {
       const promptsRes = await api.get('prompts/mine/');
-      const userPrompts = promptsRes.data.results || promptsRes.data;
-      setPrompts(userPrompts);
+      const promptsData = promptsRes.data.results || promptsRes.data;
+      setPrompts(promptsData);
+      setGlobalPrompts(promptsData); // Update global state
 
-      const totalLikes = userPrompts.reduce((sum, p) => sum + (p.likes_count || 0), 0);
-      const totalSaves = userPrompts.reduce((sum, p) => sum + (p.saves_count || 0), 0);
+      const totalLikes = promptsData.reduce((sum, p) => sum + (p.likes_count || 0), 0);
+      const totalSaves = promptsData.reduce((sum, p) => sum + (p.saves_count || 0), 0);
 
       setStats({
-        totalPrompts: userPrompts.length,
+        totalPrompts: promptsData.length,
         totalLikes,
         totalSaves
       });
@@ -260,22 +263,11 @@ export default function Profile() {
                 </div>
               ) : (
                 prompts.map((prompt) => (
-                  <div
+                  <PromptCardEnhanced
                     key={prompt.id}
-                    className="prompt-card"
-                    onClick={() => setSelectedPrompt(prompt)}
-                  >
-                    <h3>{prompt.title}</h3>
-                    <p className="prompt-preview">{prompt.content}</p>
-                    <div className="prompt-meta">
-                      <span className="prompt-model">{prompt.ai_model}</span>
-                      <div className="prompt-stats">
-                        <span><HeartIcon size={16} /> {prompt.likes_count || 0}</span>
-                        <span><BookmarkIcon size={16} /> {prompt.saves_count || 0}</span>
-                        <span><EyeIcon size={16} /> {prompt.views_count || 0}</span>
-                      </div>
-                    </div>
-                  </div>
+                    prompt={prompt}
+                    showActions={false}
+                  />
                 ))
               )}
             </div>
