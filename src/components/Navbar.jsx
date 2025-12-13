@@ -43,6 +43,7 @@ export default function Navbar({ unreadCount = 0 }) {
                     <div className={`navbar-menu ${showMobileMenu ? 'active' : ''}`}>
                         <Link to="/explore" className="nav-link" onClick={() => setShowMobileMenu(false)}>Explore</Link>
                         <Link to="/trending" className="nav-link" onClick={() => setShowMobileMenu(false)}>Trending</Link>
+                        <Link to="/my-prompts" className="nav-link desktop-nav-link" onClick={() => setShowMobileMenu(false)}>My Prompts</Link>
                         <Link to="/profile" className="nav-link mobile-only" onClick={() => setShowMobileMenu(false)}>Profile</Link>
                         <Link to="/my-prompts" className="nav-link mobile-only" onClick={() => setShowMobileMenu(false)}>My Prompts</Link>
                         <Link to="/saved" className="nav-link mobile-only" onClick={() => setShowMobileMenu(false)}>Saved Prompts</Link>
@@ -68,7 +69,6 @@ export default function Navbar({ unreadCount = 0 }) {
                                     )}
                                     {unreadCount > 0 && <div className="notification-dot"></div>}
                                 </div>
-                                <span className="username">{user.username || 'User'}</span>
                             </div>
                         ) : (
                             <div className="user-profile-loading">
@@ -84,35 +84,17 @@ export default function Navbar({ unreadCount = 0 }) {
                                     <Link to="/profile" onClick={() => setShowUserMenu(false)}>
                                         Profile
                                     </Link>
-                                    <Link to="/my-prompts" onClick={() => setShowUserMenu(false)}>
-                                        My Prompts
-                                    </Link>
                                     <Link to="/saved" onClick={() => setShowUserMenu(false)}>
                                         Saved Prompts
                                     </Link>
+                                    <Link to="/notifications" onClick={() => setShowUserMenu(false)}>
+                                        Notifications
+                                        {unreadCount > 0 && <span className="notification-badge">{unreadCount}</span>}
+                                    </Link>
                                 </div>
 
-                                {unreadCount > 0 && (
-                                    <div className="dropdown-section notifications-section">
-                                        <div className="section-title">
-                                            Notifications ({unreadCount})
-                                        </div>
-                                        <Link to="/notifications" onClick={() => setShowUserMenu(false)}>
-                                            View all notifications
-                                        </Link>
-                                    </div>
-                                )}
-
-                                {unreadCount === 0 && (
-                                    <div className="dropdown-section">
-                                        <Link to="/notifications" onClick={() => setShowUserMenu(false)}>
-                                            Notifications
-                                        </Link>
-                                    </div>
-                                )}
-
-                                <div className="dropdown-section">
-                                    <button onClick={handleLogout}>Logout</button>
+                                <div className="dropdown-section logout-section">
+                                    <button onClick={() => { handleLogout(); setShowUserMenu(false); }}>Logout</button>
                                 </div>
                             </div>
                         )}

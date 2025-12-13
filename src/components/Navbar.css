@@ -80,6 +80,16 @@
   background: rgba(139, 92, 246, 0.15);
 }
 
+/* Desktop-only nav links */
+.desktop-nav-link {
+  display: flex;
+}
+
+/* Mobile-only nav links - hidden on desktop */
+.mobile-only {
+  display: none;
+}
+
 .navbar-actions {
   display: flex;
   align-items: center;
@@ -400,6 +410,11 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+  }
+
+  /* Hide desktop nav links on mobile */
+  .desktop-nav-link {
+    display: none;
   }
 
   /* Mobile notification badge */
