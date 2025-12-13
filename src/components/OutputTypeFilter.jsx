@@ -2,9 +2,9 @@ import './OutputTypeFilter.css';
 
 export default function OutputTypeFilter({ selectedTypes = ['all'], onChange }) {
     const OUTPUT_TYPES = [
-        { value: 'all', label: 'All Types', icon: '🎨' },
-        { value: 'text', label: 'Text', icon: '📝' },
-        { value: 'image', label: 'Image', icon: '🖼️' },
+        { value: 'all', label: 'All Types', icon: '⚡' },
+        { value: 'text', label: 'Text', icon: '📄' },
+        { value: 'image', label: 'Image', icon: '🖼' },
         { value: 'video', label: 'Video', icon: '🎬' },
         { value: 'audio', label: 'Audio', icon: '🎵' },
         { value: 'code', label: 'Code', icon: '💻' }
@@ -39,7 +39,6 @@ export default function OutputTypeFilter({ selectedTypes = ['all'], onChange }) 
                         className={`filter-chip ${isSelected(type.value) ? 'active' : ''}`}
                         onClick={() => handleToggle(type.value)}
                     >
-                        <span className="chip-icon">{type.icon}</span>
                         <span className="chip-label">{type.label}</span>
                     </button>
                 ))}

@@ -43,108 +43,81 @@ export default function PromptCardEnhanced({ prompt, showActions = false, onEdit
     };
 
     const renderMedia = () => {
-        if (prompt.output_image) {
-            return (
-                <div className="prompt-media image-media">
-                    <img
-                        src={prompt.output_image}
-                        alt={prompt.title}
-                        loading="lazy"
-                    />
-                    <div className="media-overlay">
-                        <span className="media-type-badge">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" />
-                            </svg>
-                            Image
-                        </span>
-                    </div>
-                </div>
-            );
-        }
+        // Use fixed placeholder images based on output_type
+        const placeholders = {
+            text: '/api/placeholder-text.png',
+            code: '/api/placeholder-code.png',
+            image: '/api/placeholder-image.png',
+            video: '/api/placeholder-video.png',
+            audio: '/api/placeholder-audio.png'
+        };
 
-        if (prompt.output_video) {
-            return (
-                <div className="prompt-media video-media">
-                    <video
-                        src={prompt.output_video}
-                        poster={prompt.output_image || undefined}
-                        preload="metadata"
-                    />
-                    <div className="media-overlay">
-                        <div className="play-button">
-                            <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M8 5v14l11-7z" />
-                            </svg>
-                        </div>
-                        <span className="media-type-badge">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z" />
-                            </svg>
-                            Video
-                        </span>
-                    </div>
-                </div>
-            );
-        }
+        const outputType = prompt.output_type || 'text';
+        const placeholderImage = placeholders[outputType] || placeholders.text;
 
-        if (prompt.output_audio) {
-            return (
-                <div className="prompt-media audio-media">
-                    <div className="audio-visualizer">
-                        <div className="audio-icon">
-                            <svg width="64" height="64" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
-                            </svg>
-                        </div>
-                        <div className="waveform">
-                            {[...Array(20)].map((_, i) => (
-                                <div
-                                    key={i}
-                                    className="wave-bar"
-                                    style={{ height: `${Math.random() * 100}%` }}
-                                />
-                            ))}
-                        </div>
-                    </div>
-                    <div className="media-overlay">
-                        <span className="media-type-badge">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
-                            </svg>
-                            Audio
-                        </span>
-                    </div>
-                </div>
-            );
-        }
+        // Type-specific badges and overlays
+        const typeConfig = {
+            text: {
+                icon: (
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" />
+                        <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" />
+                    </svg>
+                ),
+                label: 'Text',
+                gradient: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)'
+            },
+            code: {
+                icon: (
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z" />
+                    </svg>
+                ),
+                label: 'Code',
+                gradient: 'linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)'
+            },
+            image: {
+                icon: (
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" />
+                    </svg>
+                ),
+                label: 'Image',
+                gradient: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)'
+            },
+            video: {
+                icon: (
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z" />
+                    </svg>
+                ),
+                label: 'Video',
+                gradient: 'linear-gradient(135deg, #8b5cf6 0%, #ef4444 100%)'
+            },
+            audio: {
+                icon: (
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
+                    </svg>
+                ),
+                label: 'Audio',
+                gradient: 'linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)'
+            }
+        };
 
-        // No media - show gradient background
+        const config = typeConfig[outputType] || typeConfig.text;
+
         return (
-            <div className="prompt-media no-media">
-                <div className="gradient-bg"></div>
-                {prompt.output_type && (
-                    <div className="media-overlay">
-                        <span className="media-type-badge">
-                            {prompt.output_type === 'code' && (
-                                <>
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z" />
-                                    </svg>
-                                    Code
-                                </>
-                            )}
-                            {prompt.output_type === 'text' && (
-                                <>
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" />
-                                    </svg>
-                                    Text
-                                </>
-                            )}
-                        </span>
-                    </div>
-                )}
+            <div className="prompt-media category-media" style={{ background: config.gradient }}>
+                <div className="category-icon-overlay">
+                    {config.icon}
+                </div>
+                <div className="media-overlay">
+                    <span className="media-type-badge">
+                        {config.icon}
+                        {config.label}
+                    </span>
+                </div>
             </div>
         );
     };
