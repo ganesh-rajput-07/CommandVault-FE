@@ -1,10 +1,21 @@
 /* Trending Page - Unique Styles Only */
 /* Base styles inherited from Dashboard.css */
 
+/* Trending Card Wrapper */
+.trending-card-wrapper {
+    position: relative;
+    padding-top: 24px;
+}
+
+.trending-card-wrapper:hover .trending-rank {
+    transform: scale(1.1) rotate(-10deg);
+    border-color: #8b5cf6;
+}
+
 /* Rank Badge */
-.rank-badge {
+.trending-rank {
     position: absolute;
-    top: -15px;
+    top: 8px;
     left: 20px;
     width: 50px;
     height: 50px;
@@ -23,14 +34,8 @@
     transition: all 0.3s ease;
 }
 
-.trending-card:hover .rank-badge {
-    transform: scale(1.1) rotate(-10deg);
-    border-color: #8b5cf6;
-    background: #000;
-}
-
 /* Top 3 Special Styling */
-.rank-1 .rank-badge {
+.trending-card-wrapper:nth-child(1) .trending-rank {
     background: linear-gradient(135deg, #ffd700 0%, #ffa500 100%);
     border: none;
     color: #000;
@@ -40,7 +45,7 @@
     box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
 }
 
-.rank-2 .rank-badge {
+.trending-card-wrapper:nth-child(2) .trending-rank {
     background: linear-gradient(135deg, #e0e0e0 0%, #bdbdbd 100%);
     border: none;
     color: #000;
@@ -48,41 +53,10 @@
     height: 54px;
 }
 
-.rank-3 .rank-badge {
+.trending-card-wrapper:nth-child(3) .trending-rank {
     background: linear-gradient(135deg, #cd7f32 0%, #a0522d 100%);
     border: none;
     color: #fff;
-}
-
-/* Inline Stats (Likes/Views) */
-.rank-stats-inline {
-    display: flex;
-    gap: 16px;
-    margin: 16px 0;
-    padding: 12px;
-    background: rgba(139, 92, 246, 0.05);
-    border-radius: 8px;
-    border: 1px solid rgba(139, 92, 246, 0.1);
-}
-
-.rank-stats-inline .stat {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: #a0a0a0;
-    font-family: 'Inter', sans-serif !important;
-}
-
-.rank-stats-inline .stat .icon {
-    font-size: 1rem;
-}
-
-/* Trending Card Adjustments */
-.trending-card {
-    position: relative;
-    padding-top: 24px;
 }
 
 .trending-prompts-grid {

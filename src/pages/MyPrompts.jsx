@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import api from "../api";
 import Navbar from "../components/Navbar";
 import LoadingSpinner from "../components/LoadingSpinner";
-import { HeartIcon, BookmarkIcon, EyeIcon } from "../components/AnimatedIcons";
+import PromptCardEnhanced from "../components/PromptCardEnhanced";
 import SEO from "../components/SEO";
 import { AuthContext } from "../context/AuthContext";
+import usePrompts from "../hooks/usePrompts";
 import useNotifications from "../hooks/useNotifications";
 import "./Dashboard.css";
 import "./MyPrompts.css";
@@ -13,6 +14,7 @@ import "./MyPrompts.css";
 export default function MyPrompts() {
     const { user } = useContext(AuthContext);
     const { unreadCount } = useNotifications();
+    const { setPrompts: setGlobalPrompts } = usePrompts();
     const navigate = useNavigate();
     const [prompts, setPrompts] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -37,7 +39,9 @@ export default function MyPrompts() {
         setLoading(true);
         try {
             const res = await api.get('prompts/mine/');
-            setPrompts(res.data.results || res.data);
+            const data = res.data.results || res.data;
+            setPrompts(data);
+            setGlobalPrompts(data); // Update global state
         } catch (error) {
             console.error('Error loading my prompts:', error);
         } finally {
@@ -107,12 +111,10 @@ export default function MyPrompts() {
         }
     };
 
-    const handlePromptClick = (promptSlug) => {
-        navigate(`/prompt/${promptSlug}`);
-    };
+    // Removed handlePromptClick - handled by PromptCardEnhanced
 
     const handleEdit = (e, prompt) => {
-        e.stopPropagation();
+        if (e) e.stopPropagation();
         setEditingPrompt(prompt);
         setForm({
             title: prompt.title,
@@ -240,90 +242,13 @@ export default function MyPrompts() {
                         ) : (
                             <div className="prompts-grid">
                                 {prompts.map((prompt) => (
-                                    <div
+                                    <PromptCardEnhanced
                                         key={prompt.id}
-                                        className="prompt-card"
-                                        onClick={() => handlePromptClick(prompt.slug)}
-                                    >
-                                        <div className="card-header">
-                                            <div className="owner-info">
-                                                {user?.avatar ? (
-                                                    <img src={user.avatar} alt={user.username} className="avatar-sm" />
-                                                ) : (
-                                                    <div className="avatar-sm placeholder">
-                                                        {user?.username?.charAt(0).toUpperCase()}
-                                                    </div>
-                                                )}
-                                                <span className="owner-name">{user?.username}</span>
-                                            </div>
-                                            {!prompt.is_public && (
-                                                <span className="private-badge">
-                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                                                        <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z" />
-                                                    </svg>
-                                                    Private
-                                                </span>
-                                            )}
-                                        </div>
-
-                                        <h3 className="card-title">{prompt.title}</h3>
-                                        <p className="card-text">{prompt.text}</p>
-
-                                        {prompt.ai_model && (
-                                            <div className="model-badge">{prompt.ai_model}</div>
-                                        )}
-
-                                        {prompt.tags && prompt.tags.length > 0 && (
-                                            <div className="card-tags">
-                                                {prompt.tags.slice(0, 3).map((tag, i) => (
-                                                    <span key={i} className="tag">{tag}</span>
-                                                ))}
-                                                {prompt.tags.length > 3 && (
-                                                    <span className="tag-more">+{prompt.tags.length - 3}</span>
-                                                )}
-                                            </div>
-                                        )}
-
-                                        <div className="card-stats">
-                                            <span className="stat-item">
-                                                <HeartIcon isLiked={prompt.is_liked_by_user || false} size={20} />
-                                                <span className="stat-count">{prompt.likes_count || 0}</span>
-                                            </span>
-                                            <span className="stat-item">
-                                                <BookmarkIcon isSaved={prompt.is_saved_by_user || false} size={20} />
-                                                <span className="stat-count">{prompt.saves_count || 0}</span>
-                                            </span>
-                                            <span className="stat-item">
-                                                <EyeIcon isViewing={false} size={20} />
-                                                <span className="stat-count">{prompt.usage_count || 0}</span>
-                                            </span>
-                                        </div>
-
-                                        <div className="card-actions">
-                                            <button
-                                                className="action-btn edit-btn"
-                                                onClick={(e) => handleEdit(e, prompt)}
-                                                title="Edit prompt"
-                                            >
-                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                                                </svg>
-                                                Edit
-                                            </button>
-                                            <button
-                                                className="action-btn delete-btn"
-                                                onClick={(e) => handleDelete(e, prompt)}
-                                                title="Delete prompt"
-                                            >
-                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                    <polyline points="3 6 5 6 21 6"></polyline>
-                                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                                                </svg>
-                                                Delete
-                                            </button>
-                                        </div>
-                                    </div>
+                                        prompt={prompt}
+                                        showActions={true}
+                                        onEdit={(p) => handleEdit(null, p)}
+                                        onDelete={(p) => handleDelete(null, p)}
+                                    />
                                 ))}
                             </div>
                         )}

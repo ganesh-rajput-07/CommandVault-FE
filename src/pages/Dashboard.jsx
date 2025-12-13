@@ -3,22 +3,25 @@ import { useNavigate } from "react-router-dom";
 import api from "../api";
 import Navbar from "../components/Navbar";
 import LoadingSpinner from "../components/LoadingSpinner";
-import UserCard from "../components/UserCard";
-import { HeartIcon, BookmarkIcon, EyeIcon } from "../components/AnimatedIcons";
+import PromptCardEnhanced from "../components/PromptCardEnhanced";
+import OutputTypeFilter from "../components/OutputTypeFilter";
 import SEO from "../components/SEO";
 import { AuthContext } from "../context/AuthContext";
+import usePrompts from "../hooks/usePrompts";
 import useNotifications from "../hooks/useNotifications";
 import "./Dashboard.css";
 
 export default function Dashboard({ type = "explore" }) {
   const { user } = useContext(AuthContext);
   const { unreadCount } = useNotifications();
+  const { setPrompts: setGlobalPrompts } = usePrompts();
   const navigate = useNavigate();
   const [prompts, setPrompts] = useState([]);
   const [filteredPrompts, setFilteredPrompts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedModel, setSelectedModel] = useState("all");
+  const [selectedOutputTypes, setSelectedOutputTypes] = useState(["all"]);
   const [sortBy, setSortBy] = useState("recent");
 
   const AI_MODELS = ["all", "ChatGPT", "Claude", "Gemini", "Midjourney", "DALL-E", "Other"];
@@ -46,6 +49,13 @@ export default function Dashboard({ type = "explore" }) {
         params.append('ai_model', selectedModel);
       }
 
+      // Add output type filtering
+      if (!selectedOutputTypes.includes('all') && selectedOutputTypes.length > 0) {
+        selectedOutputTypes.forEach(type => {
+          params.append('output_type', type);
+        });
+      }
+
       const queryString = params.toString();
       const fullEndpoint = queryString ? `${endpoint}?${queryString}` : endpoint;
 
@@ -69,8 +79,14 @@ export default function Dashboard({ type = "explore" }) {
           break;
       }
 
+      // Filter by output type on client side if needed
+      if (!selectedOutputTypes.includes('all') && selectedOutputTypes.length > 0) {
+        data = data.filter(p => selectedOutputTypes.includes(p.output_type));
+      }
+
       setPrompts(data);
       setFilteredPrompts(data);
+      setGlobalPrompts(data); // Update global state
     } catch (error) {
       console.error('Error loading feed:', error);
     } finally {
@@ -85,47 +101,9 @@ export default function Dashboard({ type = "explore" }) {
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [searchQuery, selectedModel, sortBy, type]);
+  }, [searchQuery, selectedModel, selectedOutputTypes, sortBy, type]);
 
-  const handlePromptClick = (promptSlug) => {
-    navigate(`/prompt/${promptSlug}`);
-  };
-
-  const handleLike = async (e, promptId) => {
-    if (e && e.stopPropagation) e.stopPropagation();
-
-    try {
-      await api.post('likes/toggle/', { prompt_id: promptId });
-      const res = await api.get(`prompts/${promptId}/`);
-
-      setPrompts(prevPrompts =>
-        prevPrompts.map(p => p.id === promptId ? res.data : p)
-      );
-      setFilteredPrompts(prevPrompts =>
-        prevPrompts.map(p => p.id === promptId ? res.data : p)
-      );
-    } catch (error) {
-      console.error('Error toggling like:', error);
-    }
-  };
-
-  const handleSave = async (e, promptId) => {
-    if (e && e.stopPropagation) e.stopPropagation();
-
-    try {
-      await api.post('saved/toggle/', { prompt_id: promptId });
-      const res = await api.get(`prompts/${promptId}/`);
-
-      setPrompts(prevPrompts =>
-        prevPrompts.map(p => p.id === promptId ? res.data : p)
-      );
-      setFilteredPrompts(prevPrompts =>
-        prevPrompts.map(p => p.id === promptId ? res.data : p)
-      );
-    } catch (error) {
-      console.error('Error toggling save:', error);
-    }
-  };
+  // Removed handleLike and handleSave - now handled by PromptCardEnhanced via global context
 
   const pageTitle = type === 'trending' ? 'Trending Prompts' : 'Explore Prompts';
 
@@ -204,6 +182,12 @@ export default function Dashboard({ type = "explore" }) {
               </div>
             </div>
 
+            {/* Output Type Filter */}
+            <OutputTypeFilter
+              selectedTypes={selectedOutputTypes}
+              onChange={setSelectedOutputTypes}
+            />
+
             {/* Sort Dropdown */}
             <div className="sort-group">
               <span className="filter-label">Sort by:</span>
@@ -242,6 +226,7 @@ export default function Dashboard({ type = "explore" }) {
                     <button className="btn-clear-filters" onClick={() => {
                       setSearchQuery("");
                       setSelectedModel("all");
+                      setSelectedOutputTypes(["all"]);
                     }}>
                       Clear Filters
                     </button>
@@ -255,55 +240,11 @@ export default function Dashboard({ type = "explore" }) {
               </div>
             ) : (
               filteredPrompts.map((prompt) => (
-                <div
+                <PromptCardEnhanced
                   key={prompt.id}
-                  className="prompt-card"
-                  onClick={() => handlePromptClick(prompt.slug)}
-                >
-                  <div className="card-header">
-                    {prompt.owner && (
-                      <UserCard
-                        user={prompt.owner}
-                        showFollowButton={true}
-                        size="small"
-                      />
-                    )}
-                    {!prompt.is_public && <span className="private-badge">🔒</span>}
-                  </div>
-
-                  <h3 className="card-title">{prompt.title}</h3>
-                  <p className="card-text">{prompt.text}</p>
-
-                  {prompt.ai_model && (
-                    <div className="model-badge">{prompt.ai_model}</div>
-                  )}
-
-                  {prompt.tags && prompt.tags.length > 0 && (
-                    <div className="card-tags">
-                      {prompt.tags.slice(0, 3).map((tag, i) => (
-                        <span key={i} className="tag">{tag}</span>
-                      ))}
-                      {prompt.tags.length > 3 && (
-                        <span className="tag-more">+{prompt.tags.length - 3}</span>
-                      )}
-                    </div>
-                  )}
-
-                  <div className="card-stats">
-                    <span className="stat-item" onClick={(e) => handleLike(e, prompt.id)}>
-                      <HeartIcon isLiked={prompt.is_liked_by_user || false} size={20} />
-                      <span className="stat-count">{prompt.likes_count || 0}</span>
-                    </span>
-                    <span className="stat-item" onClick={(e) => handleSave(e, prompt.id)}>
-                      <BookmarkIcon isSaved={prompt.is_saved_by_user || false} size={20} />
-                      <span className="stat-count">{prompt.saves_count || 0}</span>
-                    </span>
-                    <span className="stat-item">
-                      <EyeIcon isViewing={prompt.is_viewed_by_user || false} size={20} />
-                      <span className="stat-count">{prompt.usage_count || 0}</span>
-                    </span>
-                  </div>
-                </div>
+                  prompt={prompt}
+                  showActions={false}
+                />
               ))
             )}
           </div>

@@ -3,28 +3,55 @@ import api from '../api';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import LoadingSpinner from '../components/LoadingSpinner';
-import { HeartIcon, BookmarkIcon, EyeIcon } from '../components/AnimatedIcons';
+import PromptCardEnhanced from '../components/PromptCardEnhanced';
+import OutputTypeFilter from '../components/OutputTypeFilter';
 import SEO from '../components/SEO';
+import usePrompts from '../hooks/usePrompts';
 import useNotifications from '../hooks/useNotifications';
 import './Dashboard.css';
 import './Trending.css';
 
 const Trending = () => {
     const { unreadCount } = useNotifications();
+    const { setPrompts: setGlobalPrompts } = usePrompts();
     const navigate = useNavigate();
     const [prompts, setPrompts] = useState([]);
+    const [filteredPrompts, setFilteredPrompts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [selectedOutputTypes, setSelectedOutputTypes] = useState(['all']);
+    const [selectedModel, setSelectedModel] = useState('all');
+
+    const AI_MODELS = ['all', 'ChatGPT', 'Claude', 'Gemini', 'Midjourney', 'DALL-E', 'Other'];
 
     useEffect(() => {
         fetchTrendingPrompts();
-    }, []);
+    }, [selectedModel, selectedOutputTypes]);
 
     const fetchTrendingPrompts = async () => {
         try {
             setLoading(true);
-            const res = await api.get('prompts/trending/');
-            const data = res.data.results || res.data;
+
+            // Build query parameters
+            const params = new URLSearchParams();
+
+            if (selectedModel !== 'all') {
+                params.append('ai_model', selectedModel);
+            }
+
+            const queryString = params.toString();
+            const endpoint = queryString ? `prompts/trending/?${queryString}` : 'prompts/trending/';
+
+            const res = await api.get(endpoint);
+            let data = res.data.results || res.data;
+
+            // Filter by output type on client side
+            if (!selectedOutputTypes.includes('all') && selectedOutputTypes.length > 0) {
+                data = data.filter(p => selectedOutputTypes.includes(p.output_type));
+            }
+
             setPrompts(data);
+            setFilteredPrompts(data);
+            setGlobalPrompts(data); // Update global state
         } catch (error) {
             console.error('Error fetching trending prompts:', error);
         } finally {
@@ -32,9 +59,7 @@ const Trending = () => {
         }
     };
 
-    const handlePromptClick = (promptSlug) => {
-        navigate(`/prompt/${promptSlug}`);
-    };
+    // Removed handlePromptClick - handled by PromptCardEnhanced
 
     return (
         <>
@@ -63,12 +88,39 @@ const Trending = () => {
                     </div>
                 </div>
 
+                {/* Filters Section */}
+                <div className="filters-section">
+                    <div className="filters-container">
+                        {/* AI Model Filters */}
+                        <div className="filter-group">
+                            <span className="filter-label">AI Model:</span>
+                            <div className="filter-chips">
+                                {AI_MODELS.map(model => (
+                                    <button
+                                        key={model}
+                                        className={`filter-chip ${selectedModel === model ? 'active' : ''}`}
+                                        onClick={() => setSelectedModel(model)}
+                                    >
+                                        {model === 'all' ? 'All Models' : model}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Output Type Filter */}
+                        <OutputTypeFilter
+                            selectedTypes={selectedOutputTypes}
+                            onChange={setSelectedOutputTypes}
+                        />
+                    </div>
+                </div>
+
                 {/* Content Section */}
                 {loading ? (
                     <div className="loading-container">
                         <LoadingSpinner />
                     </div>
-                ) : prompts.length === 0 ? (
+                ) : filteredPrompts.length === 0 ? (
                     <div className="empty-state">
                         <svg className="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                             <path d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -81,76 +133,13 @@ const Trending = () => {
                     </div>
                 ) : (
                     <div className="prompts-grid trending-prompts-grid">
-                        {prompts.map((prompt, index) => (
-                            <div
-                                key={prompt.id}
-                                className={`prompt-card trending-card rank-${index + 1}`}
-                                onClick={() => handlePromptClick(prompt.slug)}
-                            >
-                                <div className="rank-badge">#{index + 1}</div>
-
-                                <div className="card-header">
-                                    <div className="owner-info">
-                                        {prompt.owner_avatar ? (
-                                            <img src={prompt.owner_avatar} alt={prompt.owner_username} className="avatar-sm" />
-                                        ) : (
-                                            <div className="avatar-sm placeholder">
-                                                {prompt.owner_username?.charAt(0).toUpperCase()}
-                                            </div>
-                                        )}
-                                        <span className="owner-name">{prompt.owner_username}</span>
-                                    </div>
-                                    {!prompt.is_public && (
-                                        <span className="private-badge">
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                                                <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z" />
-                                            </svg>
-                                            Private
-                                        </span>
-                                    )}
-                                </div>
-
-                                <h3 className="card-title">{prompt.title}</h3>
-                                <p className="card-text">{prompt.text}</p>
-
-                                {prompt.ai_model && (
-                                    <div className="model-badge">{prompt.ai_model}</div>
-                                )}
-
-                                {prompt.tags && prompt.tags.length > 0 && (
-                                    <div className="card-tags">
-                                        {prompt.tags.slice(0, 3).map((tag, i) => (
-                                            <span key={i} className="tag">{tag}</span>
-                                        ))}
-                                        {prompt.tags.length > 3 && (
-                                            <span className="tag-more">+{prompt.tags.length - 3}</span>
-                                        )}
-                                    </div>
-                                )}
-
-                                <div className="rank-stats-inline">
-                                    <span className="stat">
-                                        <span className="icon">🔥</span> {prompt.like_count || 0}
-                                    </span>
-                                    <span className="stat">
-                                        <span className="icon">👁️</span> {prompt.times_used || 0}
-                                    </span>
-                                </div>
-
-                                <div className="card-stats">
-                                    <span className="stat-item">
-                                        <HeartIcon isLiked={prompt.is_liked_by_user || false} size={20} />
-                                        <span className="stat-count">{prompt.like_count || 0}</span>
-                                    </span>
-                                    <span className="stat-item">
-                                        <BookmarkIcon isSaved={prompt.is_saved_by_user || false} size={20} />
-                                        <span className="stat-count">{prompt.saves_count || 0}</span>
-                                    </span>
-                                    <span className="stat-item">
-                                        <EyeIcon isViewing={false} size={20} />
-                                        <span className="stat-count">{prompt.usage_count || 0}</span>
-                                    </span>
-                                </div>
+                        {filteredPrompts.map((prompt, index) => (
+                            <div key={prompt.id} className="trending-card-wrapper" style={{ position: 'relative' }}>
+                                <div className="rank-badge trending-rank">#{index + 1}</div>
+                                <PromptCardEnhanced
+                                    prompt={prompt}
+                                    showActions={false}
+                                />
                             </div>
                         ))}
                     </div>
