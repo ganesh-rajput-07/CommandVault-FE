@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import api from '../api';
 
 export default function useNotifications() {
@@ -6,7 +6,7 @@ export default function useNotifications() {
     const [unreadCount, setUnreadCount] = useState(0);
     const [loading, setLoading] = useState(false);
 
-    const fetchNotifications = async () => {
+    const fetchNotifications = useCallback(async () => {
         try {
             setLoading(true);
             const res = await api.get('notifications/');
@@ -16,16 +16,16 @@ export default function useNotifications() {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
-    const fetchUnreadCount = async () => {
+    const fetchUnreadCount = useCallback(async () => {
         try {
             const res = await api.get('notifications/unread_count/');
             setUnreadCount(res.data.unread_count);
         } catch (error) {
             console.error('Error fetching unread count:', error);
         }
-    };
+    }, []);
 
     const markAsRead = async (id) => {
         try {
@@ -49,10 +49,32 @@ export default function useNotifications() {
         }
     };
 
+    const deleteNotification = async (id) => {
+        try {
+            await api.delete(`notifications/${id}/`);
+            setNotifications(prev => prev.filter(n => n.id !== id));
+            // Update unread count if the deleted notification was unread
+            const notification = notifications.find(n => n.id === id);
+            if (notification && !notification.is_read) {
+                setUnreadCount(prev => Math.max(0, prev - 1));
+            }
+        } catch (error) {
+            console.error('Error deleting notification:', error);
+        }
+    };
+
     useEffect(() => {
         fetchNotifications();
         fetchUnreadCount();
-    }, []);
+
+        // Auto-refresh every 30 seconds
+        const interval = setInterval(() => {
+            fetchNotifications();
+            fetchUnreadCount();
+        }, 30000);
+
+        return () => clearInterval(interval);
+    }, [fetchNotifications, fetchUnreadCount]);
 
     return {
         notifications,
@@ -60,6 +82,7 @@ export default function useNotifications() {
         loading,
         fetchNotifications,
         markAsRead,
-        markAllAsRead
+        markAllAsRead,
+        deleteNotification
     };
 }
