@@ -4,133 +4,158 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  padding: 12px;
+  /* Increased hit-area for mobile */
+  margin: -12px;
+  /* Pull back to maintain layout */
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  touch-action: manipulation;
+  color: #888888;
+}
+
+.icon-wrapper:active {
+  transform: scale(0.9);
 }
 
 .icon-wrapper:hover {
-  transform: scale(1.1);
+  color: #ffffff;
 }
 
 /* ===== HEART ICON ===== */
 .heart-icon {
-  color: #666666;
-  transition: all 0.3s ease;
+  color: inherit;
+  transition: color 0.2s ease;
+  z-index: 2;
 }
 
 .heart-icon.liked {
   color: #ef4444;
 }
 
-.heart-outline {
-  transition: all 0.3s ease;
+.heart-icon.animating {
+  animation: heartPop 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.heart-fill {
-  animation: fillHeart 0.6s ease-out;
-  transform-origin: center;
-}
-
-@keyframes fillHeart {
+@keyframes heartPop {
   0% {
-    clip-path: inset(100% 0 0 0);
-    transform: scale(0.8);
+    transform: scale(1);
   }
+
+  25% {
+    transform: scale(1.4);
+  }
+
   50% {
-    clip-path: inset(50% 0 0 0);
+    transform: scale(0.9);
+  }
+
+  75% {
     transform: scale(1.1);
   }
+
   100% {
-    clip-path: inset(0 0 0 0);
     transform: scale(1);
   }
 }
 
-.heart-icon.breaking .heart-fill {
-  animation: breakHeart 0.6s ease-out;
+/* Burst Particles */
+.heart-burst {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+  z-index: 1;
 }
 
-.heart-icon.breaking .heart-outline {
-  animation: shakeHeart 0.6s ease-out;
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #ef4444;
+  opacity: 0;
 }
 
-@keyframes breakHeart {
+.heart-burst.bursting .particle {
+  animation: particleOut 0.5s ease-out forwards;
+}
+
+@keyframes particleOut {
   0% {
+    transform: translate(-50%, -50%) scale(0);
     opacity: 1;
-    transform: scale(1);
   }
-  50% {
-    opacity: 0.5;
-    transform: scale(1.2);
-  }
+
   100% {
+    transform: translate(var(--tx), var(--ty)) scale(1);
     opacity: 0;
-    transform: scale(0.8) translateY(-10px);
   }
 }
 
-@keyframes shakeHeart {
-  0%, 100% {
-    transform: translateX(0);
-  }
-  25% {
-    transform: translateX(-2px);
-  }
-  75% {
-    transform: translateX(2px);
-  }
+.p1 {
+  --tx: -20px;
+  --ty: -20px;
+}
+
+.p2 {
+  --tx: 20px;
+  --ty: -20px;
+}
+
+.p3 {
+  --tx: -25px;
+  --ty: 0px;
+}
+
+.p4 {
+  --tx: 25px;
+  --ty: 0px;
+}
+
+.p5 {
+  --tx: -20px;
+  --ty: 20px;
+}
+
+.p6 {
+  --tx: 20px;
+  --ty: 20px;
 }
 
 /* ===== BOOKMARK ICON ===== */
 .bookmark-icon {
-  color: #666666;
-  transition: all 0.3s ease;
+  color: inherit;
+  transition: color 0.2s ease;
 }
 
 .bookmark-icon.saved {
   color: #8b5cf6;
 }
 
-.bookmark-outline {
-  transition: all 0.3s ease;
+.bookmark-icon.animating {
+  animation: bookmarkPop 0.4s ease-out;
 }
 
-.bookmark-icon.animating .bookmark-outline {
-  animation: bookmarkSave 0.8s ease-out;
-}
-
-@keyframes bookmarkSave {
+@keyframes bookmarkPop {
   0% {
     transform: scale(1);
   }
-  25% {
-    transform: scale(1.1) rotate(-5deg);
+
+  30% {
+    transform: scale(1.3);
   }
-  50% {
-    transform: scale(0.95) rotate(5deg);
-  }
-  75% {
-    transform: scale(1.05) rotate(-2deg);
-  }
+
   100% {
-    transform: scale(1) rotate(0deg);
-  }
-}
-
-.pencil-line {
-  stroke-dasharray: 20;
-  stroke-dashoffset: 20;
-  animation: drawLine 0.6s ease-out forwards;
-}
-
-@keyframes drawLine {
-  to {
-    stroke-dashoffset: 0;
+    transform: scale(1);
   }
 }
 
 /* ===== EYE ICON ===== */
 .eye-icon {
-  color: #666666;
+  color: inherit;
   transition: all 0.3s ease;
 }
 
@@ -155,18 +180,24 @@
 }
 
 @keyframes blink {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: scaleY(1);
   }
+
   50% {
     transform: scaleY(0.1);
   }
 }
 
 @keyframes blinkPupil {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0;
   }
@@ -178,23 +209,13 @@
 }
 
 @keyframes closeEyelid {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: scaleY(0);
   }
+
   50% {
     transform: scaleY(1);
   }
-}
-
-/* ===== HOVER EFFECTS ===== */
-.icon-wrapper:hover .heart-icon:not(.liked) {
-  color: #fca5a5;
-}
-
-.icon-wrapper:hover .bookmark-icon:not(.saved) {
-  color: #a78bfa;
-}
-
-.icon-wrapper:hover .eye-icon {
-  color: #a0a0a0;
 }

@@ -9,12 +9,14 @@
 
 .auth-card {
   width: 100%;
-  max-width: 460px;
-  background: #1f1f1f;
-  border: none;
-  border-radius: 16px;
+  max-width: 480px;
+  background: rgba(31, 31, 31, 0.7);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 28px;
   padding: 48px;
-  animation: scaleIn 0.4s ease-out;
+  animation: scaleIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
 }
 
 .auth-header {
@@ -45,36 +47,49 @@
   flex-direction: column;
   gap: 18px;
   margin-bottom: 28px;
+  width: 100%;
+  align-items: stretch;
+}
+
+.auth-form>div {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .auth-form input {
-  font-family: 'Inter', sans-serif;
-  background: #2a2a2a;
-  border: none;
+  font-family: 'Inter', sans-serif !important;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
   color: #ffffff;
-  padding: 14px 16px;
-  border-radius: 8px;
-  font-size: 15px;
+  padding: 16px 20px;
+  border-radius: 14px;
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
 }
 
 .auth-form input:focus {
-  background: #333333;
-  outline: 2px solid #8b5cf6;
-  outline-offset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  border-color: #8b5cf6;
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15);
 }
 
 .auth-form button[type="submit"] {
-  font-family: 'Inter', sans-serif;
-  background: #8b5cf6;
+  font-family: 'Space Grotesk', sans-serif !important;
+  background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
   color: #ffffff;
   border: none;
-  padding: 14px;
-  border-radius: 8px;
-  font-size: 15px;
-  font-weight: 600;
+  padding: 16px;
+  border-radius: 14px;
+  font-size: 1.125rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s ease;
-  margin-top: 8px;
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  margin-top: 12px;
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.3);
 }
 
 .auth-form button[type="submit"]:hover {
@@ -164,10 +179,17 @@
 
 @media (max-width: 480px) {
   .auth-card {
-    padding: 36px 28px;
+    padding: 40px 24px;
+    border-radius: 24px;
   }
 
   .auth-header h1 {
     font-size: 1.75rem;
+  }
+
+  .auth-form input,
+  .auth-form button[type="submit"] {
+    padding: 14px 18px;
+    font-size: 0.9375rem;
   }
 }

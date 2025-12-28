@@ -40,7 +40,9 @@
 }
 
 /* ===== BUTTONS ===== */
-.btn-primary, .btn-secondary, .btn-large {
+.btn-primary,
+.btn-secondary,
+.btn-large {
   padding: 12px 24px;
   border-radius: 8px;
   text-decoration: none;
@@ -118,8 +120,16 @@
 }
 
 @keyframes blink {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0; }
+
+  0%,
+  50% {
+    opacity: 1;
+  }
+
+  51%,
+  100% {
+    opacity: 0;
+  }
 }
 
 .hero-actions {
@@ -297,6 +307,11 @@
     font-size: 1.25rem;
   }
 
+  /* Hide nav buttons on mobile - they duplicate hero buttons */
+  .nav-actions {
+    display: none;
+  }
+
   .hero-section {
     padding: 60px 20px 40px;
   }
@@ -322,6 +337,14 @@
 
   .hero-description {
     font-size: 1rem;
+  }
+
+  .nav-content {
+    padding: 0 16px;
+  }
+
+  .nav-content h1 {
+    font-size: 1.1rem;
   }
 
   .btn-large {

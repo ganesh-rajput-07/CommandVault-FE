@@ -32,7 +32,7 @@
 }
 
 .hero-title {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Space Grotesk', sans-serif !important;
   font-size: clamp(2.5rem, 5vw, 4rem);
   font-weight: 800;
   color: #ffffff;
@@ -668,116 +668,77 @@
 /* Mobile (480px and below) */
 @media (max-width: 480px) {
   .dashboard-hero {
-    padding: 40px 16px 32px;
+    padding: 60px 16px 32px;
   }
 
   .hero-title {
-    font-size: 2rem;
+    font-size: 2.25rem;
     line-height: 1.1;
+    margin-bottom: 20px;
   }
 
   .hero-subtitle {
-    font-size: 1rem;
+    font-size: 1.1rem;
+    margin-bottom: 32px;
   }
 
   .search-bar {
-    padding: 12px 16px;
-    border-radius: 12px;
+    padding: 14px 20px;
+    border-radius: 16px;
+    margin-bottom: 40px;
   }
 
-  .search-input {
-    font-size: 14px;
-  }
-
-  .search-input::placeholder {
-    font-size: 13px;
+  .btn-create {
+    width: 100%;
+    justify-content: center;
+    padding: 16px;
+    font-size: 1.1rem;
   }
 
   .hero-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
     gap: 16px;
+    padding: 0 16px;
   }
 
   .hero-stats .stat-item {
-    min-width: 100px;
-  }
-
-  .hero-stats .stat-value {
-    font-size: 1.75rem;
-  }
-
-  .hero-stats .stat-label {
-    font-size: 0.75rem;
+    min-width: 0;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 16px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
   }
 
   .filters-container {
-    padding: 12px;
+    padding: 20px 16px;
+    gap: 24px;
+    border-radius: 20px;
+  }
+
+  .filter-group {
     gap: 16px;
   }
 
-  .filter-label {
-    font-size: 13px;
+  .filter-chips {
+    gap: 10px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .filter-chip {
-    font-size: 12px;
-    padding: 8px 16px;
-  }
-
-  .sort-select {
-    font-size: 0.875rem;
     padding: 12px;
+    justify-content: center;
+    font-size: 14px;
   }
 
   .prompts-grid {
-    gap: 16px;
     padding: 0 12px;
+    gap: 20px;
   }
 
   .prompt-card {
-    padding: 16px;
-  }
-
-  .card-title {
-    font-size: 1.125rem;
-  }
-
-  .card-text {
-    font-size: 0.9375rem;
-    line-height: 1.5;
-  }
-
-  .card-stats {
-    gap: 12px;
-  }
-
-  .stat-item {
-    font-size: 0.875rem;
-  }
-
-  .empty-state {
-    padding: 80px 16px;
-  }
-
-  .empty-state h3 {
-    font-size: 1.5rem;
-  }
-
-  .empty-state p {
-    font-size: 1rem;
-  }
-
-  .modal-header h2 {
-    font-size: 1.25rem;
-  }
-
-  .form-group label {
-    font-size: 0.8125rem;
-  }
-
-  .form-group input,
-  .form-group textarea {
-    font-size: 0.9375rem;
-    padding: 12px 14px;
+    border-radius: 24px;
   }
 }
 
@@ -809,16 +770,36 @@
 }
 
 .modal-content {
-  background: linear-gradient(180deg, #1a1a1a 0%, #151515 100%);
-  border: 1px solid rgba(139, 92, 246, 0.2);
-  border-radius: 24px;
-  max-width: 600px;
-  width: 100%;
-  max-height: 90vh;
+  background: linear-gradient(180deg, #121212 0%, #0a0a0a 100%);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 28px;
+  max-width: 800px;
+  width: 95%;
+  max-height: 85vh;
   overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5),
-    0 0 0 1px rgba(139, 92, 246, 0.1);
-  animation: slideUp 0.3s ease;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.8),
+    0 0 0 1px rgba(139, 92, 246, 0.2);
+  animation: slideUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  position: relative;
+}
+
+/* Custom Scrollbar for Modal content */
+.modal-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+  background: rgba(10, 10, 10, 0.5);
+  border-radius: 10px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #8b5cf6, #ec4899);
+  border-radius: 10px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #7c3aed, #db2777);
 }
 
 @keyframes slideUp {
@@ -846,7 +827,7 @@
   font-weight: 700;
   color: #ffffff;
   margin: 0;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Space Grotesk', sans-serif !important;
 }
 
 .modal-close {
@@ -868,7 +849,7 @@
 }
 
 .modal-form {
-  padding: 32px;
+  padding: 40px;
 }
 
 .form-group {
@@ -894,7 +875,7 @@
   padding: 14px 16px;
   color: #ffffff;
   font-size: 1rem;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif !important;
   transition: all 0.3s ease;
   resize: vertical;
 }
@@ -1029,7 +1010,7 @@
   padding: 14px 16px;
   color: #ffffff;
   font-size: 1rem;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif !important;
   cursor: pointer;
   transition: all 0.3s ease;
 }

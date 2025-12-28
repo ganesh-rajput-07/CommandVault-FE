@@ -1,5 +1,13 @@
 // Comprehensive AI Models Database
 export const AI_MODELS = [
+    {
+        id: 'universal',
+        name: 'Universal',
+        category: 'All',
+        provider: 'Multi-Model',
+        description: 'Works with all AI models and tools',
+        popular: true
+    },
     // Text Models
     {
         id: 'chatgpt-4',

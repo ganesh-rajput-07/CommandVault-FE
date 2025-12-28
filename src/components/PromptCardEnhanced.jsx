@@ -2,20 +2,38 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { HeartIcon, BookmarkIcon, EyeIcon } from './AnimatedIcons';
 import UserCard from './UserCard';
+import MediaViewer from './MediaViewer';
 import usePrompts from '../hooks/usePrompts';
 import './PromptCardEnhanced.css';
 
-export default function PromptCardEnhanced({ prompt, showActions = false, onEdit, onDelete }) {
+export default function PromptCardEnhanced({ prompt: initialPrompt, showActions = false, onEdit, onDelete }) {
     const navigate = useNavigate();
-    const { toggleLike, toggleSave } = usePrompts();
+    const { toggleLike, toggleSave, prompts } = usePrompts();
     const [isProcessing, setIsProcessing] = useState(false);
+    const [lastTap, setLastTap] = useState(0);
+    const [showLargeHeart, setShowLargeHeart] = useState(false);
+    const [showViewer, setShowViewer] = useState(false);
+
+    // Get the most up-to-date version of this prompt from global state
+    const prompt = prompts.find(p => p.id === initialPrompt.id) || initialPrompt;
 
     const handlePromptClick = () => {
         navigate(`/prompt/${prompt.slug}`);
     };
 
+    const handleDoubleTap = () => {
+        if (!prompt.is_liked_by_user) {
+            toggleLike(prompt.id);
+            setShowLargeHeart(true);
+            setTimeout(() => setShowLargeHeart(false), 1000);
+        }
+    };
+
     const handleLike = async (e) => {
-        e.stopPropagation();
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
         if (isProcessing) return;
 
         setIsProcessing(true);
@@ -29,7 +47,10 @@ export default function PromptCardEnhanced({ prompt, showActions = false, onEdit
     };
 
     const handleSave = async (e) => {
-        e.stopPropagation();
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
         if (isProcessing) return;
 
         setIsProcessing(true);
@@ -43,80 +64,79 @@ export default function PromptCardEnhanced({ prompt, showActions = false, onEdit
     };
 
     const renderMedia = () => {
-        // Use fixed placeholder images based on output_type
-        const placeholders = {
-            text: '/api/placeholder-text.png',
-            code: '/api/placeholder-code.png',
-            image: '/api/placeholder-image.png',
-            video: '/api/placeholder-video.png',
-            audio: '/api/placeholder-audio.png'
-        };
-
         const outputType = prompt.output_type || 'text';
-        const placeholderImage = placeholders[outputType] || placeholders.text;
+        const config = {
+            text: { icon: '📄', label: 'Text', gradient: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)' },
+            code: { icon: '💻', label: 'Code', gradient: 'linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)' },
+            image: { icon: '🖼️', label: 'Image', gradient: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)' },
+            video: { icon: '🎥', label: 'Video', gradient: 'linear-gradient(135deg, #8b5cf6 0%, #ef4444 100%)' },
+            audio: { icon: '🎵', label: 'Audio', gradient: 'linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)' }
+        }[outputType] || { icon: '📄', label: 'Text', gradient: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)' };
 
-        // Type-specific badges and overlays
-        const typeConfig = {
-            text: {
-                icon: (
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" />
-                        <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" />
-                    </svg>
-                ),
-                label: 'Text',
-                gradient: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)'
-            },
-            code: {
-                icon: (
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z" />
-                    </svg>
-                ),
-                label: 'Code',
-                gradient: 'linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)'
-            },
-            image: {
-                icon: (
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" />
-                    </svg>
-                ),
-                label: 'Image',
-                gradient: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)'
-            },
-            video: {
-                icon: (
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z" />
-                    </svg>
-                ),
-                label: 'Video',
-                gradient: 'linear-gradient(135deg, #8b5cf6 0%, #ef4444 100%)'
-            },
-            audio: {
-                icon: (
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
-                    </svg>
-                ),
-                label: 'Audio',
-                gradient: 'linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)'
+        const hasActualMedia = prompt.output_image || prompt.output_video;
+        const hasTextOutput = prompt.example_output && (outputType === 'code' || outputType === 'text');
+        const canViewDetail = hasActualMedia || hasTextOutput;
+
+        const handleMediaClick = (e) => {
+            e.stopPropagation();
+            const now = Date.now();
+            const DOUBLE_TAP_DELAY = 300;
+
+            if (now - lastTap < DOUBLE_TAP_DELAY) {
+                // Double tap detected
+                handleDoubleTap();
+            } else {
+                // If single tap and has viewable content, show viewer
+                if (canViewDetail) {
+                    setShowViewer(true);
+                }
             }
+            setLastTap(now);
         };
-
-        const config = typeConfig[outputType] || typeConfig.text;
 
         return (
-            <div className="prompt-media category-media" style={{ background: config.gradient }}>
-                <div className="category-icon-overlay">
-                    {config.icon}
-                </div>
+            <div
+                className={`prompt-media ${hasActualMedia ? 'actual-media' : 'category-media'}`}
+                style={!hasActualMedia ? { background: config.gradient } : {}}
+                onClick={handleMediaClick}
+            >
+                {prompt.output_image && (
+                    <img src={prompt.output_image} alt={prompt.title} className="media-preview" />
+                )}
+                {prompt.output_video && !prompt.output_image && (
+                    <video
+                        src={prompt.output_video}
+                        className="media-preview"
+                        muted
+                        loop
+                        playsInline
+                        onMouseOver={e => e.target.play()}
+                        onMouseOut={e => e.target.pause()}
+                    />
+                )}
+
+                {!hasActualMedia && (
+                    <div className="category-icon-overlay">
+                        {config.icon}
+                    </div>
+                )}
+
+                {showLargeHeart && (
+                    <div className="large-heart-overlay">
+                        <HeartIcon isLiked={true} size={80} />
+                    </div>
+                )}
                 <div className="media-overlay">
                     <span className="media-type-badge">
-                        {config.icon}
-                        {config.label}
+                        {config.icon} {config.label}
                     </span>
+                    {canViewDetail && (
+                        <div className="view-indicator">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+                            </svg>
+                        </div>
+                    )}
                 </div>
             </div>
         );
@@ -140,9 +160,6 @@ export default function PromptCardEnhanced({ prompt, showActions = false, onEdit
                     )}
                     {!prompt.is_public && (
                         <span className="private-badge">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z" />
-                            </svg>
                             Private
                         </span>
                     )}
@@ -156,7 +173,9 @@ export default function PromptCardEnhanced({ prompt, showActions = false, onEdit
 
                 {/* AI Model Badge */}
                 {prompt.ai_model && (
-                    <div className="model-badge">{prompt.ai_model}</div>
+                    <div className="model-badge">
+                        {Array.isArray(prompt.ai_model) ? prompt.ai_model.join(', ') : prompt.ai_model}
+                    </div>
                 )}
 
                 {/* Tags */}
@@ -171,26 +190,27 @@ export default function PromptCardEnhanced({ prompt, showActions = false, onEdit
                     </div>
                 )}
 
-                {/* Stats */}
                 <div className="card-stats">
-                    <span
-                        className={`stat-item ${isProcessing ? 'processing' : ''}`}
-                        onClick={handleLike}
-                    >
-                        <HeartIcon isLiked={prompt.is_liked_by_user || false} size={20} />
+                    <div className={`stat-item heart-btn ${isProcessing ? 'processing' : ''}`}>
+                        <HeartIcon
+                            isLiked={prompt.is_liked_by_user || false}
+                            onClick={handleLike}
+                            size={22}
+                        />
                         <span className="stat-count">{prompt.likes_count || 0}</span>
-                    </span>
-                    <span
-                        className={`stat-item ${isProcessing ? 'processing' : ''}`}
-                        onClick={handleSave}
-                    >
-                        <BookmarkIcon isSaved={prompt.is_saved_by_user || false} size={20} />
+                    </div>
+                    <div className={`stat-item bookmark-btn ${isProcessing ? 'processing' : ''}`}>
+                        <BookmarkIcon
+                            isSaved={prompt.is_saved_by_user || false}
+                            onClick={handleSave}
+                            size={22}
+                        />
                         <span className="stat-count">{prompt.saves_count || 0}</span>
-                    </span>
-                    <span className="stat-item">
-                        <EyeIcon isViewing={prompt.is_viewed_by_user || false} size={20} />
+                    </div>
+                    <div className="stat-item eye-btn">
+                        <EyeIcon isViewing={prompt.is_viewed_by_user || false} size={22} />
                         <span className="stat-count">{prompt.usage_count || 0}</span>
-                    </span>
+                    </div>
                 </div>
 
                 {/* Action Buttons (for MyPrompts page) */}
@@ -227,6 +247,17 @@ export default function PromptCardEnhanced({ prompt, showActions = false, onEdit
                     </div>
                 )}
             </div>
+
+            {/* Fullscreen Media Viewer */}
+            {showViewer && (
+                <MediaViewer
+                    media={prompt.output_image || prompt.output_video}
+                    type={prompt.output_type}
+                    title={prompt.title}
+                    text={prompt.example_output}
+                    onClose={() => setShowViewer(false)}
+                />
+            )}
         </div>
     );
 }

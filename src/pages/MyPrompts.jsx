@@ -22,7 +22,7 @@ export default function MyPrompts() {
     const [form, setForm] = useState({
         title: "",
         text: "",
-        ai_model: "",
+        ai_model: [], // Changed to array
         example_output: "",
         tags: "",
         is_public: true,
@@ -34,6 +34,7 @@ export default function MyPrompts() {
     const [editingPrompt, setEditingPrompt] = useState(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [promptToDelete, setPromptToDelete] = useState(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const loadMyPrompts = async () => {
         setLoading(true);
@@ -60,7 +61,7 @@ export default function MyPrompts() {
             // Add text fields
             formData.append('title', form.title);
             formData.append('text', form.text);
-            formData.append('ai_model', form.ai_model);
+            formData.append('ai_model', JSON.stringify(form.ai_model));
             formData.append('example_output', form.example_output);
             formData.append('tags', JSON.stringify(tagsArray));
             formData.append('is_public', form.is_public);
@@ -82,7 +83,7 @@ export default function MyPrompts() {
                 },
             });
 
-            setForm({ title: "", text: "", ai_model: "", example_output: "", tags: "", is_public: true, output_type: "text" });
+            setForm({ title: "", text: "", ai_model: [], example_output: "", tags: "", is_public: true, output_type: "text" });
             setOutputFile(null);
             setFilePreview(null);
             setShowCreateModal(false);
@@ -114,12 +115,12 @@ export default function MyPrompts() {
     // Removed handlePromptClick - handled by PromptCardEnhanced
 
     const handleEdit = (e, prompt) => {
-        if (e) e.stopPropagation();
+        if (e && e.stopPropagation) e.stopPropagation();
         setEditingPrompt(prompt);
         setForm({
             title: prompt.title,
             text: prompt.text,
-            ai_model: prompt.ai_model || '',
+            ai_model: Array.isArray(prompt.ai_model) ? prompt.ai_model : (prompt.ai_model ? [prompt.ai_model] : []),
             example_output: prompt.example_output || '',
             tags: Array.isArray(prompt.tags) ? prompt.tags.join(', ') : '',
             is_public: prompt.is_public,
@@ -129,22 +130,26 @@ export default function MyPrompts() {
     };
 
     const handleDelete = (e, prompt) => {
-        e.stopPropagation();
+        if (e && e.stopPropagation) e.stopPropagation();
         setPromptToDelete(prompt);
         setShowDeleteModal(true);
     };
 
     const confirmDelete = async () => {
-        if (!promptToDelete) return;
+        if (!promptToDelete || isDeleting) return;
 
+        setIsDeleting(true);
         try {
             await api.delete(`prompts/${promptToDelete.slug}/`);
             setPrompts(prev => prev.filter(p => p.id !== promptToDelete.id));
             setShowDeleteModal(false);
             setPromptToDelete(null);
+            // Optional: Show success message/toast
         } catch (error) {
             console.error('Error deleting prompt:', error);
-            alert('Failed to delete prompt');
+            alert('Failed to delete prompt. Please try again.');
+        } finally {
+            setIsDeleting(false);
         }
     };
 
@@ -158,7 +163,7 @@ export default function MyPrompts() {
 
             formData.append('title', form.title);
             formData.append('text', form.text);
-            formData.append('ai_model', form.ai_model);
+            formData.append('ai_model', JSON.stringify(form.ai_model));
             formData.append('example_output', form.example_output);
             formData.append('tags', JSON.stringify(tagsArray));
             formData.append('is_public', form.is_public);
@@ -180,7 +185,7 @@ export default function MyPrompts() {
             });
 
             setPrompts(prev => prev.map(p => p.id === editingPrompt.id ? res.data : p));
-            setForm({ title: "", text: "", ai_model: "", example_output: "", tags: "", is_public: true, output_type: "text" });
+            setForm({ title: "", text: "", ai_model: [], example_output: "", tags: "", is_public: true, output_type: "text" });
             setOutputFile(null);
             setFilePreview(null);
             setShowEditModal(false);
@@ -290,7 +295,11 @@ export default function MyPrompts() {
                                     onChange={(e) => setForm({ ...form, text: e.target.value })}
                                     required
                                     rows="6"
+                                    maxLength={50000}
                                 />
+                                <div className="char-counter">
+                                    {form.text.length}/50,000 characters
+                                </div>
                             </div>
 
                             <div className="form-group">
@@ -444,8 +453,12 @@ export default function MyPrompts() {
                                     value={form.text}
                                     onChange={(e) => setForm({ ...form, text: e.target.value })}
                                     required
-                                    rows="6"
+                                    rows="10"
+                                    maxLength={50000}
                                 />
+                                <div className="char-counter">
+                                    {form.text.length}/50,000 characters
+                                </div>
                             </div>
 
                             <div className="form-group">
@@ -533,11 +546,16 @@ export default function MyPrompts() {
                         </div>
 
                         <div className="modal-actions">
-                            <button type="button" className="btn-secondary" onClick={() => setShowDeleteModal(false)}>
+                            <button type="button" className="btn-secondary" onClick={() => setShowDeleteModal(false)} disabled={isDeleting}>
                                 Cancel
                             </button>
-                            <button type="button" className="btn-danger" onClick={confirmDelete}>
-                                Delete Prompt
+                            <button
+                                type="button"
+                                className={`btn-danger ${isDeleting ? 'btn-loading' : ''}`}
+                                onClick={confirmDelete}
+                                disabled={isDeleting}
+                            >
+                                {isDeleting ? 'Deleting...' : 'Delete Prompt'}
                             </button>
                         </div>
                     </div>

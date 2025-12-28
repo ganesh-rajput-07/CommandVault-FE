@@ -79,7 +79,7 @@
 }
 
 .delete-confirmation h3 {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Space Grotesk', sans-serif !important;
     font-size: 1.5rem;
     font-weight: 700;
     color: #ffffff;
@@ -87,6 +87,7 @@
 }
 
 .delete-confirmation p {
+    font-family: 'Inter', sans-serif !important;
     color: #a0a0a0;
     font-size: 1rem;
     line-height: 1.6;
@@ -94,6 +95,7 @@
 }
 
 .delete-confirmation strong {
+    font-family: 'Inter', sans-serif !important;
     color: #ffffff;
 }
 

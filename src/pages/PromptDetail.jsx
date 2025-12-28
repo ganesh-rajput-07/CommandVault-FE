@@ -4,10 +4,13 @@ import api from "../api";
 import Navbar from "../components/Navbar";
 import LoadingSpinner from "../components/LoadingSpinner";
 import UserCard from "../components/UserCard";
+import MediaViewer from "../components/MediaViewer";
+import PromptCardEnhanced from "../components/PromptCardEnhanced";
 import { HeartIcon, BookmarkIcon, EyeIcon } from "../components/AnimatedIcons";
 import SEO from "../components/SEO";
 import { AuthContext } from "../context/AuthContext";
 import useNotifications from "../hooks/useNotifications";
+import usePrompts from "../hooks/usePrompts";
 import "./PromptDetail.css";
 
 export default function PromptDetail() {
@@ -15,10 +18,17 @@ export default function PromptDetail() {
     const navigate = useNavigate();
     const { user } = useContext(AuthContext);
     const { unreadCount } = useNotifications();
-    const [prompt, setPrompt] = useState(null);
+    const [localPrompt, setLocalPrompt] = useState(null);
+    const { prompts, toggleLike, toggleSave, updatePrompt } = usePrompts();
     const [similarPrompts, setSimilarPrompts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [copied, setCopied] = useState(false);
+    const [lastTap, setLastTap] = useState(0);
+    const [showLargeHeart, setShowLargeHeart] = useState(false);
+    const [showViewer, setShowViewer] = useState(false);
+
+    // Sync with global state
+    const prompt = prompts.find(p => p.slug === slug) || localPrompt;
 
     useEffect(() => {
         loadPrompt();
@@ -28,7 +38,11 @@ export default function PromptDetail() {
     const loadPrompt = async () => {
         try {
             const res = await api.get(`prompts/${slug}/`);
-            setPrompt(res.data);
+            const loadedPrompt = res.data;
+            setLocalPrompt(loadedPrompt);
+
+            // Sync with global context
+            updatePrompt(loadedPrompt.id, loadedPrompt);
 
             // Record view
             try {
@@ -60,21 +74,39 @@ export default function PromptDetail() {
         }
     };
 
+    const handleMediaClick = (e) => {
+        const now = Date.now();
+        const DOUBLE_TAP_DELAY = 300;
+
+        if (now - lastTap < DOUBLE_TAP_DELAY) {
+            // Double tap detected
+            if (prompt && !prompt.is_liked_by_user) {
+                toggleLike(prompt.id);
+                setShowLargeHeart(true);
+                setTimeout(() => setShowLargeHeart(false), 1000);
+            }
+        } else {
+            // Single tap detected - show viewer if media exists
+            if (prompt.output_image || prompt.output_video) {
+                setShowViewer(true);
+            }
+        }
+        setLastTap(now);
+    };
+
     const handleLike = async () => {
+        if (!prompt) return;
         try {
-            await api.post('likes/toggle/', { prompt_id: prompt.id });
-            const res = await api.get(`prompts/${slug}/`);
-            setPrompt(res.data);
+            await toggleLike(prompt.id);
         } catch (error) {
             console.error('Error toggling like:', error);
         }
     };
 
     const handleSave = async () => {
+        if (!prompt) return;
         try {
-            await api.post('saved/toggle/', { prompt_id: prompt.id });
-            const res = await api.get(`prompts/${slug}/`);
-            setPrompt(res.data);
+            await toggleSave(prompt.id);
         } catch (error) {
             console.error('Error toggling save:', error);
         }
@@ -144,7 +176,9 @@ export default function PromptDetail() {
 
                     {/* AI Model Badge */}
                     {prompt.ai_model && (
-                        <div className="detail-model-badge">{prompt.ai_model}</div>
+                        <div className="detail-model-badge">
+                            {Array.isArray(prompt.ai_model) ? prompt.ai_model.join(', ') : prompt.ai_model}
+                        </div>
                     )}
 
                     {/* Prompt Content */}
@@ -178,20 +212,34 @@ export default function PromptDetail() {
                     {/* Media Output */}
                     {(prompt.output_image || prompt.output_video || prompt.output_audio) && (
                         <div className="media-output-section">
-                            <h3>Example Output</h3>
-                            {prompt.output_image && (
-                                <div className="output-image-container">
-                                    <img src={prompt.output_image} alt="Example output" className="output-image" />
-                                </div>
-                            )}
-                            {prompt.output_video && (
-                                <div className="output-video-container">
-                                    <video controls className="output-video">
-                                        <source src={prompt.output_video} type="video/mp4" />
-                                        Your browser does not support the video tag.
-                                    </video>
-                                </div>
-                            )}
+                            <div className="section-header">
+                                <h3>Example Output</h3>
+                                {(prompt.output_image || prompt.output_video) && (
+                                    <div className="view-tip">Single tap to view fullscreen • Double tap to Like</div>
+                                )}
+                            </div>
+
+                            <div className="media-detail-viewer" onClick={handleMediaClick}>
+                                {prompt.output_image && (
+                                    <div className="output-image-container">
+                                        <img src={prompt.output_image} alt="Example output" className="output-image" />
+                                    </div>
+                                )}
+                                {prompt.output_video && (
+                                    <div className="output-video-container">
+                                        <video className="output-video" muted loop playsInline onMouseOver={e => e.target.play()} onMouseOut={e => e.target.pause()}>
+                                            <source src={prompt.output_video} type="video/mp4" />
+                                        </video>
+                                    </div>
+                                )}
+
+                                {showLargeHeart && (
+                                    <div className="large-heart-overlay">
+                                        <HeartIcon isLiked={true} size={120} />
+                                    </div>
+                                )}
+                            </div>
+
                             {prompt.output_audio && (
                                 <div className="output-audio-container">
                                     <div className="audio-player">
@@ -216,8 +264,16 @@ export default function PromptDetail() {
                     {/* Example Output */}
                     {prompt.example_output && (
                         <div className="example-output-section">
-                            <h3>Text Output</h3>
-                            <div className="example-output-box">
+                            <div className="section-header">
+                                <h3>Text Output</h3>
+                                <button className="view-btn-small" onClick={() => setShowViewer(true)}>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+                                    </svg>
+                                    Fullscreen
+                                </button>
+                            </div>
+                            <div className="example-output-box" onClick={() => setShowViewer(true)}>
                                 {prompt.example_output}
                             </div>
                         </div>
@@ -264,46 +320,23 @@ export default function PromptDetail() {
                         <h2>Similar Prompts</h2>
                         <div className="similar-prompts-grid">
                             {similarPrompts.map((similarPrompt) => (
-                                <div
-                                    key={similarPrompt.id}
-                                    className="similar-prompt-card"
-                                    onClick={() => navigate(`/prompt/${similarPrompt.slug}`)}
-                                >
-                                    <div className="similar-card-header">
-                                        {similarPrompt.owner && (
-                                            <div className="similar-owner-info">
-                                                {similarPrompt.owner.avatar ? (
-                                                    <img src={similarPrompt.owner.avatar} alt={similarPrompt.owner.username} className="similar-avatar" />
-                                                ) : (
-                                                    <div className="similar-avatar-placeholder">
-                                                        {similarPrompt.owner.username?.charAt(0).toUpperCase()}
-                                                    </div>
-                                                )}
-                                                <span className="similar-username">{similarPrompt.owner.username}</span>
-                                            </div>
-                                        )}
-                                    </div>
-                                    <h4 className="similar-title">{similarPrompt.title}</h4>
-                                    <p className="similar-text">{similarPrompt.text}</p>
-                                    {similarPrompt.ai_model && (
-                                        <div className="similar-model-badge">{similarPrompt.ai_model}</div>
-                                    )}
-                                    <div className="similar-stats">
-                                        <span>
-                                            <HeartIcon isLiked={false} size={16} />
-                                            {similarPrompt.likes_count || 0}
-                                        </span>
-                                        <span>
-                                            <BookmarkIcon isSaved={false} size={16} />
-                                            {similarPrompt.saves_count || 0}
-                                        </span>
-                                    </div>
-                                </div>
+                                <PromptCardEnhanced key={similarPrompt.id} prompt={similarPrompt} />
                             ))}
                         </div>
                     </div>
                 )}
             </div>
+
+            {/* Fullscreen Media Viewer */}
+            {showViewer && (
+                <MediaViewer
+                    media={prompt.output_image || prompt.output_video}
+                    type={prompt.output_type}
+                    title={prompt.title}
+                    text={prompt.example_output}
+                    onClose={() => setShowViewer(false)}
+                />
+            )}
         </>
     );
 }

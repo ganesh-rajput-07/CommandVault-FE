@@ -12,7 +12,13 @@ export function AuthProvider({ children }) {
       setUser(res.data);
     } catch (error) {
       console.error("Failed to fetch user profile", error);
-      // If token is invalid, maybe clear it? For now just log.
+      // If token is invalid (401/403), clear it to prevent auth loops
+      if (error.response?.status === 401 || error.response?.status === 403) {
+        console.log("Invalid token detected, clearing authentication");
+        localStorage.removeItem("access");
+        localStorage.removeItem("refresh");
+        setUser(null);
+      }
     }
   };
 

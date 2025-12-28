@@ -27,7 +27,7 @@
 }
 
 .navbar-brand {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Space Grotesk', sans-serif !important;
   font-size: 1.5rem;
   font-weight: 800;
   background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
@@ -65,7 +65,7 @@
   border-radius: 8px;
   font-weight: 600;
   font-size: 15px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif !important;
   transition: all 0.2s ease;
   position: relative;
 }
@@ -131,7 +131,7 @@
   color: #ffffff;
   font-weight: 600;
   font-size: 14px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif !important;
 }
 
 .user-profile-loading {
@@ -204,7 +204,7 @@
   color: white;
   font-weight: 700;
   font-size: 14px;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Space Grotesk', sans-serif !important;
   letter-spacing: 0.5px;
 }
 
@@ -238,7 +238,7 @@
   color: #ffffff;
   font-weight: 600;
   font-size: 14px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif !important;
 }
 
 .user-dropdown {
@@ -288,7 +288,7 @@
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif !important;
   transition: all 0.2s ease;
 }
 
@@ -309,7 +309,7 @@
   color: #ec4899;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif !important;
 }
 
 @media (max-width: 768px) {
@@ -369,16 +369,20 @@
 
   .navbar-menu.active {
     display: flex;
+    animation: slideDown 0.4s cubic-bezier(0.23, 1, 0.32, 1);
   }
 
   .nav-link {
-    padding: 14px 18px;
-    font-size: 1rem;
-    font-weight: 500;
-    border-radius: 12px;
-    transition: all 0.2s ease;
+    padding: 16px 20px;
+    font-size: 1.125rem;
+    font-weight: 600;
+    border-radius: 14px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     color: #e0e0e0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
   }
 
   .nav-link:hover {
@@ -422,32 +426,38 @@
     margin-left: auto;
     background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
     color: #ffffff;
-    font-size: 0.7rem;
-    font-weight: 700;
-    padding: 3px 9px;
-    border-radius: 14px;
-    min-width: 22px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 20px;
+    min-width: 24px;
     text-align: center;
-    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
   }
 
   /* Logout button in mobile menu */
   .logout-btn {
-    background: rgba(236, 72, 153, 0.1);
-    border: 1px solid rgba(236, 72, 153, 0.3);
-    color: #ec4899;
-    font-weight: 600;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    color: #f87171;
+    font-weight: 700;
     cursor: pointer;
     text-align: left;
     width: 100%;
     font-family: 'Inter', sans-serif !important;
-    margin-top: 4px;
+    margin-top: 12px;
+    padding: 16px 20px;
+    border-radius: 14px;
+    font-size: 1.125rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
   }
 
   .logout-btn:hover {
-    background: rgba(236, 72, 153, 0.2);
-    border-color: rgba(236, 72, 153, 0.5);
-    color: #ff6ba9;
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.4);
+    color: #ffffff;
   }
 
   .username {

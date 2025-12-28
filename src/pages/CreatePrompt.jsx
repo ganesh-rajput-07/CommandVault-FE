@@ -11,7 +11,7 @@ export default function CreatePrompt() {
     const [formData, setFormData] = useState({
         title: '',
         text: '',
-        ai_model: '',
+        ai_model: [], // Changed from string to array for multi-select
         output_type: '',
         example_output: '',
         output_image: null,
@@ -57,7 +57,7 @@ export default function CreatePrompt() {
 
     // Track unsaved changes
     useEffect(() => {
-        const hasData = formData.title || formData.text || formData.ai_model;
+        const hasData = formData.title || formData.text || formData.ai_model.length > 0;
         setHasUnsavedChanges(hasData);
     }, [formData]);
 
@@ -84,14 +84,14 @@ export default function CreatePrompt() {
                     setError('Please enter prompt content');
                     return false;
                 }
-                if (formData.text.length > 2000) {
-                    setError('Prompt content must be less than 2000 characters');
+                if (formData.text.length > 50000) {
+                    setError('Prompt content must be less than 50,000 characters');
                     return false;
                 }
                 return true;
             case 2:
-                if (!formData.ai_model) {
-                    setError('Please select an AI model');
+                if (formData.ai_model.length === 0) {
+                    setError('Please select at least one AI model');
                     return false;
                 }
                 return true;
@@ -104,7 +104,11 @@ export default function CreatePrompt() {
     };
 
     const handleSubmit = async () => {
-        if (!validateStage(3)) return;
+        // Final validation of all critical stages
+        if (!validateStage(1) || !validateStage(2)) {
+            setCurrentStage(1);
+            return;
+        }
 
         setLoading(true);
         setError('');
@@ -113,7 +117,10 @@ export default function CreatePrompt() {
             const submitData = new FormData();
             submitData.append('title', formData.title);
             submitData.append('text', formData.text);
-            submitData.append('ai_model', formData.ai_model);
+
+            // Handle multi-select AI models
+            submitData.append('ai_model', JSON.stringify(formData.ai_model));
+
             submitData.append('is_public', formData.is_public);
 
             if (formData.output_type) {
@@ -142,14 +149,18 @@ export default function CreatePrompt() {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
 
-            // Clear draft
+            // Success! 
+            // 1. Clear draft
             localStorage.removeItem('createPromptDraft');
 
-            // Navigate to My Prompts
-            navigate('/my-prompts');
+            // 2. Set loading to false before navigation to avoid UI flicker/stuck state
+            setLoading(false);
+
+            // 3. Navigate to My Prompts
+            navigate('/my-prompts', { replace: true });
         } catch (err) {
-            setError(err.response?.data?.detail || 'Failed to create prompt');
-        } finally {
+            console.error('Submission error:', err);
+            setError(err.response?.data?.detail || 'Failed to create prompt. Please check your connection.');
             setLoading(false);
         }
     };
@@ -186,44 +197,60 @@ export default function CreatePrompt() {
     };
 
     return (
-        <>
+        <div className="create-prompt-container">
             <SEO title="Create Prompt" description="Create a new AI prompt" />
 
-            <div className="create-prompt-container">
-                {/* Header */}
-                <div className="create-prompt-header">
+            <div className="create-prompt-header">
+                <div className="header-top">
                     <button className="back-to-prompts" onClick={() => navigate('/my-prompts')}>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M19 12H5M12 19l-7-7 7-7" />
                         </svg>
-                        Back to My Prompts
+                        Exit to My Prompts
                     </button>
-
-                    <div className="progress-indicator">
-                        <span className="stage-text">Stage {currentStage}/4</span>
-                        <div className="progress-bar">
-                            <div
-                                className="progress-fill"
-                                style={{ width: `${getProgressPercentage()}%` }}
-                            />
-                        </div>
-                    </div>
                 </div>
 
-                {/* Main Content */}
-                <div className="create-prompt-content">
-                    <div className="stage-container">
-                        {/* Stage 1: Title & Content */}
-                        {currentStage === 1 && (
-                            <div className="stage stage-1" key="stage-1">
-                                <h2 className="stage-title">Title & Content</h2>
-                                <p className="stage-subtitle">Give your prompt a clear title and describe what it does</p>
+                <div className="progress-stepper">
+                    {[1, 2, 3, 4].map((step) => (
+                        <div
+                            key={step}
+                            className={`step-item ${currentStage === step ? 'active' : ''} ${currentStage > step ? 'completed' : ''}`}
+                            onClick={() => currentStage > step && setCurrentStage(step)}
+                        >
+                            <div className="step-circle">
+                                {currentStage > step ? (
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                                        <path d="M20 6L9 17l-5-5" />
+                                    </svg>
+                                ) : step}
+                            </div>
+                            <span className="step-label">
+                                {step === 1 ? 'Details' : step === 2 ? 'AI Model' : step === 3 ? 'Output' : 'Review'}
+                            </span>
+                        </div>
+                    ))}
+                </div>
+            </div>
 
+            <div className="create-prompt-content">
+                <div className="stage-container">
+                    {/* Stage 1: Title & Content */}
+                    {currentStage === 1 && (
+                        <div className="stage" key="stage-1">
+                            <div className="stage-title-group">
+                                <h2 className="stage-title">Core Details</h2>
+                                <p className="stage-subtitle">Give your prompt a clear identity and define its purpose</p>
+                            </div>
+
+                            <div className="form-section">
                                 <div className="form-group">
-                                    <label>Prompt Title *</label>
+                                    <div className="label-wrapper">
+                                        <label>Prompt Title <span className="required-dot">•</span></label>
+                                    </div>
                                     <input
                                         type="text"
-                                        placeholder="e.g., Professional Email Writer"
+                                        className="modern-input"
+                                        placeholder="e.g., Professional Email Ghostwriter"
                                         value={formData.title}
                                         onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                                         maxLength={200}
@@ -231,58 +258,64 @@ export default function CreatePrompt() {
                                 </div>
 
                                 <div className="form-group">
-                                    <label>Prompt Content *</label>
+                                    <div className="label-wrapper">
+                                        <label>Prompt Content <span className="required-dot">•</span></label>
+                                    </div>
                                     <textarea
-                                        placeholder="Write your prompt here..."
+                                        className="modern-textarea"
+                                        placeholder="Paste or write your prompt instructions here..."
                                         value={formData.text}
                                         onChange={(e) => setFormData({ ...formData, text: e.target.value })}
-                                        maxLength={2000}
-                                        rows={10}
+                                        maxLength={50000}
                                     />
                                     <div className="char-counter">
-                                        {formData.text.length}/2000 characters
+                                        {formData.text.length.toLocaleString()} / 50,000 characters
                                     </div>
                                 </div>
-
-                                {error && <div className="error-message">{error}</div>}
-
-                                <div className="stage-actions">
-                                    <button className="btn-next" onClick={handleNext}>
-                                        Next
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <path d="M5 12h14M12 5l7 7-7 7" />
-                                        </svg>
-                                    </button>
-                                </div>
                             </div>
-                        )}
 
-                        {/* Stage 2: AI Model Selection */}
-                        {currentStage === 2 && (
-                            <div className="stage stage-2" key="stage-2">
-                                <h2 className="stage-title">AI Model Selection</h2>
-                                <p className="stage-subtitle">Choose which AI model this prompt is designed for</p>
+                            {error && <div className="form-error">{error}</div>}
 
-                                {/* Search */}
-                                <div className="model-search">
-                                    <svg className="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <div className="navigation-actions">
+                                <span /> {/* Placeholder for back button spacing */}
+                                <button className="btn-nav-next" onClick={handleNext}>
+                                    Selection AI Model
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                        <path d="M5 12h14M12 5l7 7-7 7" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Stage 2: AI Model Selection */}
+                    {currentStage === 2 && (
+                        <div className="stage" key="stage-2">
+                            <div className="stage-title-group">
+                                <h2 className="stage-title">AI Compatibility</h2>
+                                <p className="stage-subtitle">Select the models this prompt is specifically optimized for</p>
+                            </div>
+
+                            <div className="model-selection-area">
+                                <div className="model-search-bar">
+                                    <svg className="search-icon-inline" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                                         <circle cx="11" cy="11" r="8" />
                                         <path d="m21 21-4.35-4.35" />
                                     </svg>
                                     <input
                                         type="text"
-                                        placeholder="Search AI models..."
+                                        className="modern-input"
+                                        placeholder="Search for models (e.g. GPT-4, Claude, Midjourney)"
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
                                     />
                                 </div>
 
-                                {/* Categories */}
-                                <div className="model-categories">
+                                <div className="filter-pills">
                                     {MODEL_CATEGORIES.map(category => (
                                         <button
                                             key={category}
-                                            className={`category-chip ${selectedCategory === category ? 'active' : ''}`}
+                                            className={`filter-pill ${selectedCategory === category ? 'active' : ''}`}
                                             onClick={() => setSelectedCategory(category)}
                                         >
                                             {category}
@@ -290,23 +323,35 @@ export default function CreatePrompt() {
                                     ))}
                                 </div>
 
-                                {/* Models Grid */}
                                 <div className="models-grid">
                                     {filteredModels.map(model => (
                                         <div
                                             key={model.id}
-                                            className={`model-card ${formData.ai_model === model.name ? 'selected' : ''}`}
-                                            onClick={() => setFormData({ ...formData, ai_model: model.name })}
+                                            className={`model-card-modern ${formData.ai_model.includes(model.name) ? 'selected' : ''}`}
+                                            onClick={() => {
+                                                const isSelected = formData.ai_model.includes(model.name);
+                                                let newModels = [...formData.ai_model];
+
+                                                if (model.name === 'Universal') {
+                                                    newModels = isSelected ? [] : ['Universal'];
+                                                } else {
+                                                    if (isSelected) {
+                                                        newModels = newModels.filter(m => m !== model.name);
+                                                    } else {
+                                                        newModels = newModels.filter(m => m !== 'Universal');
+                                                        newModels.push(model.name);
+                                                    }
+                                                }
+                                                setFormData({ ...formData, ai_model: newModels });
+                                            }}
                                         >
-                                            <div className="model-header">
-                                                <h3>{model.name}</h3>
-                                                {model.popular && <span className="popular-badge">Popular</span>}
-                                            </div>
-                                            <p className="model-provider">{model.provider}</p>
-                                            <p className="model-description">{model.description}</p>
-                                            {formData.ai_model === model.name && (
-                                                <div className="selected-check">
-                                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                                            <span className="provider">{model.provider}</span>
+                                            <h4>{model.name}</h4>
+                                            <p className="desc">{model.description}</p>
+
+                                            {formData.ai_model.includes(model.name) && (
+                                                <div className="selected-badge">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4">
                                                         <path d="M20 6L9 17l-5-5" />
                                                     </svg>
                                                 </div>
@@ -314,241 +359,221 @@ export default function CreatePrompt() {
                                         </div>
                                     ))}
                                 </div>
-
-                                {filteredModels.length === 0 && (
-                                    <div className="no-results">
-                                        <p>No models found. Try a different search term.</p>
-                                    </div>
-                                )}
-
-                                {error && <div className="error-message">{error}</div>}
-
-                                <div className="stage-actions">
-                                    <button className="btn-back" onClick={handleBack}>
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <path d="M19 12H5M12 19l-7-7 7-7" />
-                                        </svg>
-                                        Back
-                                    </button>
-                                    <button className="btn-next" onClick={handleNext}>
-                                        Next
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <path d="M5 12h14M12 5l7 7-7 7" />
-                                        </svg>
-                                    </button>
-                                </div>
                             </div>
-                        )}
 
-                        {/* Stage 3: Output Type & Tags */}
-                        {currentStage === 3 && (
-                            <div className="stage stage-3" key="stage-3">
-                                <h2 className="stage-title">Output & Tags</h2>
-                                <p className="stage-subtitle">Add example outputs and tags to help others find your prompt</p>
+                            {error && <div className="form-error">{error}</div>}
 
+                            <div className="navigation-actions">
+                                <button className="btn-nav-back" onClick={handleBack}>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                        <path d="M19 12H5M12 19l-7-7 7-7" />
+                                    </svg>
+                                    Previous Step
+                                </button>
+                                <button className="btn-nav-next" onClick={handleNext}>
+                                    Next: Rich Media
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                        <path d="M5 12h14M12 5l7 7-7 7" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Stage 3: Output & Tags */}
+                    {currentStage === 3 && (
+                        <div className="stage" key="stage-3">
+                            <div className="stage-title-group">
+                                <h2 className="stage-title">Rich Outputs</h2>
+                                <p className="stage-subtitle">Showcase example results and add tags for better discoverability</p>
+                            </div>
+
+                            <div className="form-section">
                                 <div className="form-group">
-                                    <label>Output Type (Optional)</label>
+                                    <label>Choose Output Category</label>
                                     <select
+                                        className="modern-select"
                                         value={formData.output_type}
                                         onChange={(e) => setFormData({ ...formData, output_type: e.target.value })}
                                     >
                                         <option value="">Select output type...</option>
-                                        <option value="text">Text</option>
-                                        <option value="image">Image</option>
-                                        <option value="video">Video</option>
-                                        <option value="audio">Audio</option>
-                                        <option value="code">Code</option>
+                                        <option value="text">Textual Output</option>
+                                        <option value="image">Generative Image</option>
+                                        <option value="video">Motion Video</option>
+                                        <option value="audio">Voice / Audio</option>
+                                        <option value="code">Source Code</option>
                                     </select>
                                 </div>
 
-                                {/* File Uploads - Show based on output type */}
                                 {formData.output_type && (
-                                    <div className="file-uploads">
-                                        {formData.output_type === 'text' && (
+                                    <div className="dynamic-output-area">
+                                        {(formData.output_type === 'text' || formData.output_type === 'code') && (
                                             <div className="form-group">
-                                                <label>Example Text Output</label>
+                                                <label>Example {formData.output_type === 'code' ? 'Code' : 'Text'} Preview</label>
                                                 <textarea
-                                                    placeholder="Paste an example text output here..."
-                                                    rows={6}
-                                                    value={formData.example_output || ''}
-                                                    onChange={(e) => setFormData({ ...formData, example_output: e.target.value })}
-                                                />
-                                            </div>
-                                        )}
-
-                                        {formData.output_type === 'code' && (
-                                            <div className="form-group">
-                                                <label>Example Code Output</label>
-                                                <textarea
-                                                    placeholder="Paste an example code output here..."
+                                                    className="modern-textarea"
+                                                    placeholder={`Paste the expected ${formData.output_type} output here...`}
                                                     rows={8}
                                                     value={formData.example_output || ''}
                                                     onChange={(e) => setFormData({ ...formData, example_output: e.target.value })}
-                                                    style={{ fontFamily: 'monospace' }}
+                                                    style={formData.output_type === 'code' ? { fontFamily: 'monospace' } : {}}
                                                 />
                                             </div>
                                         )}
 
-                                        {formData.output_type === 'image' && (
-                                            <div className="form-group">
-                                                <label>Example Image Output</label>
-                                                <input
-                                                    type="file"
-                                                    accept="image/*"
-                                                    onChange={(e) => handleFileChange(e, 'image')}
-                                                />
-                                                {formData.output_image && (
-                                                    <p className="file-name">📎 {formData.output_image.name}</p>
-                                                )}
-                                            </div>
-                                        )}
-
-                                        {formData.output_type === 'video' && (
-                                            <div className="form-group">
-                                                <label>Example Video Output</label>
-                                                <input
-                                                    type="file"
-                                                    accept="video/*"
-                                                    onChange={(e) => handleFileChange(e, 'video')}
-                                                />
-                                                {formData.output_video && (
-                                                    <p className="file-name">📎 {formData.output_video.name}</p>
-                                                )}
-                                            </div>
-                                        )}
-
-                                        {formData.output_type === 'audio' && (
-                                            <div className="form-group">
-                                                <label>Example Audio Output</label>
-                                                <input
-                                                    type="file"
-                                                    accept="audio/*"
-                                                    onChange={(e) => handleFileChange(e, 'audio')}
-                                                />
-                                                {formData.output_audio && (
-                                                    <p className="file-name">📎 {formData.output_audio.name}</p>
-                                                )}
+                                        {['image', 'video', 'audio'].includes(formData.output_type) && (
+                                            <div className="upload-grid">
+                                                <div className="upload-card" onClick={() => document.getElementById('file-upload').click()}>
+                                                    <svg className="upload-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" />
+                                                    </svg>
+                                                    <div className="upload-text">Upload {formData.output_type}</div>
+                                                    <div className="upload-subtext">Click to browse or drag and drop</div>
+                                                    <input
+                                                        id="file-upload"
+                                                        type="file"
+                                                        hidden
+                                                        accept={`${formData.output_type}/*`}
+                                                        onChange={(e) => handleFileChange(e, formData.output_type)}
+                                                    />
+                                                    {formData[`output_${formData.output_type}`] && (
+                                                        <div className="file-name" style={{ marginTop: '12px' }}>
+                                                            Successfully Selected: {formData[`output_${formData.output_type}`].name}
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
                                         )}
                                     </div>
                                 )}
+                            </div>
 
-                                {/* Tags */}
+                            <div className="form-section">
                                 <div className="form-group">
-                                    <label>Tags</label>
-                                    <div className="tag-input-container">
+                                    <label>Keywords & Tags</label>
+                                    <div className="tag-input-box">
                                         <input
                                             type="text"
-                                            placeholder="Add a tag..."
+                                            className="modern-input"
+                                            placeholder="Press Enter to add tags..."
                                             value={tagInput}
                                             onChange={(e) => setTagInput(e.target.value)}
                                             onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddTag())}
                                         />
-                                        <button type="button" onClick={handleAddTag} className="add-tag-btn">
-                                            Add
+                                        <button type="button" onClick={handleAddTag} className="btn-add-tag">
+                                            Add Tag
                                         </button>
                                     </div>
-                                    <div className="tags-list">
+                                    <div className="tags-container">
                                         {formData.tags.map((tag, index) => (
-                                            <span key={index} className="tag">
-                                                {tag}
-                                                <button onClick={() => handleRemoveTag(tag)}>×</button>
-                                            </span>
+                                            <div key={index} className="modern-tag">
+                                                <span>#{tag}</span>
+                                                <button className="btn-remove-tag" onClick={() => handleRemoveTag(tag)}>
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                                                        <path d="M18 6L6 18M6 6l12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
                                         ))}
                                     </div>
                                 </div>
+                            </div>
 
-                                <div className="stage-actions">
-                                    <button className="btn-back" onClick={handleBack}>
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <path d="M19 12H5M12 19l-7-7 7-7" />
-                                        </svg>
-                                        Back
-                                    </button>
-                                    <button className="btn-next" onClick={handleNext}>
-                                        Next
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <path d="M5 12h14M12 5l7 7-7 7" />
-                                        </svg>
-                                    </button>
+                            <div className="navigation-actions">
+                                <button className="btn-nav-back" onClick={handleBack}>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                        <path d="M19 12H5M12 19l-7-7 7-7" />
+                                    </svg>
+                                    Model Selection
+                                </button>
+                                <button className="btn-nav-next" onClick={handleNext}>
+                                    Final Review
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                        <path d="M5 12h14M12 5l7 7-7 7" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Stage 4: Privacy & Submit */}
+                    {currentStage === 4 && (
+                        <div className="stage" key="stage-4">
+                            <div className="stage-title-group">
+                                <h2 className="stage-title">Ready for Launch</h2>
+                                <p className="stage-subtitle">Review your creation and set visibility before publishing to the vault</p>
+                            </div>
+
+                            <div className="form-section">
+                                <div className={`privacy-card ${formData.is_public ? 'active' : ''}`}>
+                                    <div className="privacy-info">
+                                        <h4>{formData.is_public ? 'Public Access' : 'Private Vault'}</h4>
+                                        <p style={{ color: '#666', fontSize: '0.875rem' }}>
+                                            {formData.is_public
+                                                ? 'Visible to the entire CommandVault community'
+                                                : 'Only you can see and use this prompt in your profile'}
+                                        </p>
+                                    </div>
+                                    <label className="switch-modern">
+                                        <input
+                                            type="checkbox"
+                                            checked={formData.is_public}
+                                            onChange={(e) => setFormData({ ...formData, is_public: e.target.checked })}
+                                        />
+                                        <span className="slider-modern"></span>
+                                    </label>
                                 </div>
                             </div>
-                        )}
 
-                        {/* Stage 4: Privacy & Submit */}
-                        {currentStage === 4 && (
-                            <div className="stage stage-4" key="stage-4">
-                                <h2 className="stage-title">Privacy & Submit</h2>
-                                <p className="stage-subtitle">Review your prompt and choose who can see it</p>
-
-                                {/* Privacy Toggle */}
-                                <div className="privacy-section">
-                                    <div className="privacy-toggle">
-                                        <div className="toggle-info">
-                                            <h3>{formData.is_public ? 'Public' : 'Private'}</h3>
-                                            <p>
-                                                {formData.is_public
-                                                    ? 'Anyone can view and use this prompt'
-                                                    : 'Only you can view this prompt'}
-                                            </p>
-                                        </div>
-                                        <label className="switch">
-                                            <input
-                                                type="checkbox"
-                                                checked={formData.is_public}
-                                                onChange={(e) => setFormData({ ...formData, is_public: e.target.checked })}
-                                            />
-                                            <span className="slider"></span>
-                                        </label>
-                                    </div>
-                                </div>
-
-                                {/* Summary */}
-                                <div className="prompt-summary">
-                                    <h3>Prompt Summary</h3>
+                            <div className="form-section">
+                                <h4 className="configuration-title">Final Configuration</h4>
+                                <div className="summary-list">
                                     <div className="summary-item">
-                                        <span className="label">Title:</span>
-                                        <span className="value">{formData.title}</span>
+                                        <span className="summary-label">Title</span>
+                                        <span className="summary-value">{formData.title}</span>
                                     </div>
                                     <div className="summary-item">
-                                        <span className="label">AI Model:</span>
-                                        <span className="value">{formData.ai_model}</span>
+                                        <span className="summary-label">Models</span>
+                                        <span className="summary-value">{formData.ai_model.join(', ') || 'None Selected'}</span>
                                     </div>
                                     <div className="summary-item">
-                                        <span className="label">Output Type:</span>
-                                        <span className="value">{formData.output_type || 'None'}</span>
+                                        <span className="summary-label">Output</span>
+                                        <span className="summary-value">{formData.output_type || 'Unspecified'}</span>
                                     </div>
-                                    <div className="summary-item">
-                                        <span className="label">Tags:</span>
-                                        <span className="value">{formData.tags.length > 0 ? formData.tags.join(', ') : 'None'}</span>
-                                    </div>
-                                </div>
-
-                                {error && <div className="error-message">{error}</div>}
-
-                                <div className="stage-actions">
-                                    <button className="btn-back" onClick={handleBack}>
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <path d="M19 12H5M12 19l-7-7 7-7" />
-                                        </svg>
-                                        Back
-                                    </button>
-                                    <button
-                                        className="btn-submit"
-                                        onClick={handleSubmit}
-                                        disabled={loading}
-                                    >
-                                        {loading ? 'Creating...' : 'Create Prompt'}
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <path d="M20 6L9 17l-5-5" />
-                                        </svg>
-                                    </button>
                                 </div>
                             </div>
-                        )}
-                    </div>
+
+                            {error && <div className="form-error">{error}</div>}
+
+                            <div className="navigation-actions">
+                                <button className="btn-nav-back" onClick={handleBack}>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                        <path d="M19 12H5M12 19l-7-7 7-7" />
+                                    </svg>
+                                    Back to Media
+                                </button>
+                                <button
+                                    className="btn-nav-submit"
+                                    onClick={handleSubmit}
+                                    disabled={loading}
+                                >
+                                    {loading ? (
+                                        <>Creating...</>
+                                    ) : (
+                                        <>
+                                            Publish Prompt
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                                <path d="M20 6L9 17l-5-5" />
+                                            </svg>
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
-        </>
+        </div>
     );
+
 }
