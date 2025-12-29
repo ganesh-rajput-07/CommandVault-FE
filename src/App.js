@@ -16,6 +16,7 @@ import Trending from "./pages/Trending";
 import SavedPrompts from "./pages/SavedPrompts";
 import CreatePrompt from "./pages/CreatePrompt";
 import VerifyEmail from "./pages/VerifyEmail";
+import QRScanner from "./pages/QRScanner";
 
 function ProtectedRoute({ children }) {
   const { user } = useContext(AuthContext);
@@ -91,6 +92,11 @@ export default function App() {
             <Route path="/create-prompt" element={
               <ProtectedRoute>
                 <CreatePrompt />
+              </ProtectedRoute>
+            } />
+            <Route path="/scan" element={
+              <ProtectedRoute>
+                <QRScanner />
               </ProtectedRoute>
             } />
 

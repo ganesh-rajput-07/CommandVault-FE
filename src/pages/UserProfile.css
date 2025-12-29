@@ -220,7 +220,7 @@
   opacity: 1;
 }
 
-.prompt-card > * {
+.prompt-card>* {
   position: relative;
   z-index: 1;
 }
@@ -359,38 +359,93 @@
 }
 
 /* Responsive */
-@media (max-width: 768px) {
+@media (max-width: 480px) {
+  .user-profile-container {
+    padding-bottom: 60px;
+  }
+
   .profile-banner {
-    height: 200px;
+    height: 160px;
+  }
+
+  .profile-info-section {
+    padding: 0 16px;
+    margin-top: -60px;
   }
 
   .profile-avatar-large {
-    width: 120px;
-    height: 120px;
+    width: 100px;
+    height: 100px;
+    border-width: 4px;
+    font-size: 2rem;
+  }
+
+  .profile-avatar-container {
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
   }
 
   .profile-details {
-    padding: 24px;
+    padding: 24px 20px;
+    border-radius: 16px;
+    text-align: center;
   }
 
   .profile-header {
     flex-direction: column;
-    gap: 16px;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .profile-username {
+    font-size: 1.75rem;
+    margin-bottom: 4px;
+  }
+
+  .profile-email {
+    font-size: 0.9375rem;
   }
 
   .follow-btn {
     width: 100%;
+    padding: 14px;
+    font-size: 1rem;
   }
 
-  .profile-username {
-    font-size: 2rem;
+  .profile-bio {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 24px;
   }
 
   .profile-stats {
-    gap: 24px;
+    gap: 16px;
+    justify-content: space-around;
+    width: 100%;
   }
 
-  .prompts-grid {
-    grid-template-columns: 1fr;
+  .stat-box {
+    align-items: center;
+  }
+
+  .stat-number {
+    font-size: 1.5rem;
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+  }
+
+  .user-prompts-section {
+    margin-top: 32px;
+    padding: 0 16px;
+  }
+
+  .user-prompts-section h2 {
+    font-size: 1.5rem;
+    text-align: center;
+    margin-bottom: 24px;
   }
 }

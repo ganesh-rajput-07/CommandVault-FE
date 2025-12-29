@@ -153,34 +153,64 @@
 }
 
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }
+
   50% {
     opacity: 0.7;
     transform: scale(1.1);
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 480px) {
+  .notifications-container {
+    padding: 24px 16px 80px;
+  }
+
   .notifications-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
+    flex-direction: row;
+    /* Keep row but wrap if needed, or just standard flex */
+    align-items: center;
+    margin-bottom: 24px;
+    gap: 12px;
   }
 
   .notifications-header h1 {
-    font-size: 24px;
+    font-size: 1.5rem;
+  }
+
+  .btn-mark-all {
+    padding: 8px 12px;
+    font-size: 12px;
   }
 
   .notification-item {
+    gap: 12px;
     padding: 16px;
+    border-radius: 16px;
   }
 
   .notification-icon {
-    font-size: 24px;
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
+  }
+
+  .notification-icon svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .notification-text {
+    font-size: 14px;
+    margin-bottom: 4px;
+    line-height: 1.4;
+  }
+
+  .notification-time {
+    font-size: 12px;
   }
 }

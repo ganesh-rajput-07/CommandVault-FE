@@ -749,15 +749,11 @@ input:checked+.slider-modern:before {
     }
 
     .models-grid {
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        grid-template-columns: 1fr;
+        /* Stack vertically */
         gap: 12px;
-        max-height: none;
-        overflow: visible;
-    }
-
-    .model-card-modern {
-        padding: 16px;
-        gap: 8px;
+        max-height: 400px;
+        overflow-y: auto;
     }
 
     .upload-grid {
@@ -781,13 +777,18 @@ input:checked+.slider-modern:before {
     }
 
     .progress-stepper {
-        padding: 0 5px;
-        margin-bottom: 24px;
-        gap: 4px;
+        padding: 0 16px;
+        margin-bottom: 32px;
+        gap: 0;
+    }
+
+    .step-label {
+        display: none;
+        /* Hide labels on mobile to save space */
     }
 
     .step-item {
-        gap: 8px;
+        gap: 0;
     }
 
     .step-circle {

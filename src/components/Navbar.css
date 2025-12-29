@@ -318,11 +318,15 @@
   }
 
   .mobile-menu-btn {
-    display: block;
-    font-size: 1.75rem;
-    padding: 8px 12px;
-    background: rgba(139, 92, 246, 0.15);
-    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    font-size: 1.5rem;
+    padding: 0;
+    background: rgba(139, 92, 246, 0.1);
+    border: 1px solid rgba(139, 92, 246, 0.2);
     border-radius: 10px;
     color: #8b5cf6;
     transition: all 0.3s ease;
@@ -330,41 +334,40 @@
     margin-left: auto;
   }
 
-  .mobile-menu-btn:hover {
-    background: rgba(139, 92, 246, 0.25);
-    transform: scale(1.05);
+  .mobile-menu-btn:active {
+    transform: scale(0.95);
+    background: rgba(139, 92, 246, 0.2);
   }
 
   .navbar-menu {
     position: fixed;
     top: 70px;
-    left: 12px;
-    right: 12px;
-    background: rgba(20, 20, 20, 0.98);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: calc(100vh - 70px);
+    background: rgba(0, 0, 0, 0.95);
     backdrop-filter: blur(20px);
     border: none;
-    border-radius: 20px;
+    border-top: 1px solid rgba(139, 92, 246, 0.2);
+    border-radius: 0;
     flex-direction: column;
-    padding: 8px;
-    gap: 4px;
-    display: none;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
-    animation: slideDown 0.3s ease;
-    z-index: 1000;
-    max-height: calc(100vh - 90px);
+    padding: 24px 20px;
+    gap: 12px;
+    display: flex;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(100%);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 999;
     overflow-y: auto;
+    box-shadow: none;
   }
 
-  @keyframes slideDown {
-    from {
-      opacity: 0;
-      transform: translateY(-10px);
-    }
-
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  .navbar-menu.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
   }
 
   .navbar-menu.active {
@@ -395,18 +398,10 @@
     transform: scale(0.98);
   }
 
-  /* Add separator after Trending */
+  /* Separator after Trending */
   .nav-link:nth-child(2)::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 18px;
-    right: 18px;
-    height: 1px;
-    background: linear-gradient(90deg,
-        transparent 0%,
-        rgba(139, 92, 246, 0.3) 50%,
-        transparent 100%);
+    display: none;
+    /* Remove subtle separator line for cleaner look */
   }
 
   /* Show Profile link only on mobile */

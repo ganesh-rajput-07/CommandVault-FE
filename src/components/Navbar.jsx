@@ -36,7 +36,7 @@ export default function Navbar({ unreadCount = 0 }) {
                     className="mobile-menu-btn"
                     onClick={() => setShowMobileMenu(!showMobileMenu)}
                 >
-                    ☰
+                    {showMobileMenu ? '✕' : '☰'}
                 </button>
 
                 <div className="navbar-right">
@@ -47,6 +47,7 @@ export default function Navbar({ unreadCount = 0 }) {
                         <Link to="/profile" className="nav-link mobile-only" onClick={() => setShowMobileMenu(false)}>Profile</Link>
                         <Link to="/my-prompts" className="nav-link mobile-only" onClick={() => setShowMobileMenu(false)}>My Prompts</Link>
                         <Link to="/saved" className="nav-link mobile-only" onClick={() => setShowMobileMenu(false)}>Saved Prompts</Link>
+                        <Link to="/scan" className="nav-link mobile-only" onClick={() => setShowMobileMenu(false)}>Scan QR</Link>
                         <Link to="/notifications" className="nav-link mobile-only" onClick={() => setShowMobileMenu(false)}>
                             Notifications
                             {unreadCount > 0 && <span className="mobile-notification-badge">{unreadCount}</span>}

@@ -307,9 +307,16 @@
     font-size: 1.25rem;
   }
 
-  /* Hide nav buttons on mobile - they duplicate hero buttons */
+  /* Show nav buttons on mobile but scale them */
   .nav-actions {
-    display: none;
+    display: flex;
+    gap: 8px;
+  }
+
+  .nav-actions .btn-primary,
+  .nav-actions .btn-secondary {
+    padding: 8px 12px;
+    font-size: 0.8rem;
   }
 
   .hero-section {

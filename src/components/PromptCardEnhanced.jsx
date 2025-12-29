@@ -4,6 +4,8 @@ import { HeartIcon, BookmarkIcon, EyeIcon } from './AnimatedIcons';
 import UserCard from './UserCard';
 import MediaViewer from './MediaViewer';
 import usePrompts from '../hooks/usePrompts';
+import ShareModal from './ShareModal';
+import api from '../api';
 import './PromptCardEnhanced.css';
 
 export default function PromptCardEnhanced({ prompt: initialPrompt, showActions = false, onEdit, onDelete }) {
@@ -13,6 +15,8 @@ export default function PromptCardEnhanced({ prompt: initialPrompt, showActions 
     const [lastTap, setLastTap] = useState(0);
     const [showLargeHeart, setShowLargeHeart] = useState(false);
     const [showViewer, setShowViewer] = useState(false);
+    const [shareModalOpen, setShareModalOpen] = useState(false);
+    const [shareUrl, setShareUrl] = useState("");
 
     // Get the most up-to-date version of this prompt from global state
     const prompt = prompts.find(p => p.id === initialPrompt.id) || initialPrompt;
@@ -60,6 +64,21 @@ export default function PromptCardEnhanced({ prompt: initialPrompt, showActions 
             console.error('Error toggling save:', error);
         } finally {
             setIsProcessing(false);
+        }
+    };
+
+    const handleShare = async (e) => {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        try {
+            const res = await api.get(`prompts/${prompt.slug}/share_token/`);
+            setShareUrl(res.data.share_url);
+            setShareModalOpen(true);
+        } catch (error) {
+            console.error("Error generating share token:", error);
         }
     };
 
@@ -211,53 +230,72 @@ export default function PromptCardEnhanced({ prompt: initialPrompt, showActions 
                         <EyeIcon isViewing={prompt.is_viewed_by_user || false} size={22} />
                         <span className="stat-count">{prompt.usage_count || 0}</span>
                     </div>
-                </div>
-
-                {/* Action Buttons (for MyPrompts page) */}
-                {showActions && (
-                    <div className="card-actions">
-                        <button
-                            className="action-btn edit-btn"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                onEdit && onEdit(prompt);
-                            }}
-                            title="Edit prompt"
-                        >
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                            </svg>
-                            Edit
-                        </button>
-                        <button
-                            className="action-btn delete-btn"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                onDelete && onDelete(prompt);
-                            }}
-                            title="Delete prompt"
-                        >
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <polyline points="3 6 5 6 21 6"></polyline>
-                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                            </svg>
-                            Delete
-                        </button>
+                    <div className="stat-item share-btn" onClick={handleShare}>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <circle cx="18" cy="5" r="3" />
+                            <circle cx="6" cy="12" r="3" />
+                            <circle cx="18" cy="19" r="3" />
+                            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+                        </svg>
                     </div>
-                )}
+                </div>
             </div>
 
-            {/* Fullscreen Media Viewer */}
-            {showViewer && (
-                <MediaViewer
-                    media={prompt.output_image || prompt.output_video}
-                    type={prompt.output_type}
-                    title={prompt.title}
-                    text={prompt.example_output}
-                    onClose={() => setShowViewer(false)}
-                />
+            {/* Action Buttons (for MyPrompts page) */}
+            {showActions && (
+                <div className="card-actions">
+                    <button
+                        className="action-btn edit-btn"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onEdit && onEdit(prompt);
+                        }}
+                        title="Edit prompt"
+                    >
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                        Edit
+                    </button>
+                    <button
+                        className="action-btn delete-btn"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onDelete && onDelete(prompt);
+                        }}
+                        title="Delete prompt"
+                    >
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        </svg>
+                        Delete
+                    </button>
+                </div>
             )}
-        </div>
+
+
+            {/* Fullscreen Media Viewer */}
+            {
+                showViewer && (
+                    <MediaViewer
+                        media={prompt.output_image || prompt.output_video}
+                        type={prompt.output_type}
+                        title={prompt.title}
+                        text={prompt.example_output}
+                        onClose={() => setShowViewer(false)}
+                    />
+                )
+            }
+
+            {/* Share Modal */}
+            <ShareModal
+                isOpen={shareModalOpen}
+                onClose={() => setShareModalOpen(false)}
+                shareUrl={shareUrl}
+            />
+        </div >
     );
 }

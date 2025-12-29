@@ -1,0 +1,106 @@
+.scanner-container {
+    min-height: calc(100vh - 80px);
+    /* Adjust for navbar */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 60px;
+    background: linear-gradient(180deg, #0a0a0a 0%, #0f0f0f 100%);
+}
+
+.scanner-card {
+    background: rgba(31, 31, 31, 0.6);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    border-radius: 24px;
+    padding: 32px;
+    width: 90%;
+    max-width: 500px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.scanner-card h2 {
+    color: #fff;
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-size: 1.8rem;
+    font-family: 'Space Grotesk', sans-serif !important;
+}
+
+.scanner-instruction {
+    color: #a0a0a0;
+    font-size: 0.95rem;
+    margin-bottom: 24px;
+}
+
+.scanner-error {
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: #fca5a5;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.qr-reader-box {
+    margin: 0 auto 24px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #000;
+    width: 100%;
+}
+
+/* Overriding html5-qrcode styles */
+#reader__scan_region {
+    background: #000;
+}
+
+#reader__dashboard_section_csr button {
+    background: #8b5cf6;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    margin-top: 10px;
+}
+
+#html5-qrcode-button-camera-stop {
+    background: #ec4899 !important;
+}
+
+#reader__status_span {
+    color: #888 !important;
+    font-size: 0.8rem;
+}
+
+.back-btn {
+    background: transparent;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    color: #a0a0a0;
+    padding: 10px 24px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+.back-btn:hover {
+    border-color: #8b5cf6;
+    color: #fff;
+    background: rgba(139, 92, 246, 0.1);
+    background: rgba(139, 92, 246, 0.1);
+}
+
+@media (max-width: 480px) {
+    .scanner-card {
+        padding: 24px 16px;
+        width: 95%;
+    }
+
+    .scanner-card h2 {
+        font-size: 1.5rem;
+    }
+}

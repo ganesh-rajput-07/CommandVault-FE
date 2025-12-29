@@ -594,11 +594,13 @@
 
   .search-container {
     margin-bottom: 24px;
+    padding: 0 16px;
   }
 
   .hero-stats {
-    gap: 24px;
+    gap: 16px;
     flex-wrap: wrap;
+    justify-content: center;
   }
 
   .hero-stats .stat-item {
@@ -733,8 +735,12 @@
   }
 
   .prompts-grid {
-    padding: 0 12px;
-    gap: 20px;
+    padding: 0 16px;
+    gap: 16px;
+    /* Force single column on mobile */
+    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
   }
 
   .prompt-card {

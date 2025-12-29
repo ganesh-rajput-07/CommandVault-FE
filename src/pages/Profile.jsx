@@ -229,18 +229,8 @@ export default function Profile() {
 
               {/* Email Verification Notice */}
               {!user?.is_email_verified && !user?.is_google_account && (
-                <div className="verification-notice" style={{
-                  background: 'rgba(245, 158, 11, 0.1)',
-                  border: '1px solid rgba(245, 158, 11, 0.3)',
-                  borderRadius: '12px',
-                  padding: '12px 16px',
-                  marginTop: '16px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: '12px'
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div className="verification-notice">
+                  <div className="verification-content">
                     <span style={{ fontSize: '18px' }}>⚠️</span>
                     <span style={{ color: '#f59e0b', fontSize: '14px', fontWeight: '500' }}>
                       Email not verified
@@ -255,19 +245,7 @@ export default function Profile() {
                         alert(error.response?.data?.error || 'Failed to send email');
                       }
                     }}
-                    style={{
-                      padding: '6px 12px',
-                      background: 'rgba(245, 158, 11, 0.2)',
-                      border: '1px solid rgba(245, 158, 11, 0.4)',
-                      borderRadius: '8px',
-                      color: '#f59e0b',
-                      fontSize: '13px',
-                      fontWeight: '600',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s'
-                    }}
-                    onMouseOver={(e) => e.target.style.background = 'rgba(245, 158, 11, 0.3)'}
-                    onMouseOut={(e) => e.target.style.background = 'rgba(245, 158, 11, 0.2)'}
+                    className="resend-btn"
                   >
                     Resend Email
                   </button>
@@ -409,34 +387,18 @@ export default function Profile() {
                         )}
                       </div>
                       <div className="upload-actions">
-                        <div className="avatar-input-toggle" style={{ marginBottom: '10px', display: 'flex', gap: '10px' }}>
+                        <div className="avatar-input-box">
                           <button
                             className={`btn-toggle ${!useAvatarUrl ? 'active' : ''}`}
                             onClick={() => setUseAvatarUrl(false)}
-                            style={{
-                              padding: '5px 10px',
-                              borderRadius: '4px',
-                              border: '1px solid #333',
-                              background: !useAvatarUrl ? '#3ea6ff' : 'transparent',
-                              color: !useAvatarUrl ? 'black' : '#aaa',
-                              cursor: 'pointer'
-                            }}
                           >
-                            Upload File
+                            File
                           </button>
                           <button
                             className={`btn-toggle ${useAvatarUrl ? 'active' : ''}`}
                             onClick={() => setUseAvatarUrl(true)}
-                            style={{
-                              padding: '5px 10px',
-                              borderRadius: '4px',
-                              border: '1px solid #333',
-                              background: useAvatarUrl ? '#3ea6ff' : 'transparent',
-                              color: useAvatarUrl ? 'black' : '#aaa',
-                              cursor: 'pointer'
-                            }}
                           >
-                            Use URL
+                            URL
                           </button>
                         </div>
 
@@ -451,15 +413,6 @@ export default function Profile() {
                                 setAvatarPreview(e.target.value);
                               }}
                               className="url-input"
-                              style={{
-                                width: '100%',
-                                padding: '8px',
-                                background: '#121212',
-                                border: '1px solid #333',
-                                borderRadius: '4px',
-                                color: 'white',
-                                marginBottom: '4px'
-                              }}
                             />
                             <p className="upload-hint">Enter a direct link to an image (JPG, PNG)</p>
                           </div>
@@ -473,9 +426,9 @@ export default function Profile() {
                               style={{ display: 'none' }}
                             />
                             <label htmlFor="modal-avatar-upload" className="btn-upload">
-                              Upload
+                              Choose File
                             </label>
-                            <p className="upload-hint">It's recommended to use a picture that's at least 98 x 98 pixels and less than 1MB</p>
+                            <p className="upload-hint">Recommended: 98x98px, less than 1MB</p>
                           </>
                         )}
                       </div>
