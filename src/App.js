@@ -1,6 +1,6 @@
 import { Routes, Route, BrowserRouter, Navigate } from "react-router-dom";
 import { HelmetProvider } from 'react-helmet-async';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from './context/AuthContext';
 import { PromptProvider } from './context/PromptContext';
 import Landing from "./pages/Landing";
@@ -40,6 +40,14 @@ function PublicRoute({ children }) {
 }
 
 export default function App() {
+  const [params] = useState(new URLSearchParams(window.location.search));
+
+  useEffect(() => {
+    if (params.get('url') === 'sitemapfrombackend') {
+      window.location.href = 'https://commandvault-be.onrender.com/sitemap.xml';
+    }
+  }, [params]);
+
   return (
     <HelmetProvider>
       <PromptProvider>
