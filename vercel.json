@@ -1,0 +1,16 @@
+{
+    "rewrites": [
+        {
+            "source": "/sitemap.xml",
+            "destination": "https://commandvault-backend.onrender.com/sitemap.xml"
+        },
+        {
+            "source": "/api/:path*",
+            "destination": "https://commandvault-backend.onrender.com/api/:path*"
+        },
+        {
+            "source": "/(.*)",
+            "destination": "/index.html"
+        }
+    ]
+}
