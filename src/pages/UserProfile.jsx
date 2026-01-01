@@ -6,6 +6,7 @@ import LoadingSpinner from "../components/LoadingSpinner";
 import { HeartIcon, BookmarkIcon, EyeIcon } from "../components/AnimatedIcons";
 import useNotifications from "../hooks/useNotifications";
 import useFollow from "../hooks/useFollow";
+import SEO from "../components/SEO";
 import "./UserProfile.css";
 
 export default function UserProfile() {
@@ -112,8 +113,24 @@ export default function UserProfile() {
         );
     }
 
+    const structuredData = user ? {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": user.first_name && user.last_name ? `${user.first_name} ${user.last_name}` : user.username,
+        "alternateName": user.username,
+        "description": user.bio,
+        "image": user.avatar,
+        "url": window.location.href
+    } : null;
+
     return (
         <>
+            <SEO
+                title={user.username}
+                description={user.bio}
+                image={user.avatar}
+                structuredData={structuredData}
+            />
             <Navbar unreadCount={unreadCount} />
 
             <div className="user-profile-container">

@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 
-export default function SEO({ title, description, keywords, image, url }) {
+export default function SEO({ title, description, keywords, image, url, structuredData }) {
     const defaultTitle = 'CommandVault - AI Prompt Storage & Sharing Platform';
     const defaultDescription = 'Store, share, and discover AI prompts. A social platform for prompt engineers to collaborate, save favorites, and find trending prompts.';
     const defaultKeywords = 'AI prompts, prompt engineering, ChatGPT prompts, AI tools, prompt library';
@@ -28,6 +28,13 @@ export default function SEO({ title, description, keywords, image, url }) {
             <meta name="twitter:description" content={seoDescription} />
             <meta name="twitter:image" content={seoImage} />
             <meta name="twitter:url" content={seoUrl} />
+
+            {/* Structured Data (JSON-LD) */}
+            {structuredData && (
+                <script type="application/ld+json">
+                    {JSON.stringify(structuredData)}
+                </script>
+            )}
         </Helmet>
     );
 }

@@ -200,9 +200,40 @@ export default function PromptDetail() {
         );
     }
 
+    const structuredData = prompt ? {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": prompt.title,
+        "description": prompt.text ? prompt.text.substring(0, 160) : "",
+        "author": {
+            "@type": "Person",
+            "name": prompt.owner ? (prompt.owner.first_name ? `${prompt.owner.first_name} ${prompt.owner.last_name}` : prompt.owner.username) : "Unknown"
+        },
+        "datePublished": prompt.created_at,
+        "dateModified": prompt.updated_at,
+        "image": prompt.output_image ? [prompt.output_image] : [],
+        "interactionStatistic": [
+            {
+                "@type": "InteractionCounter",
+                "interactionType": "https://schema.org/LikeAction",
+                "userInteractionCount": prompt.likes_count || 0
+            },
+            {
+                "@type": "InteractionCounter",
+                "interactionType": "https://schema.org/SaveAction",
+                "userInteractionCount": prompt.saves_count || 0
+            }
+        ]
+    } : null;
+
     return (
         <>
-            <SEO title={prompt.title} description={prompt.text.substring(0, 160)} />
+            <SEO
+                title={prompt.title}
+                description={prompt.text.substring(0, 160)}
+                image={prompt.output_image}
+                structuredData={structuredData}
+            />
             <Navbar unreadCount={unreadCount} />
 
             <div className="prompt-detail-container">
