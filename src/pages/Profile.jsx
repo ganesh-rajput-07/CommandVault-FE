@@ -374,7 +374,7 @@ export default function Profile() {
                   <div className="upload-section">
                     <h3>Picture</h3>
                     <p className="upload-description">
-                      Your profile picture will appear where your profile is presented on CommandVault
+                      Your profile picture will appear where your profile is presented on PromptDeck
                     </p>
                     <div className="upload-preview">
                       <div className="preview-avatar">
@@ -478,7 +478,7 @@ export default function Profile() {
                       onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                       placeholder="Enter profile name"
                     />
-                    <p className="field-hint">Your unique username on CommandVault.</p>
+                    <p className="field-hint">Your unique username on PromptDeck.</p>
                   </div>
 
                   <div style={{ display: 'flex', gap: '16px' }}>

@@ -510,7 +510,7 @@ export default function CreatePrompt() {
                                         <h4>{formData.is_public ? 'Public Access' : 'Private Vault'}</h4>
                                         <p style={{ color: '#666', fontSize: '0.875rem' }}>
                                             {formData.is_public
-                                                ? 'Visible to the entire CommandVault community'
+                                                ? 'Visible to the entire PromptDeck community'
                                                 : 'Only you can see and use this prompt in your profile'}
                                         </p>
                                     </div>

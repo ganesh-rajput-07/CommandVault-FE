@@ -3,6 +3,7 @@ import { HeartIcon, BookmarkIcon, EyeIcon } from './AnimatedIcons';
 import UserCard from './UserCard';
 import api from '../api';
 import './PromptDetailModal.css';
+import './Buttons.css';
 
 export default function PromptDetailModal({ prompt, onClose, onLike, onSave }) {
     const [copied, setCopied] = useState(false);
@@ -178,6 +179,12 @@ export default function PromptDetailModal({ prompt, onClose, onLike, onSave }) {
                         <button className="action-btn-large" onClick={handleSave}>
                             <BookmarkIcon isSaved={isSaved} size={20} />
                             <span>{isSaved ? 'Saved' : 'Save'}</span>
+                        </button>
+                        <button className="action-btn-large primary-action" onClick={() => window.location.href = `/try/${currentPrompt.slug}`}>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                            </svg>
+                            <span>Try Out</span>
                         </button>
                         <div className="usage-stat">
                             <EyeIcon isViewing={isViewed} size={18} />

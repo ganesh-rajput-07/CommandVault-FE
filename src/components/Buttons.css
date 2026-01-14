@@ -1,0 +1,19 @@
+/* Add these to existing CSS files or create a small patch file */
+
+/* In PromptCardEnhanced.css */
+.stat-item.magic-btn:hover {
+    color: #8b5cf6;
+    background: rgba(139, 92, 246, 0.1);
+}
+
+/* In PromptDetailModal.css */
+.action-btn-large.primary-action {
+    background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+    border-color: transparent;
+    color: white;
+}
+
+.action-btn-large.primary-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}

@@ -6,6 +6,7 @@ import MediaViewer from './MediaViewer';
 import usePrompts from '../hooks/usePrompts';
 import ShareModal from './ShareModal';
 import api from '../api';
+import './Buttons.css';
 import './PromptCardEnhanced.css';
 
 export default function PromptCardEnhanced({ prompt: initialPrompt, showActions = false, onEdit, onDelete }) {
@@ -237,6 +238,14 @@ export default function PromptCardEnhanced({ prompt: initialPrompt, showActions 
                             <circle cx="18" cy="19" r="3" />
                             <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
                             <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+                        </svg>
+                    </div>
+                    <div className="stat-item magic-btn" onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/try/${prompt.slug}`);
+                    }} title="Try this prompt">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
                         </svg>
                     </div>
                 </div>

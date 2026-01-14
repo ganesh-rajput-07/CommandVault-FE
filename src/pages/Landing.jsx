@@ -47,7 +47,7 @@ export default function Landing() {
             <div className="landing-page">
                 <nav className="landing-nav">
                     <div className="nav-content">
-                        <h1>CommandVault</h1>
+                        <h1>PromptDeck</h1>
                         <div className="nav-actions">
                             <Link to="/login" className="btn-secondary">Login</Link>
                             <Link to="/register" className="btn-primary">Get Started</Link>
@@ -90,7 +90,7 @@ export default function Landing() {
                 </section>
 
                 <section className="features-section">
-                    <h2>Why CommandVault?</h2>
+                    <h2>Why PromptDeck?</h2>
                     <div className="features-grid">
                         <div className="feature-card">
                             <h3>Secure Storage</h3>
@@ -113,7 +113,7 @@ export default function Landing() {
 
                 <footer className="landing-footer">
                     <div className="footer-content">
-                        <p>© 2024 CommandVault. Built for prompt engineers.</p>
+                        <p>© 2024 PromptDeck. Built for prompt engineers.</p>
                         <div className="social-links">
                             <a href="https://github.com/ganesh-rajput-07" target="_blank" rel="noopener noreferrer" className="social-link">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">

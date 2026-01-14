@@ -1,13 +1,13 @@
 import { Helmet } from 'react-helmet-async';
 
 export default function SEO({ title, description, keywords, image, url, structuredData }) {
-    const defaultTitle = 'CommandVault - AI Prompt Storage & Sharing Platform';
+    const defaultTitle = 'PromptDeck - AI Prompt Storage & Sharing Platform';
     const defaultDescription = 'Store, share, and discover AI prompts. A social platform for prompt engineers to collaborate, save favorites, and find trending prompts.';
     const defaultKeywords = 'AI prompts, prompt engineering, ChatGPT prompts, AI tools, prompt library';
     const defaultImage = '/og-image.png';
-    const defaultUrl = 'https://commandvault.com';
+    const defaultUrl = 'https://promptdeck.com';
 
-    const seoTitle = title ? `${title} | CommandVault` : defaultTitle;
+    const seoTitle = title ? `${title} | PromptDeck` : defaultTitle;
     const seoDescription = description || defaultDescription;
     const seoKeywords = keywords || defaultKeywords;
     const seoImage = image || defaultImage;

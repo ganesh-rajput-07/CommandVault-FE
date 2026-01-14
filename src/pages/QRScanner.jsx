@@ -19,7 +19,7 @@ export default function QRScanner() {
             // Handle success
             setScanResult(decodedText);
 
-            // Check if it is a valid CommandVault URL
+            // Check if it is a valid PromptDeck URL
             if (decodedText.includes('/prompt/')) {
                 // Extract slug or path
                 try {
@@ -35,7 +35,7 @@ export default function QRScanner() {
                     }
                 }
             } else {
-                setError("This QR code is not for CommandVault");
+                setError("This QR code is not for PromptDeck");
             }
 
             if (scanner) {
@@ -79,7 +79,7 @@ export default function QRScanner() {
             <div className="scanner-container">
                 <div className="scanner-card">
                     <h2>Scan QR Code</h2>
-                    <p className="scanner-instruction">Point your camera at a CommandVault QR code to unlock content.</p>
+                    <p className="scanner-instruction">Point your camera at a PromptDeck QR code to unlock content.</p>
 
                     {error && (
                         <div className="scanner-error">

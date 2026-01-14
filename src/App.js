@@ -17,6 +17,7 @@ import SavedPrompts from "./pages/SavedPrompts";
 import CreatePrompt from "./pages/CreatePrompt";
 import VerifyEmail from "./pages/VerifyEmail";
 import QRScanner from "./pages/QRScanner";
+import ImageEditor from "./pages/ImageEditor";
 
 function ProtectedRoute({ children }) {
   const { user } = useContext(AuthContext);
@@ -105,6 +106,16 @@ export default function App() {
             <Route path="/scan" element={
               <ProtectedRoute>
                 <QRScanner />
+              </ProtectedRoute>
+            } />
+            <Route path="/editor" element={
+              <ProtectedRoute>
+                <ImageEditor />
+              </ProtectedRoute>
+            } />
+            <Route path="/try/:slug" element={
+              <ProtectedRoute>
+                <ImageEditor />
               </ProtectedRoute>
             } />
 

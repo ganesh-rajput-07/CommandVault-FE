@@ -88,12 +88,12 @@ export default function Login() {
 
   return (
     <>
-      <SEO title="Login" description="Login to CommandVault to manage your AI prompts" />
+      <SEO title="Login" description="Login to PromptDeck to manage your AI prompts" />
 
       <div className="auth-container">
         <div className="auth-card">
           <div className="auth-header">
-            <h1>CommandVault</h1>
+            <h1>PromptDeck</h1>
             <p>Welcome back! Login to continue</p>
           </div>
 

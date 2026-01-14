@@ -29,7 +29,7 @@ export default function Navbar({ unreadCount = 0 }) {
         <nav className="navbar">
             <div className="navbar-container">
                 <Link to="/explore" className="navbar-brand">
-                    CommandVault
+                    PromptDeck
                 </Link>
 
                 <button

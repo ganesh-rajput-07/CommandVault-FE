@@ -160,12 +160,12 @@ export default function Register() {
 
   return (
     <>
-      <SEO title="Register" description="Create your CommandVault account to start storing and sharing AI prompts" />
+      <SEO title="Register" description="Create your PromptDeck account to start storing and sharing AI prompts" />
 
       <div className="auth-container">
         <div className="auth-card">
           <div className="auth-header">
-            <h1>CommandVault</h1>
+            <h1>PromptDeck</h1>
             <p>Create your account to get started</p>
           </div>
 
