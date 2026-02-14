@@ -1,4 +1,4 @@
-import { createContext, useState, useCallback, useEffect, useRef } from 'react';
+import { createContext, useState, useCallback, useRef } from 'react';
 import api from '../api';
 
 export const PromptContext = createContext();

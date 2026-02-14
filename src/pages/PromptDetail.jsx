@@ -1,14 +1,14 @@
 import { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useInView } from "react-intersection-observer";
-import { QRCodeSVG } from "qrcode.react";
+// import { QRCodeSVG } from "qrcode.react"; // unused
 import api from "../api";
 import Navbar from "../components/Navbar";
 import LoadingSpinner from "../components/LoadingSpinner";
 import UserCard from "../components/UserCard";
 import MediaViewer from "../components/MediaViewer";
 import PromptCardEnhanced from "../components/PromptCardEnhanced";
-import { HeartIcon, BookmarkIcon, EyeIcon } from "../components/AnimatedIcons";
+import { HeartIcon, BookmarkIcon } from "../components/AnimatedIcons";
 import SEO from "../components/SEO";
 import { AuthContext } from "../context/AuthContext";
 import useNotifications from "../hooks/useNotifications";
@@ -21,7 +21,7 @@ import ShareModal from "../components/ShareModal";
 export default function PromptDetail() {
     const { slug } = useParams();
     const navigate = useNavigate();
-    const { user } = useContext(AuthContext);
+    // const { user } = useContext(AuthContext); // user is unused
     const { unreadCount } = useNotifications();
 
     // States

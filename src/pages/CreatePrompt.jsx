@@ -192,9 +192,9 @@ export default function CreatePrompt() {
         }
     };
 
-    const getProgressPercentage = () => {
-        return (currentStage / 4) * 100;
-    };
+    // const getProgressPercentage = () => {
+    //     return (currentStage / 4) * 100;
+    // };
 
     return (
         <div className="create-prompt-container">

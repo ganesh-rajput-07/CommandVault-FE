@@ -6,8 +6,8 @@ import api from '../api';
 import './Notifications.css';
 
 export default function Notifications() {
-    const { user } = useContext(AuthContext);
-    const { unreadCount, markAsRead } = useNotifications();
+    // const { user } = useContext(AuthContext); // user is unused
+    const { unreadCount } = useNotifications(); // markAsRead is unused
     const [notifications, setNotifications] = useState([]);
     const [loading, setLoading] = useState(true);
 
