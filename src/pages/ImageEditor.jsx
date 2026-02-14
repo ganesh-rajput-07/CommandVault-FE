@@ -14,10 +14,27 @@ export default function ImageEditor() {
     const [generatedImage, setGeneratedImage] = useState(null);
 
     // Settings State
-    const [model, setModel] = useState('stable-diffusion-xl');
+    const [availableModels, setAvailableModels] = useState([]);
+    const [selectedModelId, setSelectedModelId] = useState('');
     const [aspectRatio, setAspectRatio] = useState('1:1');
     const [steps, setSteps] = useState(30);
     const [cfgScale, setCfgScale] = useState(7);
+
+    // Fetch available models on mount
+    useEffect(() => {
+        const fetchModels = async () => {
+            try {
+                const res = await api.get('ai/models/');
+                setAvailableModels(res.data);
+                if (res.data.length > 0) {
+                    setSelectedModelId(res.data[0].id);
+                }
+            } catch (error) {
+                console.error("Error fetching AI models:", error);
+            }
+        };
+        fetchModels();
+    }, []);
 
     useEffect(() => {
         if (slug) {
@@ -27,12 +44,13 @@ export default function ImageEditor() {
                     const res = await api.get(`prompts/${slug}/`);
                     setPromptText(res.data.text);
                     if (res.data.ai_model) {
-                        // Simple heuristic to match model if possible, otherwise default
-                        const modelStr = String(res.data.ai_model).toLowerCase();
-                        if (modelStr.includes('dall')) setModel('dall-e-3');
-                        else if (modelStr.includes('midjourney')) setModel('midjourney-v6');
-                        else if (modelStr.includes('flux')) setModel('flux-1');
-                        else setModel('stable-diffusion-xl');
+                        // Improved matching logic: try to find a model in availableModels that matches the prompt's model string
+                        const promptModel = String(res.data.ai_model).toLowerCase();
+                        const match = availableModels.find(m =>
+                            m.name.toLowerCase().includes(promptModel) ||
+                            m.api_id.toLowerCase().includes(promptModel)
+                        );
+                        if (match) setSelectedModelId(match.id);
                     }
                 } catch (error) {
                     console.error("Error fetching prompt for editor:", error);
@@ -42,22 +60,30 @@ export default function ImageEditor() {
         }
     }, [slug]);
 
-    const handleGenerate = () => {
+    const handleGenerate = async () => {
         setIsGenerating(true);
         setGeneratedImage(null);
 
-        // Simulate generation API call
-        setTimeout(() => {
-            setIsGenerating(false);
-            // Mock result - in real app this comes from backend
-            // Using a placeholder image service for demo
-            const seed = Math.floor(Math.random() * 1000);
-            const [w, h] = aspectRatio.split(':').map(Number);
-            const width = 1024;
-            const height = Math.floor(width * (h / w));
+        try {
+            const res = await api.post('ai/generate/', {
+                prompt: promptText,
+                model_id: selectedModelId,
+                params: {
+                    aspect_ratio: aspectRatio,
+                    steps: steps,
+                    cfg_scale: cfgScale
+                }
+            });
 
-            setGeneratedImage(`https://picsum.photos/seed/${seed}/${width}/${height}`);
-        }, 3000);
+            if (res.data.image_url) {
+                setGeneratedImage(res.data.image_url);
+            }
+        } catch (error) {
+            console.error("Generation error:", error);
+            alert("Failed to generate image. Please check backend logs or try again.");
+        } finally {
+            setIsGenerating(false);
+        }
     };
 
     return (
@@ -79,13 +105,12 @@ export default function ImageEditor() {
                     <label>AI Model</label>
                     <select
                         className="select-input"
-                        value={model}
-                        onChange={(e) => setModel(e.target.value)}
+                        value={selectedModelId}
+                        onChange={(e) => setSelectedModelId(e.target.value)}
                     >
-                        <option value="stable-diffusion-xl">Stable Diffusion XL</option>
-                        <option value="dall-e-3">DALL-E 3</option>
-                        <option value="midjourney-v6">Midjourney v6 (via Proxy)</option>
-                        <option value="flux-1">Flux 1.0</option>
+                        {availableModels.map(m => (
+                            <option key={m.id} value={m.id}>{m.name} ({m.provider})</option>
+                        ))}
                     </select>
                 </div>
 
