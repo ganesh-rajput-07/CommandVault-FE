@@ -19,7 +19,7 @@ export default function Profile() {
     totalLikes: 0,
     totalSaves: 0
   });
-  const [loading, setLoading] = useState(true);
+  /* const [loading, setLoading] = useState(true); */
   const [showCustomizeModal, setShowCustomizeModal] = useState(false);
   const [customizeTab, setCustomizeTab] = useState('branding');
   const [avatarFile, setAvatarFile] = useState(null);
@@ -37,6 +37,29 @@ export default function Profile() {
   });
 
   useEffect(() => {
+    const loadUserData = async () => {
+      // setLoading(true);
+      try {
+        const promptsRes = await api.get('prompts/mine/');
+        const promptsData = promptsRes.data.results || promptsRes.data;
+        setPrompts(promptsData);
+        setGlobalPrompts(promptsData); // Update global state
+
+        const totalLikes = promptsData.reduce((sum, p) => sum + (p.likes_count || 0), 0);
+        const totalSaves = promptsData.reduce((sum, p) => sum + (p.saves_count || 0), 0);
+
+        setStats({
+          totalPrompts: promptsData.length,
+          totalLikes,
+          totalSaves
+        });
+      } catch (error) {
+        console.error('Error loading data:', error);
+      } finally {
+        // setLoading(false);
+      }
+    };
+
     loadUserData();
     if (user) {
       setFormData(prev => ({
@@ -48,30 +71,7 @@ export default function Profile() {
         is_email_public: user.is_email_public || false
       }));
     }
-  }, [user]);
-
-  const loadUserData = async () => {
-    setLoading(true);
-    try {
-      const promptsRes = await api.get('prompts/mine/');
-      const promptsData = promptsRes.data.results || promptsRes.data;
-      setPrompts(promptsData);
-      setGlobalPrompts(promptsData); // Update global state
-
-      const totalLikes = promptsData.reduce((sum, p) => sum + (p.likes_count || 0), 0);
-      const totalSaves = promptsData.reduce((sum, p) => sum + (p.saves_count || 0), 0);
-
-      setStats({
-        totalPrompts: promptsData.length,
-        totalLikes,
-        totalSaves
-      });
-    } catch (error) {
-      console.error('Error loading data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [user, setGlobalPrompts]);
 
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];

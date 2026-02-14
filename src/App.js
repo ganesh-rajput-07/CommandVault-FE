@@ -1,7 +1,7 @@
 import { Routes, Route, BrowserRouter, Navigate } from "react-router-dom";
 import { HelmetProvider } from 'react-helmet-async';
-import { useContext, useEffect, useState } from 'react';
-import { AuthContext } from './context/AuthContext';
+import { useEffect, useState } from 'react';
+/* import { AuthContext } from './context/AuthContext'; */
 import { PromptProvider } from './context/PromptContext';
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
@@ -20,7 +20,7 @@ import QRScanner from "./pages/QRScanner";
 import ImageEditor from "./pages/ImageEditor";
 
 function ProtectedRoute({ children }) {
-  const { } = useContext(AuthContext);
+  /* const { } = useContext(AuthContext); */
   const token = localStorage.getItem('access');
 
   if (!token) {

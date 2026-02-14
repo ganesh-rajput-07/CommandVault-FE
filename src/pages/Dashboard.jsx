@@ -1,12 +1,11 @@
-import { useEffect, useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+/* import { useNavigate } from "react-router-dom"; */
 import api from "../api";
 import Navbar from "../components/Navbar";
 import LoadingSpinner from "../components/LoadingSpinner";
 import PromptCardEnhanced from "../components/PromptCardEnhanced";
 import OutputTypeFilter from "../components/OutputTypeFilter";
 import SEO from "../components/SEO";
-import { AuthContext } from "../context/AuthContext";
 import usePrompts from "../hooks/usePrompts";
 import useNotifications from "../hooks/useNotifications";
 import "./Dashboard.css";
@@ -15,7 +14,7 @@ export default function Dashboard({ type = "explore" }) {
   // const { user } = useContext(AuthContext); // user is unused
   const { unreadCount } = useNotifications();
   const { setPrompts: setGlobalPrompts } = usePrompts();
-  const navigate = useNavigate();
+  /* const navigate = useNavigate(); */
   const [prompts, setPrompts] = useState([]);
   const [filteredPrompts, setFilteredPrompts] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -32,76 +31,76 @@ export default function Dashboard({ type = "explore" }) {
     { value: "saves", label: "Most Saved" }
   ];
 
-  const loadFeed = async () => {
-    setLoading(true);
-    try {
-      let endpoint = 'prompts/';
-      if (type === 'trending') endpoint = 'prompts/trending/';
-
-      // Build query parameters
-      const params = new URLSearchParams();
-
-      if (searchQuery.trim()) {
-        params.append('search', searchQuery.trim());
-      }
-
-      if (selectedModel !== 'all') {
-        params.append('ai_model', selectedModel);
-      }
-
-      // Add output type filtering
-      if (!selectedOutputTypes.includes('all') && selectedOutputTypes.length > 0) {
-        selectedOutputTypes.forEach(type => {
-          params.append('output_type', type);
-        });
-      }
-
-      const queryString = params.toString();
-      const fullEndpoint = queryString ? `${endpoint}?${queryString}` : endpoint;
-
-      const res = await api.get(fullEndpoint);
-      let data = res.data.results || res.data;
-
-      // Client-side sorting
-      switch (sortBy) {
-        case "trending":
-          data.sort((a, b) => (b.trend_score || 0) - (a.trend_score || 0));
-          break;
-        case "likes":
-          data.sort((a, b) => (b.likes_count || 0) - (a.likes_count || 0));
-          break;
-        case "saves":
-          data.sort((a, b) => (b.saves_count || 0) - (a.saves_count || 0));
-          break;
-        case "recent":
-        default:
-          data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-          break;
-      }
-
-      // Filter by output type on client side if needed
-      if (!selectedOutputTypes.includes('all') && selectedOutputTypes.length > 0) {
-        data = data.filter(p => selectedOutputTypes.includes(p.output_type));
-      }
-
-      setPrompts(data);
-      setFilteredPrompts(data);
-      setGlobalPrompts(data); // Update global state
-    } catch (error) {
-      console.error('Error loading feed:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   // Debounce search
   useEffect(() => {
+    const loadFeed = async () => {
+      setLoading(true);
+      try {
+        let endpoint = 'prompts/';
+        if (type === 'trending') endpoint = 'prompts/trending/';
+
+        // Build query parameters
+        const params = new URLSearchParams();
+
+        if (searchQuery.trim()) {
+          params.append('search', searchQuery.trim());
+        }
+
+        if (selectedModel !== 'all') {
+          params.append('ai_model', selectedModel);
+        }
+
+        // Add output type filtering
+        if (!selectedOutputTypes.includes('all') && selectedOutputTypes.length > 0) {
+          selectedOutputTypes.forEach(type => {
+            params.append('output_type', type);
+          });
+        }
+
+        const queryString = params.toString();
+        const fullEndpoint = queryString ? `${endpoint}?${queryString}` : endpoint;
+
+        const res = await api.get(fullEndpoint);
+        let data = res.data.results || res.data;
+
+        // Client-side sorting
+        switch (sortBy) {
+          case "trending":
+            data.sort((a, b) => (b.trend_score || 0) - (a.trend_score || 0));
+            break;
+          case "likes":
+            data.sort((a, b) => (b.likes_count || 0) - (a.likes_count || 0));
+            break;
+          case "saves":
+            data.sort((a, b) => (b.saves_count || 0) - (a.saves_count || 0));
+            break;
+          case "recent":
+          default:
+            data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            break;
+        }
+
+        // Filter by output type on client side if needed
+        if (!selectedOutputTypes.includes('all') && selectedOutputTypes.length > 0) {
+          data = data.filter(p => selectedOutputTypes.includes(p.output_type));
+        }
+
+        setPrompts(data);
+        setFilteredPrompts(data);
+        setGlobalPrompts(data); // Update global state
+      } catch (error) {
+        console.error('Error loading feed:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     const timer = setTimeout(() => {
       loadFeed();
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [searchQuery, selectedModel, selectedOutputTypes, sortBy, type]);
+  }, [searchQuery, selectedModel, selectedOutputTypes, sortBy, type, setGlobalPrompts]);
 
   // Removed handleLike and handleSave - now handled by PromptCardEnhanced via global context
 

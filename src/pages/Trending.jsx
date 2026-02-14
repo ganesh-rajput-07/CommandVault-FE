@@ -24,40 +24,40 @@ const Trending = () => {
     const AI_MODELS = ['all', 'ChatGPT', 'Claude', 'Gemini', 'Midjourney', 'DALL-E', 'Other'];
 
     useEffect(() => {
+        const fetchTrendingPrompts = async () => {
+            try {
+                setLoading(true);
+
+                // Build query parameters
+                const params = new URLSearchParams();
+
+                if (selectedModel !== 'all') {
+                    params.append('ai_model', selectedModel);
+                }
+
+                const queryString = params.toString();
+                const endpoint = queryString ? `prompts/trending/?${queryString}` : 'prompts/trending/';
+
+                const res = await api.get(endpoint);
+                let data = res.data.results || res.data;
+
+                // Filter by output type on client side
+                if (!selectedOutputTypes.includes('all') && selectedOutputTypes.length > 0) {
+                    data = data.filter(p => selectedOutputTypes.includes(p.output_type));
+                }
+
+                setPrompts(data);
+                setFilteredPrompts(data);
+                setGlobalPrompts(data); // Update global state
+            } catch (error) {
+                console.error('Error fetching trending prompts:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
         fetchTrendingPrompts();
-    }, [selectedModel, selectedOutputTypes]);
-
-    const fetchTrendingPrompts = async () => {
-        try {
-            setLoading(true);
-
-            // Build query parameters
-            const params = new URLSearchParams();
-
-            if (selectedModel !== 'all') {
-                params.append('ai_model', selectedModel);
-            }
-
-            const queryString = params.toString();
-            const endpoint = queryString ? `prompts/trending/?${queryString}` : 'prompts/trending/';
-
-            const res = await api.get(endpoint);
-            let data = res.data.results || res.data;
-
-            // Filter by output type on client side
-            if (!selectedOutputTypes.includes('all') && selectedOutputTypes.length > 0) {
-                data = data.filter(p => selectedOutputTypes.includes(p.output_type));
-            }
-
-            setPrompts(data);
-            setFilteredPrompts(data);
-            setGlobalPrompts(data); // Update global state
-        } catch (error) {
-            console.error('Error fetching trending prompts:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
+    }, [selectedModel, selectedOutputTypes, setGlobalPrompts]);
 
     // Removed handlePromptClick - handled by PromptCardEnhanced
 

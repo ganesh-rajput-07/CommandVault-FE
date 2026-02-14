@@ -1,11 +1,11 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
 import Navbar from "../components/Navbar";
 import LoadingSpinner from "../components/LoadingSpinner";
 import PromptCardEnhanced from "../components/PromptCardEnhanced";
 import SEO from "../components/SEO";
-import { AuthContext } from "../context/AuthContext";
+/* import { AuthContext } from "../context/AuthContext"; */
 import usePrompts from "../hooks/usePrompts";
 import useNotifications from "../hooks/useNotifications";
 import "./Dashboard.css";
@@ -36,6 +36,7 @@ export default function MyPrompts() {
     const [promptToDelete, setPromptToDelete] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
 
+
     const loadMyPrompts = async () => {
         setLoading(true);
         try {
@@ -49,6 +50,11 @@ export default function MyPrompts() {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        loadMyPrompts();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setGlobalPrompts]);
 
     const createPrompt = async (e) => {
         e.preventDefault();
@@ -196,9 +202,9 @@ export default function MyPrompts() {
         }
     };
 
-    useEffect(() => {
+    /* useEffect(() => {
         loadMyPrompts();
-    }, []);
+    }, []); */
 
     return (
         <>

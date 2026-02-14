@@ -58,7 +58,7 @@ export default function ImageEditor() {
             };
             fetchPrompt();
         }
-    }, [slug]);
+    }, [slug, availableModels]);
 
     const handleGenerate = async () => {
         setIsGenerating(true);

@@ -1,13 +1,13 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext";
+/* import { AuthContext } from "../context/AuthContext"; */
 import { GoogleLogin } from "@react-oauth/google";
 import SEO from "../components/SEO";
 import api from "../api";
 import "./Auth.css";
 
 export default function Login() {
-  const { login } = useContext(AuthContext);
+  /* const { login } = useContext(AuthContext); */
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

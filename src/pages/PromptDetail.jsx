@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useInView } from "react-intersection-observer";
 // import { QRCodeSVG } from "qrcode.react"; // unused
@@ -10,8 +10,8 @@ import MediaViewer from "../components/MediaViewer";
 import PromptCardEnhanced from "../components/PromptCardEnhanced";
 import { HeartIcon, BookmarkIcon } from "../components/AnimatedIcons";
 import SEO from "../components/SEO";
-import { AuthContext } from "../context/AuthContext";
 import useNotifications from "../hooks/useNotifications";
+/* import { AuthContext } from "../context/AuthContext"; */
 import usePrompts from "../hooks/usePrompts";
 import "./PromptDetail.css";
 
@@ -21,7 +21,7 @@ import ShareModal from "../components/ShareModal";
 export default function PromptDetail() {
     const { slug } = useParams();
     const navigate = useNavigate();
-    // const { user } = useContext(AuthContext); // user is unused
+    /* const { user } = useContext(AuthContext); // user is unused */
     const { unreadCount } = useNotifications();
 
     // States
@@ -49,19 +49,7 @@ export default function PromptDetail() {
     // Sync with global state
     const prompt = prompts.find(p => p.slug === slug) || localPrompt;
 
-    useEffect(() => {
-        loadPrompt();
-        loadSimilarPrompts();
-    }, [slug]);
-
-    useEffect(() => {
-        // Auto unlock on scroll
-        if (inView && prompt?.is_locked && !unlocking) {
-            handleUnlock('scroll');
-        }
-    }, [inView]);
-
-    const loadPrompt = async () => {
+    const loadPrompt = useCallback(async () => {
         try {
             const res = await api.get(`prompts/${slug}/`);
             const loadedPrompt = res.data;
@@ -79,16 +67,42 @@ export default function PromptDetail() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [slug, updatePrompt]);
 
-    const loadSimilarPrompts = async () => {
+    const loadSimilarPrompts = useCallback(async () => {
         try {
             const res = await api.get(`prompts/${slug}/similar/`);
             setSimilarPrompts(res.data.slice(0, 6)); // Show max 6 similar prompts
         } catch (error) {
             console.error('Error loading similar prompts:', error);
         }
-    };
+    }, [slug]);
+
+    useEffect(() => {
+        loadPrompt();
+        loadSimilarPrompts();
+    }, [loadPrompt, loadSimilarPrompts]);
+
+    const handleUnlock = useCallback(async (method = 'scroll') => {
+        if (!prompt || unlocking) return;
+        setUnlocking(true);
+        try {
+            await api.post(`prompts/${slug}/unlock/`, { method });
+            // Refresh prompt to get full content
+            await loadPrompt();
+        } catch (error) {
+            console.error("Error unlocking:", error);
+        } finally {
+            setUnlocking(false);
+        }
+    }, [prompt, unlocking, slug, loadPrompt]);
+
+    useEffect(() => {
+        // Auto unlock on scroll
+        if (inView && prompt?.is_locked && !unlocking) {
+            handleUnlock('scroll');
+        }
+    }, [inView, prompt, unlocking, handleUnlock]);
 
     const handleCopy = () => {
         if (prompt && !prompt.is_locked) {
@@ -114,19 +128,7 @@ export default function PromptDetail() {
         }
     };
 
-    const handleUnlock = async (method = 'scroll') => {
-        if (!prompt || unlocking) return;
-        setUnlocking(true);
-        try {
-            await api.post(`prompts/${slug}/unlock/`, { method });
-            // Refresh prompt to get full content
-            await loadPrompt();
-        } catch (error) {
-            console.error("Error unlocking:", error);
-        } finally {
-            setUnlocking(false);
-        }
-    };
+    /* handleUnlock moved up */
 
     const handleShare = async () => {
         if (!prompt) return;
@@ -306,7 +308,7 @@ export default function PromptDetail() {
                             </button>
                         </div>
 
-                        <div className="prompt-text-box">
+                        <div className="prompt-text-box" ref={scrollRef}>
                             {prompt.text}
 
                         </div>

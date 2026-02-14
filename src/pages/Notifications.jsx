@@ -1,12 +1,12 @@
-import { useEffect, useState, useContext } from 'react';
-import { AuthContext } from '../context/AuthContext';
+import { useEffect, useState } from 'react';
+/* import { AuthContext } from '../context/AuthContext'; */
 import Navbar from '../components/Navbar';
 import useNotifications from '../hooks/useNotifications';
 import api from '../api';
 import './Notifications.css';
 
 export default function Notifications() {
-    // const { user } = useContext(AuthContext); // user is unused
+    /* const { user } = useContext(AuthContext); // user is unused */
     const { unreadCount } = useNotifications(); // markAsRead is unused
     const [notifications, setNotifications] = useState([]);
     const [loading, setLoading] = useState(true);

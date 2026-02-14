@@ -21,40 +21,40 @@ export default function UserProfile() {
     const [isFollowing, setIsFollowing] = useState(false);
 
     useEffect(() => {
-        loadUserProfile();
-    }, [username]);
-
-    const loadUserProfile = async () => {
-        try {
-            const res = await api.get(`auth/users/${username}/profile/`);
-            const profileUser = res.data;
-
-            // Check if viewing own profile - redirect to /profile
-            const currentUserRes = await api.get('auth/profile/');
-            if (currentUserRes.data.username === profileUser.username) {
-                navigate('/profile');
-                return;
+        const loadUserPrompts = async (userId) => {
+            try {
+                const res = await api.get(`prompts/?owner_id=${userId}`);
+                setPrompts(res.data.results || res.data);
+            } catch (error) {
+                console.error('Error loading user prompts:', error);
             }
+        };
 
-            setUser(profileUser);
-            setIsFollowing(profileUser.is_following || false);
-            // Load prompts after getting user data
-            loadUserPrompts(profileUser.id);
-        } catch (error) {
-            console.error('Error loading user profile:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
+        const loadUserProfile = async () => {
+            try {
+                const res = await api.get(`auth/users/${username}/profile/`);
+                const profileUser = res.data;
 
-    const loadUserPrompts = async (userId) => {
-        try {
-            const res = await api.get(`prompts/?owner_id=${userId}`);
-            setPrompts(res.data.results || res.data);
-        } catch (error) {
-            console.error('Error loading user prompts:', error);
-        }
-    };
+                // Check if viewing own profile - redirect to /profile
+                const currentUserRes = await api.get('auth/profile/');
+                if (currentUserRes.data.username === profileUser.username) {
+                    navigate('/profile');
+                    return;
+                }
+
+                setUser(profileUser);
+                setIsFollowing(profileUser.is_following || false);
+                // Load prompts after getting user data
+                loadUserPrompts(profileUser.id);
+            } catch (error) {
+                console.error('Error loading user profile:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadUserProfile();
+    }, [username, navigate]);
 
     const handleFollow = async () => {
         if (!user) return;
