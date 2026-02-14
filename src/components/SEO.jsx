@@ -5,7 +5,7 @@ export default function SEO({ title, description, keywords, image, url, structur
     const defaultDescription = 'Store, share, and discover AI prompts. A social platform for prompt engineers to collaborate, save favorites, and find trending prompts.';
     const defaultKeywords = 'AI prompts, prompt engineering, ChatGPT prompts, AI tools, prompt library';
     const defaultImage = '/og-image.png';
-    const defaultUrl = 'https://promptdeck.com';
+    const defaultUrl = 'https://prompt-deck.vercel.app';
 
     const seoTitle = title ? `${title} | PromptDeck` : defaultTitle;
     const seoDescription = description || defaultDescription;
