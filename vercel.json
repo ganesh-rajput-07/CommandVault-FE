@@ -2,11 +2,11 @@
     "rewrites": [
         {
             "source": "/sitemap.xml",
-            "destination": "https://commandvault-backend.onrender.com/sitemap.xml"
+            "destination": "https://api-promptdeck.vercel.app/sitemap.xml"
         },
         {
             "source": "/api/:path*",
-            "destination": "https://commandvault-backend.onrender.com/api/:path*"
+            "destination": "https://api-promptdeck.vercel.app/api/:path*"
         },
         {
             "source": "/(.*)",

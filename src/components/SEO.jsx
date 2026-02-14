@@ -24,6 +24,7 @@ export default function SEO({ title, description, keywords, image, url, structur
             <meta property="og:image" content={seoImage} />
             <meta property="og:url" content={seoUrl} />
 
+            <meta name="twitter:card" content="summary_large_image" />
             <meta name="twitter:title" content={seoTitle} />
             <meta name="twitter:description" content={seoDescription} />
             <meta name="twitter:image" content={seoImage} />

@@ -2,4 +2,4 @@
 User-agent: *
 Disallow:
 
-Sitemap: https://api.commandvault.com/sitemap.xml
+Sitemap: https://prompt-deck.vercel.app/sitemap.xml
