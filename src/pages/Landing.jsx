@@ -49,6 +49,7 @@ export default function Landing() {
                     <div className="nav-content">
                         <h1>PromptDeck</h1>
                         <div className="nav-actions">
+                            <Link to="/blog" style={{ marginRight: '20px', color: '#fff', textDecoration: 'none', fontWeight: 500 }}>Blog</Link>
                             <Link to="/login" className="btn-secondary">Login</Link>
                             <Link to="/register" className="btn-primary">Get Started</Link>
                         </div>

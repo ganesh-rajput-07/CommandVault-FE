@@ -18,6 +18,8 @@ import CreatePrompt from "./pages/CreatePrompt";
 import VerifyEmail from "./pages/VerifyEmail";
 import QRScanner from "./pages/QRScanner";
 import ImageEditor from "./pages/ImageEditor";
+import BlogList from "./pages/BlogList";
+import BlogDetail from "./pages/BlogDetail";
 
 function ProtectedRoute({ children }) {
   /* const { } = useContext(AuthContext); */
@@ -66,6 +68,8 @@ export default function App() {
               </PublicRoute>
             } />
             <Route path="/verify-email/:token" element={<VerifyEmail />} />
+            <Route path="/blog" element={<BlogList />} />
+            <Route path="/blog/:slug" element={<BlogDetail />} />
 
             {/* Main Dashboard Routes */}
             <Route path="/explore" element={

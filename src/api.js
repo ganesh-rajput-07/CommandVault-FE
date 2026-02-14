@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: 'https://api-promptdeck.vercel.app/api',
+  baseURL: process.env.REACT_APP_API_URL || 'https://api-promptdeck.vercel.app/api',
   headers: {
     'Content-Type': 'application/json',
   },
