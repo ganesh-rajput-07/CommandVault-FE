@@ -43,10 +43,8 @@ export default function Navbar({ unreadCount = 0 }) {
                     <div className={`navbar-menu ${showMobileMenu ? 'active' : ''}`}>
                         <Link to="/explore" className="nav-link" onClick={() => setShowMobileMenu(false)}>Explore</Link>
                         <Link to="/trending" className="nav-link" onClick={() => setShowMobileMenu(false)}>Trending</Link>
-                        <Link to="/editor" className="nav-link special-nav-link" onClick={() => setShowMobileMenu(false)}>Studio 🪄</Link>
                         <Link to="/my-prompts" className="nav-link desktop-nav-link" onClick={() => setShowMobileMenu(false)}>My Prompts</Link>
                         <Link to="/profile" className="nav-link mobile-only" onClick={() => setShowMobileMenu(false)}>Profile</Link>
-                        <Link to="/editor" className="nav-link mobile-only" onClick={() => setShowMobileMenu(false)}>Studio 🪄</Link>
                         <Link to="/my-prompts" className="nav-link mobile-only" onClick={() => setShowMobileMenu(false)}>My Prompts</Link>
                         <Link to="/saved" className="nav-link mobile-only" onClick={() => setShowMobileMenu(false)}>Saved Prompts</Link>
                         <Link to="/scan" className="nav-link mobile-only" onClick={() => setShowMobileMenu(false)}>Scan QR</Link>
