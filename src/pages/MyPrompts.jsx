@@ -12,7 +12,7 @@ import "./Dashboard.css";
 import "./MyPrompts.css";
 
 export default function MyPrompts() {
-    const { user } = useContext(AuthContext);
+    // const { user } = useContext(AuthContext); // user is unused
     const { unreadCount } = useNotifications();
     const { setPrompts: setGlobalPrompts } = usePrompts();
     const navigate = useNavigate();

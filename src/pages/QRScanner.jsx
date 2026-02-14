@@ -4,12 +4,12 @@ import { Html5QrcodeScanner } from "html5-qrcode";
 import Navbar from "../components/Navbar";
 import useNotifications from "../hooks/useNotifications";
 import "./QRScanner.css";
-import LoadingSpinner from "../components/LoadingSpinner";
+// import LoadingSpinner from "../components/LoadingSpinner"; // unused
 
 export default function QRScanner() {
     const navigate = useNavigate();
     const { unreadCount } = useNotifications();
-    const [scanResult, setScanResult] = useState(null);
+    // const [scanResult, setScanResult] = useState(null); // unused
     const [error, setError] = useState(null);
 
     useEffect(() => {
@@ -17,7 +17,7 @@ export default function QRScanner() {
 
         const onScanSuccess = (decodedText, decodedResult) => {
             // Handle success
-            setScanResult(decodedText);
+            // setScanResult(decodedText);
 
             // Check if it is a valid PromptDeck URL
             if (decodedText.includes('/prompt/')) {

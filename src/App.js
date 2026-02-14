@@ -20,7 +20,7 @@ import QRScanner from "./pages/QRScanner";
 import ImageEditor from "./pages/ImageEditor";
 
 function ProtectedRoute({ children }) {
-  const { user } = useContext(AuthContext);
+  const { } = useContext(AuthContext);
   const token = localStorage.getItem('access');
 
   if (!token) {

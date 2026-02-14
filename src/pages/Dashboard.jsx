@@ -12,7 +12,7 @@ import useNotifications from "../hooks/useNotifications";
 import "./Dashboard.css";
 
 export default function Dashboard({ type = "explore" }) {
-  const { user } = useContext(AuthContext);
+  // const { user } = useContext(AuthContext); // user is unused
   const { unreadCount } = useNotifications();
   const { setPrompts: setGlobalPrompts } = usePrompts();
   const navigate = useNavigate();
