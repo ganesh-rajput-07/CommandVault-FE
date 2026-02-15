@@ -36,7 +36,20 @@
 
 .nav-actions {
   display: flex;
-  gap: 12px;
+  gap: 24px;
+  align-items: center;
+}
+
+.nav-link-text {
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 15px;
+  transition: all 0.2s ease;
+}
+
+.nav-link-text:hover {
+  color: #8b5cf6;
 }
 
 /* ===== BUTTONS ===== */
@@ -311,6 +324,10 @@
   .nav-actions {
     display: flex;
     gap: 8px;
+  }
+
+  .nav-link-text {
+    font-size: 0.9rem;
   }
 
   .nav-actions .btn-primary,
