@@ -47,9 +47,13 @@ export default function Landing() {
             <div className="landing-page">
                 <nav className="landing-nav">
                     <div className="nav-content">
-                        <h1>PromptDeck</h1>
+                        <div className="nav-left">
+                            <h1>PromptDeck</h1>
+                            <div className="nav-links">
+                                <Link to="/blog" className="nav-link-text">Blog</Link>
+                            </div>
+                        </div>
                         <div className="nav-actions">
-                            <Link to="/blog" className="nav-link-text">Blog</Link>
                             <Link to="/login" className="btn-secondary">Login</Link>
                             <Link to="/register" className="btn-primary">Get Started</Link>
                         </div>
@@ -76,15 +80,15 @@ export default function Landing() {
 
                     <div className="hero-stats">
                         <div className="stat-card">
-                            <div className="stat-number">10K+</div>
+                            <div className="stat-number">50+</div>
                             <div className="stat-label">Prompts Shared</div>
                         </div>
                         <div className="stat-card">
-                            <div className="stat-number">5K+</div>
+                            <div className="stat-number">5+</div>
                             <div className="stat-label">Active Users</div>
                         </div>
                         <div className="stat-card">
-                            <div className="stat-number">50+</div>
+                            <div className="stat-number">7+</div>
                             <div className="stat-label">AI Models</div>
                         </div>
                     </div>

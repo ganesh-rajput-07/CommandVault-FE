@@ -24,7 +24,19 @@
   height: 70px;
 }
 
-.nav-content h1 {
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+
+.nav-left h1 {
   font-family: 'Space Grotesk', sans-serif;
   font-size: 1.5rem;
   font-weight: 800;
@@ -32,11 +44,12 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  margin: 0;
 }
 
 .nav-actions {
   display: flex;
-  gap: 24px;
+  gap: 16px;
   align-items: center;
 }
 

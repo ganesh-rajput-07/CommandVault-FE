@@ -4,6 +4,7 @@ import api from '../api';
 import SEO from '../components/SEO';
 import '../components/Navbar.css';
 import './Blog.css';
+import './Landing.css';
 
 export default function BlogList() {
     const [posts, setPosts] = useState([]);
@@ -33,13 +34,20 @@ export default function BlogList() {
             />
 
             <div className="blog-page">
-                {/* Simple Navbar reusing Landing styles */}
-                <nav className="landing-nav" style={{ backgroundColor: '#0a0a0a', borderBottom: '1px solid #333', position: 'fixed', width: '100%', top: 0, zIndex: 1000 }}>
+                {/* Navbar matching Landing page */}
+                <nav className="landing-nav" style={{ backgroundColor: 'rgba(0, 0, 0, 0.95)', borderBottom: '1px solid #1f1f1f', position: 'fixed', width: '100%', top: 0, zIndex: 1000 }}>
                     <div className="nav-content">
-                        <Link to="/" style={{ textDecoration: 'none', color: 'white', fontSize: '1.5rem', fontWeight: 'bold' }}>PromptDeck</Link>
+                        <div className="nav-left">
+                            <Link to="/" style={{ textDecoration: 'none' }}>
+                                <h1>PromptDeck</h1>
+                            </Link>
+                            <div className="nav-links">
+                                <Link to="/explore" className="nav-link-text">Explore</Link>
+                            </div>
+                        </div>
                         <div className="nav-actions">
-                            <Link to="/explore" className="btn-secondary" style={{ marginRight: '1rem' }}>Explore</Link>
-                            <Link to="/login" className="btn-primary">Login</Link>
+                            <Link to="/login" className="btn-secondary">Login</Link>
+                            <Link to="/register" className="btn-primary">Get Started</Link>
                         </div>
                     </div>
                 </nav>
