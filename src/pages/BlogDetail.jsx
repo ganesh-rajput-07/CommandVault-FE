@@ -24,17 +24,21 @@ export default function BlogDetail() {
         fetchPost();
     }, [slug]);
 
-    if (loading) return <div className="blog-page"><div className="loading-spinner">Loading...</div></div>;
+    if (loading) return (
+        <div className="blog-page">
+            <div className="loader-container" style={{ paddingTop: '100px' }}>
+                <div className="spinner"></div>
+            </div>
+        </div>
+    );
 
     // Helper for Consistent Nav
     const BlogNav = () => (
         <nav className="landing-nav" style={{ backgroundColor: 'rgba(0, 0, 0, 0.95)', borderBottom: '1px solid #1f1f1f', position: 'fixed', width: '100%', top: 0, zIndex: 1000 }}>
             <div className="nav-content">
-                <div className="nav-left">
-                    <Link to="/" style={{ textDecoration: 'none' }}>
-                        <h1>PromptDeck</h1>
-                    </Link>
-                </div>
+                <Link to="/" style={{ textDecoration: 'none' }}>
+                    <h1>PromptDeck</h1>
+                </Link>
                 <div className="nav-actions">
                     <Link to="/blog" className="btn-secondary">Back to Blog</Link>
                 </div>

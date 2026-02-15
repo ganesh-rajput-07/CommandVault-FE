@@ -47,13 +47,9 @@ export default function Landing() {
             <div className="landing-page">
                 <nav className="landing-nav">
                     <div className="nav-content">
-                        <div className="nav-left">
-                            <h1>PromptDeck</h1>
-                            <div className="nav-links">
-                                <Link to="/blog" className="nav-link-text">Blog</Link>
-                            </div>
-                        </div>
+                        <h1>PromptDeck</h1>
                         <div className="nav-actions">
+                            <Link to="/blog" className="nav-link-text">Blog</Link>
                             <Link to="/login" className="btn-secondary">Login</Link>
                             <Link to="/register" className="btn-primary">Get Started</Link>
                         </div>

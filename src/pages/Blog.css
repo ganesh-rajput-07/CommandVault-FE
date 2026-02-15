@@ -142,8 +142,11 @@
     margin-bottom: 1.5rem;
 }
 
-.loading-spinner {
-    text-align: center;
-    padding: 3rem;
-    color: #888;
+.loader-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 40vh;
+    width: 100%;
+    grid-column: 1 / -1;
 }

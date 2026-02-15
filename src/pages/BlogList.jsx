@@ -37,15 +37,11 @@ export default function BlogList() {
                 {/* Navbar matching Landing page */}
                 <nav className="landing-nav" style={{ backgroundColor: 'rgba(0, 0, 0, 0.95)', borderBottom: '1px solid #1f1f1f', position: 'fixed', width: '100%', top: 0, zIndex: 1000 }}>
                     <div className="nav-content">
-                        <div className="nav-left">
-                            <Link to="/" style={{ textDecoration: 'none' }}>
-                                <h1>PromptDeck</h1>
-                            </Link>
-                            <div className="nav-links">
-                                <Link to="/explore" className="nav-link-text">Explore</Link>
-                            </div>
-                        </div>
+                        <Link to="/" style={{ textDecoration: 'none' }}>
+                            <h1>PromptDeck</h1>
+                        </Link>
                         <div className="nav-actions">
+                            <Link to="/explore" className="nav-link-text">Explore</Link>
                             <Link to="/login" className="btn-secondary">Login</Link>
                             <Link to="/register" className="btn-primary">Get Started</Link>
                         </div>
@@ -56,7 +52,9 @@ export default function BlogList() {
                     <h1 className="blog-title">Latest Updates</h1>
 
                     {loading ? (
-                        <div className="loading-spinner">Loading...</div>
+                        <div className="loader-container">
+                            <div className="spinner"></div>
+                        </div>
                     ) : (
                         <div className="blog-grid">
                             {posts.length > 0 ? (
